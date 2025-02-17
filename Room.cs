@@ -4,10 +4,6 @@ namespace DungeonExplorer
 {
     public class Room
     {
-        public static string InteractableDisplayNotFound = "IDisp Not Found.";
-        public static string RoomNotFound = "Room Not Found.";
-        public static string RoomDescriptionNotFound = "Description Not Found.";
-        public static string RoomOptionsDescriptionNotFound = "Options Description Not Found.";
 
         public static int currentLevel = 1;
         public static int currentRoom = 1;
@@ -16,13 +12,9 @@ namespace DungeonExplorer
 
         Options options;
 
-        //Level_1 newLevel1;
-
         public Room()
         {
             options = new Options();
-
-            //newLevel1 = new Level_1();
 
             currentRoomDescription = "";
         }
@@ -42,13 +34,8 @@ namespace DungeonExplorer
             if (levelNum.Equals(1))  // Statement is required to get the correct Level_x class
             {
                 Level_1 newLevel = new Level_1();
-                currentRoomDescription = newLevel.GetDescription();
 
-                int[] newOptions = { 0, 1, 2 };
-
-                string concatenatedOptions = options.GetGeneralOptions(newOptions);
-
-                //Console.Write(displayRoom + "\n" + options + "\n\n");
+                newLevel.Start();
             }
 
         }

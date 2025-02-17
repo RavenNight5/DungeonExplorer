@@ -43,6 +43,28 @@ namespace DungeonExplorer
 
         ///
 
+        public int GeneralOptionsGetPlayerResponse(string[] setOptions, int[] options)
+        {
+            var keyInfo = Console.ReadKey();
+
+            ClearCurrentConsoleLine();
+
+            if (setOptions.Contains(keyInfo.Key.ToString()))  // If the set option keybinds contain the pressed key then return
+            {
+                Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAindex = " + Array.IndexOf(setOptions, keyInfo.Key.ToString()));
+                
+                return Array.IndexOf(setOptions, keyInfo.Key.ToString());
+            }
+            else
+            {
+                Console.WriteLine("That is not an option, please provide a different input. ");
+
+                GeneralOptionsGetPlayerResponse(setOptions, options);
+
+                return 0;
+            }
+        }
+
         public int RoomExploreGetPlayerResponse()
         {
 
@@ -53,7 +75,7 @@ namespace DungeonExplorer
             return 0;
         }
 
-        public static void WaitOnKey(string keyRequired)
+        public void WaitOnKey(string keyRequired)
         {
             var keyInfo = Console.ReadKey();
 

@@ -12,7 +12,7 @@ namespace DungeonExplorer
         public static string OptionNotFound = "Option Not Found.";
 
         // For testing the input is valid and from one of the current options available
-        public static string CurrentOptionsDisplayed = "";
+        //public static string CurrentOptionsDisplayed = "";
         public static int[] CurrentOptionsDisplayedIntArray = { };
 
         public static string[] GeneralOptionsKeyBinds = { "D", "I", "C", "Enter" };
@@ -44,23 +44,23 @@ namespace DungeonExplorer
 
         public string GetGeneralOptions(int[] options)
         {
-            CurrentOptionsDisplayed = "GeneralOptions";
+            //CurrentOptionsDisplayed = "GeneralOptions";
             CurrentOptionsDisplayedIntArray = options;
 
             currentOptionsConcatenation = "  ";
 
             for (int i = 0; i < options.Length; i++)
             {
-                Debug.Assert(options[i] < GeneralOptionsArray.Length, "Options to be fetched surpass the length of the specified array.");  // Check that the current iteration of the options array is not greater than the length of the array it is using
-
-                currentOptionsConcatenation = currentOptionsConcatenation + "  " + GeneralOptionsArray[options[i]];
+                // Check that the current iteration of the options array is not greater than the length of the array it is using
+                try { currentOptionsConcatenation = currentOptionsConcatenation + "  " + GeneralOptionsArray[options[i]]; }
+                catch { Debug.WriteLine("Options to be fetched surpass the length of the specified array."); }
             }
 
             return currentOptionsConcatenation;
         }
         public string GetRoomExploreOptions(int[] options)
         {
-            CurrentOptionsDisplayed = "RoomExploreOptions";
+            //CurrentOptionsDisplayed = "RoomExploreOptions";
             CurrentOptionsDisplayedIntArray = options;
 
             currentOptionsConcatenation = "  ";
@@ -77,7 +77,7 @@ namespace DungeonExplorer
 
         public string GetInventoryOptions(int[] options)
         {
-            CurrentOptionsDisplayed = "InventoryOptions";
+            //CurrentOptionsDisplayed = "InventoryOptions";
             CurrentOptionsDisplayedIntArray = options;
 
             currentOptionsConcatenation = "  ";

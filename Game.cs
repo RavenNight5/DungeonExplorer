@@ -42,7 +42,7 @@ namespace DungeonExplorer
                 if (i.Equals(dialogue.Length - 1)) Console.WriteLine("\n\n[Space] to Wake Up\n");
                 else Console.WriteLine("\n\n[Space]\n");
 
-                Input.WaitOnKey("Spacebar");
+                input.WaitOnKey("Spacebar");
 
                 Console.Clear();
             }
@@ -61,7 +61,7 @@ namespace DungeonExplorer
                 //Console.WriteLine(displayRoom + "\n" + options + "\n\n");
             }
 
-            Console.WriteLine("---Game finished---");
+            Console.WriteLine("\n\n---Game finished---\n");
 
         }
     }

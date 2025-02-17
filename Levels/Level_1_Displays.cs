@@ -9,84 +9,144 @@ namespace DungeonExplorer.Levels
 {
     internal class Level_1_Displays
     {
-        private string L1R1_Desc = Room.RoomDescriptionNotFound;
-        private string L1R1_OptionDesc = Room.RoomOptionsDescriptionNotFound;
-        private string L1R1 = Program.RoomDisplayNotFound;
+        //private List<string> Rooms_Initial = new List<string>();
+        //private List<string> Rooms_North = new List<string>();
 
-        private string L1R2 = Program.RoomDisplayNotFound;
-        private string L1R3 = Program.RoomDisplayNotFound;
+		private Environment_Interactables environment_Interactables = new Environment_Interactables();
 
-        Environment_Interactables environmentInteractables;
+        private List<string> RoomsList = new List<string>();
+        private List<string> RoomDescriptionsList = new List<string>();
 
-        public Level_1_Displays()
-        {
-            environmentInteractables = new Environment_Interactables();
+        private int lastRoomFetched = 1;
 
-            L1R1_Desc = "A small rectangular room surrounds you, furnished with a singular wooden table and a small battered box against the right wall.";
-            L1R1 = $@"                                              
+        private string R1_Desc = "A small rectangular room surrounds you, furnished with a singular wooden table and a small battered box against the right wall.";
+        private string R2_Desc = "Hallway///";
+        private string R3_Desc = "North///";
+
+        private string R1 = $@"
   Level 1, The Cell.
 
 ║░┌─────────────────────────────────────────────────────┐░║
-║░│                                                    ┌|  
-║▒│     --────────---                                  │|  
-║▒│    |░░░░░░░░░░░░░|                                 {Environment_Interactables.Closed_Door}|  
-║▓│    ║░░░░░░░░░░░░░║                                 └|  
-║▓│    ║░░░░░░░░░░░░░║                                  │░║
-║▓│    |░░░░░░░░░░░░░|                                  │░║
-║▒│     ---───────---                                   │▒║
-║▒│                          {Environment_Interactables.Closed_Chest_0}                    │▒║
-║░│                          {Environment_Interactables.Closed_Chest_1}                    │░║
+║░│                                                 	┌|  
+║▒│ 	 ---───────---                              	│|  
+║▒│     |░░░░░░░░░░░░░|                             	{Environment_Interactables.Closed_Door}|  
+║▓│ 	║░░░░░░░░░░░░░║                             	└|  
+║▓│ 	║░░░░░░░░░░░░░║                              	│░║
+║▓│ 	|░░░░░░░░░░░░░|                              	│░║
+║▒│ 	 ---───────---                               	│▒║
+║▒│                      	{Environment_Interactables.Closed_Chest_0}                	│▒║
+║░│                      	{Environment_Interactables.Closed_Chest_1}                	│░║
 ║░└─────────────────────────────────────────────────────┘░║
-												
+                                           	 
 	";
-            L1R2 = $@"
-    Level 1, Hallway    
+        private string R2 = $@"
+ 	Level 1, Hallway    
 
-    ║░│                              │░║
-    ║░│                              │░║
-    ║▒│                              |░║
-    ║▒│                             //░║
-    ║▒│                             |░░║
-    ║░│                             |░░║
-    ╗░│                             \\░║
-    |┐                               |░║
-    |│                               │░║
-    |{Environment_Interactables.Open_Door}                               │▒║
-    |┘                               │▒║
-    ║░│                              │▒║
-    ║░│                              │▒║
-    ║▒│                              │▒║
-    ║▒│                              │▒║
-    ║▒│                              │▒║
-    ╝▒│                              │▒║
-    ║▒│                              │▒║
-    ║▒│                              │▒║
-    ║▒└────────────────┐             │▒║
-    ║▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░│             │▒║
-    ║▒┌────────────────┘             │▒║
-    ║▒│                              │▒║
-    ║▒│                              │░║
-    ║░│                              │░║
-    ║░│                              │░║
+	║░│░░ ░░░ ░░░ ░░░ ░░░ ░░░ ░░░ ░░│░║
+	║░│ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ │░║
+	║▒│  ░   ░   ░   ░   ░   ░   ░  |░║
+	║▒│                        	   //░║
+	║▒│                            |░░║
+	║░│                            |░░║
+	╗░│                            \\░║
+	|┐                           	|░║
+	|│                           	│░║
+	|{Environment_Interactables.Open_Door}                           	│▒║
+	|┘                           	│▒║
+	║░│                          	│▒║
+	║░│                          	│▒║
+	║▒│                          	│▒║
+	║▒│                          	│▒║
+	║▒│                          	│▒║
+	╝▒│                          	│▒║
+	║▒│                          	│▒║
+	║▒│                          	│▒║
+	║▒└────────────────┐         	│▒║
+	║▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░│         	│▒║
+	║▒┌────────────────┘         	│▒║
+	║▒│                          	│▒║
+	║▒│                          	│░║
+	║░│         	░             	│░║
+	║░│       ░   ░ ░░          	│░║
 
 	";
+        private string R3 = $@"
+ 	Level 1, North Hallway    
+
+	╗░│░░ ░░░ ░░░ ░░░ ░░░ ░░░ ░░░ ░░│▒║
+	|┐░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ │▒║
+	|│   ░   ░   ░   ░   ░   ░   ░  │▒║
+	|{Environment_Interactables.Open_Door}                           	│▒║
+	|┘                           	│▒║
+	║░│                          	│▒║
+	║░│                          	│▒║
+	║▒│                          	│▒║
+	║▒│                          	│▒║
+	║▒│                          	│▒║
+	╝▒│                          	│▒║
+	║░│                          	│▒║
+	╗░│                          	│▒║
+	|┐                           	│▒║
+	|│                           	│▒║
+	|┼                           	│▒║
+	|┘                           	│▒║
+	║░│                          	│▒║
+	║░│                          	│▒║
+	║▒│                          	│▒║
+	║▒│                          	│▒║
+	║▒│                          	│▒║
+	╝▒│                          	│▒║
+	║░│                          	│▒║
+	╗░│                          	│▒║
+	|┐                           	│▒║
+	|│                           	│▒║
+	|┼                           	│▒║
+	|┘                           	│▒║
+	║░│                          	│▒║
+	║░│                          	│▒║
+	║▒│                          	│▒║
+	║▒│                          	│▒║
+	║▒│                          	│▒║
+	╝▒│                          	│▒║
+	║░│                          	│▒║
+
+	";
+
+        public Level_1_Displays()
+        {
+            RoomsList.Add(R1);
+            RoomsList.Add(R2);
+            RoomsList.Add(R3);
+
+			RoomDescriptionsList.Add(R1_Desc);
+            RoomDescriptionsList.Add(R2_Desc);
+            RoomDescriptionsList.Add(R3_Desc);
+            
         }
 
         public string GetRoom(int roomNumber)
         {
-            if (roomNumber.Equals(1))
-                return L1R1;
-            if (roomNumber.Equals(2))
-                return L1R2;
-            if (roomNumber.Equals(3))
-                return L1R3;
+            lastRoomFetched = roomNumber - 1;
 
-            else return Program.RoomDisplayNotFound;
+            try
+            {
+                string roomDisplay = RoomsList[roomNumber - 1];
+
+                return roomDisplay;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+
+                return "Room does not exist.";
+            }
         }
 
         public string GetDescription()
         {
-            return "";
+            return RoomDescriptionsList[lastRoomFetched];
         }
     }
 }
+
+

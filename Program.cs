@@ -27,7 +27,7 @@ namespace DungeonExplorer
 
             Console.WriteLine("\nPress [Space] to play.\n");
 
-            Input.WaitOnKey("Spacebar");
+            input.WaitOnKey("Spacebar");
 
             Console.Clear();
 

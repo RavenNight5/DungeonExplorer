@@ -8,13 +8,16 @@ namespace DungeonExplorer.Text_Displays
 {
     internal class Environment_Interactables
     {
-        public static string Open_Chest_0 = Room.InteractableDisplayNotFound;
-        public static string Open_Chest_1 = Room.InteractableDisplayNotFound;
-        public static string Closed_Chest_0 = Room.InteractableDisplayNotFound;
-        public static string Closed_Chest_1 = Room.InteractableDisplayNotFound;
+        public static string Open_Chest_0;
+        public static string Open_Chest_1;
+        public static string Closed_Chest_0;
+        public static string Closed_Chest_1;
 
-        public static string Open_Door = Room.InteractableDisplayNotFound;
-        public static string Closed_Door = Room.InteractableDisplayNotFound;
+        public static string Puddle_0;
+        public static string Puddle_1;
+
+        public static string Open_Door;
+        public static string Closed_Door;
 
         public Environment_Interactables()
         {
@@ -25,6 +28,11 @@ namespace DungeonExplorer.Text_Displays
 
             Open_Door = "┴";
             Closed_Door = "┼";
+
+            Puddle_0 = "   ░ ░ ";
+            Puddle_1 = "  ░░░ ░ ░";
+            Puddle_1 = "░  ░░░░░  ░";
+            Puddle_1 = "  ░░░░ ░ ░░";
         }
 
         public void GetAllLevelInteractables()
