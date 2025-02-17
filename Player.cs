@@ -4,19 +4,21 @@ namespace DungeonExplorer
 {
     public class Player
     {
-        public string Name { get; private set; }
-        public int Health { get; private set; }
+        public static string Name { get; set; }
+        public int Health { get; set; }
+
         private List<string> inventory = new List<string>();
 
-        public Player(string name, int health) 
+        public Player()
         {
-            Name = name;
-            Health = health;
+            Health = 6;
         }
+
         public void PickUpItem(string item)
         {
 
         }
+
         public string InventoryContents()
         {
             return string.Join(", ", inventory);

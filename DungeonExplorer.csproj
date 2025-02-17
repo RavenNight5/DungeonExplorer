@@ -43,14 +43,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dialogue\General_Info.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="Input.cs" />
+    <Compile Include="Levels\Level_1.cs" />
+    <Compile Include="Levels\Level_1_Actions.cs" />
+    <Compile Include="Levels\Level_1_Displays.cs" />
+    <Compile Include="Options.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Room.cs" />
+    <Compile Include="Text_Displays\Description_Box.cs" />
+    <Compile Include="Text_Displays\Environment_Interactables.cs" />
+    <Compile Include="Text_Displays\Inventory.cs" />
+    <Compile Include="Text_Displays\Inventory_Items.cs" />
+    <Compile Include="Text_Displays\Welcome.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
