@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using DungeonExplorer.Text_Displays;
@@ -9,42 +10,61 @@ namespace DungeonExplorer.Levels
 {
     internal class Level_1
     {
-        private Options options = new Options();
-        private Input input = new Input();
+        public static Level_1_Displays L1_Displays { get; private set; }
+        public static Level_1_Actions L1_Actions { get; private set; }
 
-        private Inventory inventory = new Inventory();
 
-        //private Level_1_Actions actions = new Level_1_Actions();
-        private Level_1_Displays displays = new Level_1_Displays();
-
-        public Level_1() { }
+        public Level_1()
+        {
+            Level_1.L1_Displays = new Level_1_Displays();
+            Level_1.L1_Actions = new Level_1_Actions();
+        }
 
         public void Start()
         {
-            int[] newOptions = { 0, 1, 2 };
+            DisplayRooms(1);
+        }
 
-            string concatenatedOptions = options.GetGeneralOptions(newOptions);
-
-            Console.Write(displays.GetRoom(1) + "\n" + concatenatedOptions + "\n\n");
-
-            int indexOfResponse = input.GeneralOptionsGetPlayerResponse(Options.GeneralOptionsKeyBinds, newOptions);
-
-            inventory.AddItemToInventory(Inventory_Items.Key1);
-            inventory.AddItemToInventory(Inventory_Items.CupFull);
-            inventory.AddItemToInventory(Inventory_Items.CupEmpty);
-
-            if (indexOfResponse == 0)
+        public void DisplayRooms(int roomToDisplay, string[] itemToEquip = null)
+        {
+            if (roomToDisplay == 1)
             {
-                Console.WriteLine("Desc...");  // Desc box
+                Console.Write(L1_Displays.GetRoom(roomToDisplay) + "\n");
+
+                if (itemToEquip != null && itemToEquip != Player.emptySlot)
+                {
+                    //Display item in a box
+                }
+
+                int[] newOptions = { 0, 1, 2 };
+                string concatenatedOptions = Game.OptionHandler.GetGeneralOptions(newOptions);
+
+                Console.Write("\n" + concatenatedOptions + "\n\n");
+
+                int indexOfResponse = Game.InputHandler.OptionsGetPlayerResponse_CustomOptions(Options.GeneralOptionsKeyBinds, newOptions);
+
+                //Inventory.AddItemToInventory(Inventory_Items.Key1);
+                //Inventory.AddItemToInventory(Inventory_Items.CupFull);
+                //Inventory.AddItemToInventory(Inventory_Items.CupEmpty);
+
+                if (indexOfResponse == 0)
+                {
+                    Console.WriteLine("Desc...");  // Desc box
+                }
+                else if (indexOfResponse == 1)
+                {
+                    Console.WriteLine("Get stats...");
+                }
+                else if (indexOfResponse == 2)
+                {
+                    Game.CurrentPlayer.DisplayInventory();
+                }
             }
-            else if (indexOfResponse == 1)
-            {
-                string inv = inventory.GetInventory(); Console.Clear(); Console.Write(inv);
-            }
-            else if (indexOfResponse == 2)
-            {
-                Console.WriteLine("Get stats...");
-            }
+        }
+
+        public void Continue(string[] itemToEquip = null)
+        {
+            DisplayRooms(Room.currentRoom, itemToEquip);
         }
 
         public string GetDescription()

@@ -56,7 +56,6 @@
     <Compile Include="Room.cs" />
     <Compile Include="Text_Displays\Description_Box.cs" />
     <Compile Include="Text_Displays\Environment_Interactables.cs" />
-    <Compile Include="Text_Displays\Inventory.cs" />
     <Compile Include="Text_Displays\Inventory_Items.cs" />
     <Compile Include="Text_Displays\Welcome.cs" />
   </ItemGroup>

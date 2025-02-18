@@ -9,24 +9,26 @@ namespace DungeonExplorer
     {
         public static bool playing = true;
 
-        public Player player;
-        private Room currentRoom;
+        // Here I set multiple classes to static as they will only be defined once per game. Therefore they and their methods can be accessed in the level classes
+        public static Player CurrentPlayer { get; private set; }
+        public static Room RoomHandler { get; private set; }
+        public static Input InputHandler { get; private set; }
+        public static Options OptionHandler { get; private set; }
 
-        private Input input;
 
         private General_Info generalInfo;
 
         public Game()
         {
-            player = new Player();
-            currentRoom = new Room();
+            Game.CurrentPlayer = new Player();
 
-            input = new Input();
+            Game.RoomHandler = new Room();
+
+            Game.InputHandler = new Input();
+
+            Game.OptionHandler = new Options();
 
             generalInfo = new General_Info();
-
-            Start();
-
         }
 
         public void Start()
@@ -42,7 +44,7 @@ namespace DungeonExplorer
                 if (i.Equals(dialogue.Length - 1)) Console.WriteLine("\n\n[Space] to Wake Up\n");
                 else Console.WriteLine("\n\n[Space]\n");
 
-                input.WaitOnKey("Spacebar");
+                InputHandler.WaitOnKey("Spacebar");
 
                 Console.Clear();
             }
@@ -50,7 +52,7 @@ namespace DungeonExplorer
             for (int i = 1; i <= Program.NumOfLevels; i++)
             {
 
-                currentRoom.StartLevel(i);
+                RoomHandler.StartLevel(i);
 
                 //var startLevel = currentRoom.StartLevel(i);
                 //// Returned items from the tuple

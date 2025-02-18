@@ -43,7 +43,28 @@ namespace DungeonExplorer
 
         ///
 
-        public int GeneralOptionsGetPlayerResponse(string[] setOptions, int[] options)
+        public int OptionsGetPlayerResponse_CustomOptions(string[] setOptions, int[] options)
+        {
+            var keyInfo = Console.ReadKey();
+            
+            ClearCurrentConsoleLine();
+
+
+            for (int i = 0; i < setOptions.Length; i++)
+            {
+                if (setOptions.Contains(keyInfo.Key.ToString()) && setOptions[options[i]].Equals(keyInfo.Key.ToString()))
+                {
+                    return Array.IndexOf(setOptions, keyInfo.Key.ToString());
+                }
+            }
+
+            Console.WriteLine("That is not an option, please provide a different input.");
+
+            OptionsGetPlayerResponse_CustomOptions(setOptions, options);
+
+            return 0;
+        }
+        public string OptionsGetPlayerResponse(string[] setOptions)
         {
             var keyInfo = Console.ReadKey();
 
@@ -51,30 +72,19 @@ namespace DungeonExplorer
 
             if (setOptions.Contains(keyInfo.Key.ToString()))  // If the set option keybinds contain the pressed key then return
             {
-                Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAindex = " + Array.IndexOf(setOptions, keyInfo.Key.ToString()));
-                
-                return Array.IndexOf(setOptions, keyInfo.Key.ToString());
+                return keyInfo.Key.ToString();
             }
             else
             {
-                Console.WriteLine("That is not an option, please provide a different input. ");
+                Console.WriteLine("That is not an option, please provide a different input.");
 
-                GeneralOptionsGetPlayerResponse(setOptions, options);
+                OptionsGetPlayerResponse(setOptions);
 
-                return 0;
+                return null;
             }
         }
 
-        public int RoomExploreGetPlayerResponse()
-        {
-
-            return 0;
-        }
-        public int InventoryGetPlayerResponse()
-        {
-            return 0;
-        }
-
+        ///
         public void WaitOnKey(string keyRequired)
         {
             var keyInfo = Console.ReadKey();
@@ -97,7 +107,6 @@ namespace DungeonExplorer
         {
             Console.ReadKey();
         }
-
         ///
 
         public static void ClearCurrentConsoleLine()

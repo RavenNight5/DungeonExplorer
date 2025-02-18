@@ -1,20 +1,21 @@
-﻿using DungeonExplorer.Levels;
+﻿using System;
+using DungeonExplorer.Levels;
+using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
 {
     public class Room
     {
-
         public static int currentLevel = 1;
         public static int currentRoom = 1;
 
         private string currentRoomDescription;
 
-        Options options;
+        Level_1 level_1;
 
         public Room()
         {
-            options = new Options();
+            level_1 = new Level_1();
 
             currentRoomDescription = "";
         }
@@ -22,6 +23,15 @@ namespace DungeonExplorer
         public string GetRoomDescription()
         {
             return currentRoomDescription;
+        }
+
+        public void ReturnToLevel(string[] itemToEquip = null)  //If player is in inventory or another screen this method will be called to continue the gameplay
+        {
+            Console.WriteLine("Returning to " + currentLevel + " room: " + currentRoom);
+            if (currentLevel.Equals(1))
+            {
+                level_1.Continue();
+            }
         }
 
         public void StartLevel(int levelNum)
@@ -33,9 +43,7 @@ namespace DungeonExplorer
 
             if (levelNum.Equals(1))  // Statement is required to get the correct Level_x class
             {
-                Level_1 newLevel = new Level_1();
-
-                newLevel.Start();
+                level_1.Start();
             }
 
         }

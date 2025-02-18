@@ -34,8 +34,8 @@ namespace DungeonExplorer.Levels
 ║▓│ 	║░░░░░░░░░░░░░║                              	│░║
 ║▓│ 	|░░░░░░░░░░░░░|                              	│░║
 ║▒│ 	 ---───────---                               	│▒║
-║▒│                      	{Environment_Interactables.Closed_Chest_0}                	│▒║
-║░│                      	{Environment_Interactables.Closed_Chest_1}                	│░║
+║▒│                      	{Environment_Interactables.Closed_Chest[0]}                	│▒║
+║░│                      	{Environment_Interactables.Closed_Chest[1]}                	│░║
 ║░└─────────────────────────────────────────────────────┘░║
                                            	 
 	";
@@ -46,7 +46,7 @@ namespace DungeonExplorer.Levels
 	║░│ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ │░║
 	║▒│  ░   ░   ░   ░   ░   ░   ░  |░║
 	║▒│                        	   //░║
-	║▒│                            |░░║
+	║▒│                            /░░║
 	║░│                            |░░║
 	╗░│                            \\░║
 	|┐                           	|░║
@@ -66,8 +66,8 @@ namespace DungeonExplorer.Levels
 	║▒┌────────────────┘         	│▒║
 	║▒│                          	│▒║
 	║▒│                          	│░║
-	║░│         	░             	│░║
-	║░│       ░   ░ ░░          	│░║
+	║░│          ░              	│░║
+	║░│        ░  ░ ░░          	│░║
 
 	";
         private string R3 = $@"
@@ -121,7 +121,8 @@ namespace DungeonExplorer.Levels
 			RoomDescriptionsList.Add(R1_Desc);
             RoomDescriptionsList.Add(R2_Desc);
             RoomDescriptionsList.Add(R3_Desc);
-            
+
+			//R1.Replace("{Environment_Interactables.Closed_Chest[0]}", Environment_Interactables.Open_Chest[0]);
         }
 
         public string GetRoom(int roomNumber)

@@ -9,32 +9,26 @@ namespace DungeonExplorer
 {
     internal class Options
     {
-        public static string OptionNotFound = "Option Not Found.";
-
-        // For testing the input is valid and from one of the current options available
-        //public static string CurrentOptionsDisplayed = "";
-        public static int[] CurrentOptionsDisplayedIntArray = { };
-
-        public static string[] GeneralOptionsKeyBinds = { "D", "I", "C", "Enter" };
+        public static string[] GeneralOptionsKeyBinds = { "D", "C", "Tab", "Enter" };
         public static string[] RoomExploreOptionsKeyBinds = { "1", "2", "3", "4" };
+        public static string[] InventoryOptionsKeyBinds = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "Enter", "Tab" };
 
-        private string currentOptionsConcatenation = OptionNotFound;
+        private string currentOptionsConcatenation;
         ///
         private string[] GeneralOptionsArray = {
-            $"Room Description [{GeneralOptionsKeyBinds[0]}]",
-            $"Inventory [{GeneralOptionsKeyBinds[1]}]",
-            $"Character Stats [{GeneralOptionsKeyBinds[2]}]",
-            $"Use [{GeneralOptionsKeyBinds[3]}]"
-        };
+            "Room Description [D]",
+            "Character Stats [C]",
+            "Inventory [Tab]",
+            "Use [U]" };
         private string[] RoomExploreOptionsArray = {
-            $"Try Door [{RoomExploreOptionsKeyBinds[0]}]",
-            $"Look On Table [{RoomExploreOptionsKeyBinds[1]}]",
-            $"Look Under Table [{RoomExploreOptionsKeyBinds[2]}]",
-            $"Try Chest [{RoomExploreOptionsKeyBinds[3]}]" };
-
+            "Try Door [1]",
+            "Look On Table [2]",
+            "Look Under Table [3]",
+            "Try Chest [4]" };
         private string[] InventoryOptionsArray = {
-            $"Select Item [1-8]",
-            $"Equip Item [{GeneralOptionsKeyBinds[3]}]" };
+            "Select Item [0-9]",
+            "Equip Item [Enter]",
+            "Close Inventory [Tab]" };
 
 
         public Options()
@@ -44,9 +38,6 @@ namespace DungeonExplorer
 
         public string GetGeneralOptions(int[] options)
         {
-            //CurrentOptionsDisplayed = "GeneralOptions";
-            CurrentOptionsDisplayedIntArray = options;
-
             currentOptionsConcatenation = "  ";
 
             for (int i = 0; i < options.Length; i++)
@@ -60,9 +51,6 @@ namespace DungeonExplorer
         }
         public string GetRoomExploreOptions(int[] options)
         {
-            //CurrentOptionsDisplayed = "RoomExploreOptions";
-            CurrentOptionsDisplayedIntArray = options;
-
             currentOptionsConcatenation = "  ";
 
             for (int i = 0; i < options.Length; i++)
@@ -75,19 +63,9 @@ namespace DungeonExplorer
             return currentOptionsConcatenation;
         }
 
-        public string GetInventoryOptions(int[] options)
+        public string GetInventoryOptions()
         {
-            //CurrentOptionsDisplayed = "InventoryOptions";
-            CurrentOptionsDisplayedIntArray = options;
-
-            currentOptionsConcatenation = "  ";
-
-            for (int i = 0; i < options.Length; i++)
-            {
-                Debug.Assert(options[i] < GeneralOptionsArray.Length, "Options to be fetched surpass the length of the specified array.");
-
-                currentOptionsConcatenation = currentOptionsConcatenation + "  " + InventoryOptionsArray[options[i]];
-            }
+            currentOptionsConcatenation = string.Join("   ", InventoryOptionsArray);
 
             return currentOptionsConcatenation;
         }
