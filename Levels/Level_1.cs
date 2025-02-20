@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
@@ -15,9 +16,19 @@ namespace DungeonExplorer.Levels
 
 
         public Level_1()
-        {
-            Level_1.L1_Displays = new Level_1_Displays();
-            Level_1.L1_Actions = new Level_1_Actions();
+        { 
+            L1_Displays = new Level_1_Displays();
+            L1_Actions = new Level_1_Actions();
+
+            Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Sponge);
+            Game.CurrentPlayer.PickUpItem(Inventory_Items.II_DustpanBrush);
+            Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Mop);
+
+            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Key1);
+            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Longsword);
+            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Dagger);
+            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_CupEmpty);
+            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_CupFull);
         }
 
         public void Start()
@@ -41,23 +52,38 @@ namespace DungeonExplorer.Levels
 
                 Console.Write("\n" + concatenatedOptions + "\n\n");
 
-                int indexOfResponse = Game.InputHandler.OptionsGetPlayerResponse_CustomOptions(Options.GeneralOptionsKeyBinds, newOptions);
+                PlayerChoice();
 
-                //Inventory.AddItemToInventory(Inventory_Items.Key1);
-                //Inventory.AddItemToInventory(Inventory_Items.CupFull);
-                //Inventory.AddItemToInventory(Inventory_Items.CupEmpty);
+                void PlayerChoice()
+                {
+                    string optionChosen = Game.InputHandler.OptionsGetPlayerResponse(Options.GeneralOptionsKeyBinds);
 
-                if (indexOfResponse == 0)
-                {
-                    Console.WriteLine("Desc...");  // Desc box
-                }
-                else if (indexOfResponse == 1)
-                {
-                    Console.WriteLine("Get stats...");
-                }
-                else if (indexOfResponse == 2)
-                {
-                    Game.CurrentPlayer.DisplayInventory();
+                    if (optionChosen != null)
+                    {
+                        try
+                        {
+                            if (optionChosen.Equals(Options.GeneralOptionsKeyBinds[0]))
+                            {
+                                Console.WriteLine("Desc...");  // Desc box
+                            }
+                            else if (optionChosen.Equals(Options.GeneralOptionsKeyBinds[1]))
+                            {
+                                Console.WriteLine("Get stats...");
+                            }
+                            else if (optionChosen.Equals(Options.GeneralOptionsKeyBinds[2]))
+                            {
+                                Game.CurrentPlayer.DisplayInventory();
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine(optionChosen + " was not recognised as a string in this instance. \nException caught: " + e);
+                        }
+                    }
+                    else
+                    {
+                        PlayerChoice();
+                    }
                 }
             }
         }

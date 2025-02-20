@@ -9,17 +9,16 @@ namespace DungeonExplorer
 {
     internal class Options
     {
-        public static string[] GeneralOptionsKeyBinds = { "D", "C", "Tab", "Enter" };
-        public static string[] RoomExploreOptionsKeyBinds = { "1", "2", "3", "4" };
-        public static string[] InventoryOptionsKeyBinds = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "Enter", "Tab" };
+        public static string[] GeneralOptionsKeyBinds = { "D", "C", "Tab" };
+        public static string[] RoomExploreOptionsKeyBinds = { "D1", "D2", "D3", "D4",    "D", "C", "Tab" };  // D1 etc. is the name of the number keys the system recognises
+        public static string[] InventoryOptionsKeyBinds = { "D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9", "D0", "Enter", "Tab" };
 
         private string currentOptionsConcatenation;
         ///
         private string[] GeneralOptionsArray = {
             "Room Description [D]",
             "Character Stats [C]",
-            "Inventory [Tab]",
-            "Use [U]" };
+            "Inventory [Tab]" };
         private string[] RoomExploreOptionsArray = {
             "Try Door [1]",
             "Look On Table [2]",
@@ -65,7 +64,7 @@ namespace DungeonExplorer
 
         public string GetInventoryOptions()
         {
-            currentOptionsConcatenation = string.Join("   ", InventoryOptionsArray);
+            currentOptionsConcatenation = "   " + (string.Join("   ", InventoryOptionsArray));
 
             return currentOptionsConcatenation;
         }

@@ -15,9 +15,6 @@ namespace DungeonExplorer
         public static Input InputHandler { get; private set; }
         public static Options OptionHandler { get; private set; }
 
-
-        private General_Info generalInfo;
-
         public Game()
         {
             Game.CurrentPlayer = new Player();
@@ -27,15 +24,15 @@ namespace DungeonExplorer
             Game.InputHandler = new Input();
 
             Game.OptionHandler = new Options();
-
-            generalInfo = new General_Info();
         }
 
         public void Start()
         {
             Console.Clear();
 
-            string[] dialogue = generalInfo.WelcomeDialogue;
+            General_Info general_Info = new General_Info();
+
+            string[] dialogue = general_Info.WelcomeDialogue;
 
             for (int i = 0; i < dialogue.Length; i++)
             {

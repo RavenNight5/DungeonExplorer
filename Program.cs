@@ -21,8 +21,6 @@ namespace DungeonExplorer
 
             Game game = new Game();
 
-            General_Info generalInfo = new General_Info();
-
             Console.WriteLine(title);
 
             Console.WriteLine("\nPress [Space] to play.\n");
@@ -37,7 +35,7 @@ namespace DungeonExplorer
 
             game.Start();  // Start the game
 
-            //DescriptionBox BasicInfo = new DescriptionBox("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", 54);
+            //Description_Box BasicInfo = new Description_Box("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", 54);
 
             Console.WriteLine("\nPress any key to exit...");
             Console.ReadKey();

@@ -11,7 +11,6 @@ namespace DungeonExplorer.Text_Displays
     {
         public string Description { get; set; }
         public string Title { get; set; }
-
         public int LineMaxCharLen { get; set; }
 
         private int numberOfLines;
@@ -76,6 +75,23 @@ namespace DungeonExplorer.Text_Displays
 
         }
 
+        public static void ArrayDescription(string[] arrayDesc)
+        {
+            for (int i = 0; i < arrayDesc.Length; i++)
+            {
+                Console.Clear();
+
+                new Description_Box(arrayDesc[i]);
+
+                if (i.Equals(arrayDesc.Length - 1)) Console.WriteLine("\n\n[Space] to Resume\n");
+                else Console.WriteLine("\n\n[Space]\n");
+
+                Game.InputHandler.WaitOnKey("Spacebar");
+            }
+        }
+
+        ///
+
         private void GetLines(string des)
         {
             if (descriptionCurrentSplit.Length >= LineMaxCharLen)
@@ -104,7 +120,6 @@ namespace DungeonExplorer.Text_Displays
         {
             if (!numberOfLines.Equals(1))
             {
-
                 GetLines(Description);
 
                 // For the spaces that fill after each line
@@ -121,11 +136,7 @@ namespace DungeonExplorer.Text_Displays
                 }
             }
 
-            //for (int i = 0; i < description_List.Count; i++)
-            //{
-            //    Console.WriteLine(description_List[i]);
-            //}
-
+            
 
             Console.Write($@"     {Title}
      _____{_len_}__
@@ -166,9 +177,9 @@ namespace DungeonExplorer.Text_Displays
                 Console.WriteLine(descriptionBox);
             }
 
-            Console.Write($@"       │   {_len_}__|__
-       │  /{_len_space}   //
-       \\/_{_len_}__//
+            Console.Write($@"       │    {_len_}_|__
+       │   /{_len_space}  //
+       \\_/_{_len_}_//
 ");
 
         }

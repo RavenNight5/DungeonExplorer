@@ -1,6 +1,5 @@
 ﻿using System;
 using DungeonExplorer.Levels;
-using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
 {
