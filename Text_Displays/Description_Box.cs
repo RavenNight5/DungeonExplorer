@@ -31,6 +31,9 @@ namespace DungeonExplorer.Text_Displays
             LineMaxCharLen = lineMaxCharLen;
             Title = title;
 
+            description_List = new List<string>();
+            descriptionPadding_List = new List<string>();
+
             numberOfLines = 0;
 
             len_ = "";
@@ -75,13 +78,14 @@ namespace DungeonExplorer.Text_Displays
 
         }
 
-        public static void ArrayDescription(string[] arrayDesc)
+        public static void ArrayDescription(string[] arrayDesc, int maxCharLen)
         {
             for (int i = 0; i < arrayDesc.Length; i++)
             {
-                Console.Clear();
+                // Clears the current console screen and the scrollback buffer (characters that may be out of view but still there when you scroll up)
+                Console.Clear(); Console.WriteLine("\x1b[3J");
 
-                new Description_Box(arrayDesc[i]);
+                new Description_Box(arrayDesc[i], maxCharLen);
 
                 if (i.Equals(arrayDesc.Length - 1)) Console.WriteLine("\n\n[Space] to Resume\n");
                 else Console.WriteLine("\n\n[Space]\n");
@@ -118,26 +122,22 @@ namespace DungeonExplorer.Text_Displays
 
         private void ImplementDescriptionToBox(string _len_, string _len_space)
         {
-            if (!numberOfLines.Equals(1))
+
+            GetLines(Description);
+
+            // For the spaces that fill after each line
+            for (int i = 0; i < description_List.Count; i++)
             {
-                GetLines(Description);
-
-                // For the spaces that fill after each line
-                for (int i = 0; i < description_List.Count; i++)
+                string newLen_Space = " ";
+                for (int j = 0; j <= LineMaxCharLen - description_List[i].Length; j++)
                 {
-                    string newLen_Space = " ";
-
-                    for (int j = 0; j <= LineMaxCharLen - description_List[i].Length; j++)
-                    {
-                        newLen_Space = newLen_Space + " ";
-                    }
-
-                    descriptionPadding_List.Add(newLen_Space);
+                    newLen_Space = newLen_Space + " ";
                 }
+
+                descriptionPadding_List.Add(newLen_Space);
             }
 
             
-
             Console.Write($@"     {Title}
      _____{_len_}__
     / \\  {_len_space}  \\
@@ -147,7 +147,7 @@ namespace DungeonExplorer.Text_Displays
 
             if (numberOfLines > 0 && numberOfLines <= 1)  // One line
             {
-                descriptionBox = $@"    |  │  {Description}   |
+                descriptionBox = $@"    |  │  {Description}{descriptionPadding_List[0]} |
     \\_│  {_len_space}   |";
 
                 Console.WriteLine(descriptionBox);

@@ -12,46 +12,64 @@ namespace DungeonExplorer.Levels
         //private List<string> Rooms_Initial = new List<string>();
         //private List<string> Rooms_North = new List<string>();
 
-		private Environment_Interactables environment_Interactables = new Environment_Interactables();
+        public List<string[]> R1_Interactables = new List<string[]> { Environment_Interactables.Closed_DoorVertiacl, Environment_Interactables.Closed_Chest };
 
-        private List<string> RoomsList = new List<string>();
-        private List<string> RoomDescriptionsList = new List<string>();
+        private List<string> Rooms1_List = new List<string>();
+        private List<string> Room1_Descriptions_List = new List<string>();
 
-        private int lastRoomFetched = 1;
+        private int lastRoomFetched = 0;
 
-        private string R1_Desc = "A small rectangular room surrounds you, furnished with a singular wooden table and a small battered box against the right wall.";
-        private string R2_Desc = "Hallway///";
-        private string R3_Desc = "North///";
+        private string R1_Desc = "A small rectangular room surrounds you, furnished with a singular wooden table and a small battered box against the right wall. You don't notice anything out of the ordinary.";
+        private string R2_Desc = "This hallway serves as a primary passageway for staff navigating the dungeon. While cells line the walls, they hold fewer occupants since this area acts as an overflow quater. You look opposite you, a bit further up there seems to be a bump in the wall: perhaps you should check it out.";
+        private string R3_Desc = "The hallway continues with empty cells appearing on your left as you progress. Nothing much to clean out here.";
 
-        private string R1 = $@"
+        public Level_1_Displays()
+        {
+            
+			RefreshRoomDisplays();
+
+            Room1_Descriptions_List.Add(R1_Desc);
+            Room1_Descriptions_List.Add(R2_Desc);
+            Room1_Descriptions_List.Add(R3_Desc);
+
+			//R1.Replace("{Environment_Interactables.Closed_Chest[0]}", Environment_Interactables.Open_Chest[0]);
+        }
+
+		private void RefreshRoomDisplays()
+		{
+            // Remove then add the rooms back to the list - meaning if an Environment Interactable has changed it will show
+            
+			Rooms1_List.Clear();
+
+            string R1 = $@"
   Level 1, The Cell.
 
 ║░┌─────────────────────────────────────────────────────┐░║
 ║░│                                                 	┌|  
 ║▒│ 	 ---───────---                              	│|  
-║▒│     |░░░░░░░░░░░░░|                             	{Environment_Interactables.Closed_Door}|  
+║▒│     |░░░░░░░░░░░░░|                             	{R1_Interactables[0][0]}|  
 ║▓│ 	║░░░░░░░░░░░░░║                             	└|  
 ║▓│ 	║░░░░░░░░░░░░░║                              	│░║
 ║▓│ 	|░░░░░░░░░░░░░|                              	│░║
 ║▒│ 	 ---───────---                               	│▒║
-║▒│                      	{Environment_Interactables.Closed_Chest[0]}                	│▒║
-║░│                      	{Environment_Interactables.Closed_Chest[1]}                	│░║
+║▒│                      	{R1_Interactables[1][0]}                	│▒║
+║░│                      	{R1_Interactables[1][1]}                	│░║
 ║░└─────────────────────────────────────────────────────┘░║
-                                           	 
 	";
-        private string R2 = $@"
+
+            string R2 = $@"
  	Level 1, Hallway    
 
 	║░│░░ ░░░ ░░░ ░░░ ░░░ ░░░ ░░░ ░░│░║
 	║░│ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ │░║
 	║▒│  ░   ░   ░   ░   ░   ░   ░  |░║
-	║▒│                        	   //░║
-	║▒│                            /░░║
-	║░│                            |░░║
-	╗░│                            \\░║
-	|┐                           	|░║
+	║▒│                        	   //░│
+	║▒│                            /░░|
+	║░│                            |░░|
+	╗░│                            \\░|
+	|┐                           	|░│
 	|│                           	│░║
-	|{Environment_Interactables.Open_Door}                           	│▒║
+	|{R1_Interactables[0][0]}                           	│▒║
 	|┘                           	│▒║
 	║░│                          	│▒║
 	║░│                          	│▒║
@@ -68,15 +86,15 @@ namespace DungeonExplorer.Levels
 	║▒│                          	│░║
 	║░│       ░                 	│░║
 	║░│        ░░               	│░║
-
 	";
-        private string R3 = $@"
+
+            string R3 = $@"
  	Level 1, North Hallway    
 
 	╗░│░░ ░░░ ░░░ ░░░ ░░░ ░░░ ░░░ ░░│▒║
 	|┐░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ │▒║
 	|│   ░   ░   ░   ░   ░   ░   ░  │▒║
-	|{Environment_Interactables.Open_Door}                           	│▒║
+	|{R1_Interactables[0][0]}                           	│▒║
 	|┘                           	│▒║
 	║░│                          	│▒║
 	║░│                          	│▒║
@@ -109,13 +127,9 @@ namespace DungeonExplorer.Levels
 	║▒│                          	│▒║
 	╝▒│                          	│▒║
 	║░│                          	│▒║
-
 	";
 
-
-
-
-		private string RX = $@"
+            string R6 = $@"
 	Level 1, South Hallway
 
                         ║░│      ░░  ░                  │▒║
@@ -141,32 +155,28 @@ namespace DungeonExplorer.Levels
    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 ";
 
-        public Level_1_Displays()
-        {
-            RoomsList.Add(R1);
-            RoomsList.Add(R2);
-            RoomsList.Add(R3);
+            Rooms1_List.Add(R1);
+            Rooms1_List.Add(R2);
+            Rooms1_List.Add(R3);
 
-			RoomDescriptionsList.Add(R1_Desc);
-            RoomDescriptionsList.Add(R2_Desc);
-            RoomDescriptionsList.Add(R3_Desc);
-
-			//R1.Replace("{Environment_Interactables.Closed_Chest[0]}", Environment_Interactables.Open_Chest[0]);
         }
 
         public string GetRoom(int roomNumber)
         {
+
+			RefreshRoomDisplays();
+
             lastRoomFetched = roomNumber - 1;
 
             try
             {
-                string roomDisplay = RoomsList[roomNumber - 1];
+                string roomDisplay = Rooms1_List[roomNumber - 1];
 
                 return roomDisplay;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine("Room does not exist. Exception caught: " + e.Message);
 
                 return "Room does not exist.";
             }
@@ -174,7 +184,7 @@ namespace DungeonExplorer.Levels
 
         public string GetDescription()
         {
-            return RoomDescriptionsList[lastRoomFetched];
+            return Room1_Descriptions_List[lastRoomFetched];
         }
     }
 }

@@ -42,39 +42,13 @@ namespace DungeonExplorer
         }
 
         ///
-
-        //public int OptionsGetPlayerResponse_CustomOptions(string[] setOptions, int[] options)
-        //{
-        //    string keyInfo = null;
-
-        //    keyInfo = Console.ReadKey().Key.ToString();
-
-        //    ClearCurrentConsoleLine();
-
-
-        //    for (int i = 0; i < setOptions.Length; i++)
-        //    {
-        //        if (setOptions.Contains(keyInfo) && setOptions[options[i]].Equals(keyInfo))
-        //        {
-        //            return Array.IndexOf(setOptions, keyInfo);
-        //        }
-        //    }
-
-        //    Console.WriteLine("That is not an option, please provide a different input.");
-
-        //    OptionsGetPlayerResponse_CustomOptions(setOptions, options);
-
-        //    return -1;
-
-        //}
-
-        public string OptionsGetPlayerResponse(string[] setOptions, bool enter = false)
+        public string OptionsGetPlayerResponse(string[] setOptions, bool clearConsoleLine = true, bool enter = false)
         {
             string keyInfo = null;
 
             keyInfo = Console.ReadKey().Key.ToString();
 
-            ClearCurrentConsoleLine();
+            if (clearConsoleLine) ClearCurrentConsoleLine();
 
             if (setOptions.Contains(keyInfo))  // If the set option keybinds contain the pressed key then return
             {
@@ -96,7 +70,9 @@ namespace DungeonExplorer
             }
             else
             {
-                Console.WriteLine("That is not an option, please provide a different input.");
+                if (!clearConsoleLine) ClearCurrentConsoleLine();
+
+                Console.WriteLine("That is not an option, or the action has already been taken.");
                 
                 return null;
             }
@@ -115,7 +91,7 @@ namespace DungeonExplorer
             }
             else
             {
-                Console.WriteLine("That is not an option, please provide a different input. ");
+                Console.WriteLine("That is not an option, or the action has already been taken.");
 
                 WaitOnKey(keyRequired);
 

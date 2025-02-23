@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
@@ -8,7 +9,9 @@ namespace DungeonExplorer
     public class Player
     {
         public static string Name { get; set; }
-        public int Health { get; set; }
+        public static string NamePlural { get; set; }
+        public static int MaxHealth { get; set; }
+        public static int Health { get; set; }
 
         private List<string[]> inventoryItem = new List<string[]>();
         private List<string[]> inventoryItem_Descriptions = new List<string[]>();
@@ -47,12 +50,12 @@ namespace DungeonExplorer
 
         private string selectedSlotChar = "+";
 
-        private string[] slotNumbers_Initial = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
-        private string[] slotNumbers;
+        private string[] slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
 
         public Player()
         {
-            Health = 6;
+            MaxHealth = 6;
+            Health = MaxHealth;
 
             inventoryItem.Add(slot_1);
             inventoryItem.Add(slot_2);
@@ -76,8 +79,6 @@ namespace DungeonExplorer
                 inventoryItem_Descriptions.Add(emptyDescription);
             }
 
-            slotNumbers = slotNumbers_Initial;
-
             itemSelected = emptySlot;
         }
 
@@ -98,31 +99,34 @@ namespace DungeonExplorer
             }
         }
 
-        public void RemoveItemFromInventory(string[][] item)
+        public void RemoveItemFromInventory(string[] item)
         {
             for (int i = 0; i < inventoryItem.Count; i++)
             {
-                if (inventoryItem[i].Equals(item[0]))
+                if (inventoryItem[i].Equals(item))
                 {
                     inventoryItem[i] = emptySlot;
-                    inventoryItem_Descriptions.RemoveAt(i);
+                    inventoryItem_Descriptions[i] = emptyDescription;
                 }
             }
+
+            slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
+
+            Room.currentEquippedItem = emptySlot;
         }
 
         // Used to refresh the display after an item is selected etc.
         private string GetInventoryDisplay()
         {
             string inventoryDisplay = $@"
-      Inventory:
-
+     Inventory:
     ---───══───═══════════════════───══───---  Description:
     │{inventoryItem[0][0]}│{inventoryItem[1][0]}│{inventoryItem[2][0]}│{inventoryItem[3][0]}│{inventoryItem[4][0]}│ ╔══════=──────────---
     │{inventoryItem[0][1]}│{inventoryItem[1][1]}│{inventoryItem[2][1]}│{inventoryItem[3][1]}│{inventoryItem[4][1]}│ ║ {itemDescription[0]}
     │{inventoryItem[0][2]}║{inventoryItem[1][2]}║{inventoryItem[2][2]}║{inventoryItem[3][2]}║{inventoryItem[4][2]}│ │ {itemDescription[1]}
     │{inventoryItem[0][3]}│{inventoryItem[1][3]}│{inventoryItem[2][3]}│{inventoryItem[3][3]}│{inventoryItem[4][3]}│ │ {itemDescription[2]}
     ║{slotNumbers[0]}{inventoryItem[0][4]}│{slotNumbers[1]}{inventoryItem[1][4]}│{slotNumbers[2]}{inventoryItem[2][4]}│{slotNumbers[3]}{inventoryItem[3][4]}│{slotNumbers[4]}{inventoryItem[4][4]}║ │ {itemDescription[3]}
-    ║ ───────────────────────────────────── ║ ║[enter] to equip/use
+    ║ ───────────────────────────────────── ║ ║ [Enter] to Equip/Use
     ║{inventoryItem[5][0]}│{inventoryItem[6][0]}│{inventoryItem[7][0]}│{inventoryItem[8][0]}│{inventoryItem[9][0]}║ ╚══════=──────────---
     │{inventoryItem[5][1]}│{inventoryItem[6][1]}│{inventoryItem[7][1]}│{inventoryItem[8][1]}│{inventoryItem[9][1]}│
     │{inventoryItem[5][2]}║{inventoryItem[6][2]}║{inventoryItem[7][2]}║{inventoryItem[8][2]}║{inventoryItem[9][2]}│
@@ -140,9 +144,9 @@ namespace DungeonExplorer
 
             Console.Write(GetInventoryDisplay()); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
 
-            PlayerChoice();
+            PlayerChoiceInventory();
 
-            void PlayerChoice()
+            void PlayerChoiceInventory()
             {
                 string optionChosen = Game.InputHandler.OptionsGetPlayerResponse(Options.InventoryOptionsKeyBinds);
 
@@ -163,38 +167,51 @@ namespace DungeonExplorer
 
                             //To add:
                             //If selected and a useable item (health kit etc.) then use straight away and remove from inventory.
-                            //If selected and an equipable item then display room and the item in the equipped slot
+
                             if (!itemDescription[0].Equals(""))
                             {
-                                //Equip Item
+                                int itemIndex = inventoryItem_Descriptions.IndexOf(itemDescription);
 
-                                Game.RoomHandler.ReturnToLevel(itemSelected);
+                                Room.currentEquippedItem = inventoryItem[itemIndex];
+
+                                Game.RoomHandler.ReturnToLevel();
                             }
                             else
                             {
-                                PlayerChoice();
+                                Room.currentEquippedItem = emptySlot;
+
+                                Game.RoomHandler.ReturnToLevel();
                             }
 
                         }
                         else  // Player has chosen an item
                         {
-                            //Change to display item description /////////////
                             Console.Clear();
-
-                            slotNumbers = slotNumbers_Initial;
 
                             int slotChosen = Array.IndexOf(Options.InventoryOptionsKeyBinds, optionChosen);
 
-                            if (!inventoryItem[slotChosen].Equals(emptySlot))
+                            if (slotNumbers[slotChosen].ToString() != selectedSlotChar)
                             {
                                 itemDescription = inventoryItem_Descriptions[slotChosen];
 
+                                slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
+
                                 slotNumbers[slotChosen] = selectedSlotChar;
                             }
-                            
+                            else
+                            {
+                                itemDescription = emptyDescription;
+
+                                if (slotChosen.Equals(9)) slotNumbers[slotChosen] = "0";
+                                else
+                                {
+                                    slotNumbers[slotChosen] = (slotChosen + 1).ToString();
+                                }
+                            }
+
                             Console.Write(GetInventoryDisplay()); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
 
-                            PlayerChoice();
+                            PlayerChoiceInventory();
 
                         }
                     }
@@ -203,7 +220,7 @@ namespace DungeonExplorer
                         Debug.WriteLine(optionChosen + " was not recognised as a string in this instance. \nException caught: " + e);
                     }
                 }
-                else PlayerChoice();
+                else PlayerChoiceInventory();
             }
             
         }

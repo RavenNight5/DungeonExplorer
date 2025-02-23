@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using DungeonExplorer.Dialogue;
 using DungeonExplorer.Text_Displays;
 
@@ -32,6 +33,15 @@ namespace DungeonExplorer
             Console.WriteLine("\nInput your name, press [Enter] to confirm.\n");
 
             Game.InputHandler.SetName(3, 18);  // int min char, int max char
+            
+            if (Player.Name.EndsWith("s") || Player.Name.EndsWith("z"))
+            {
+                Player.NamePlural = $"{Player.Name}'";
+            }
+            else
+            {
+                Player.NamePlural = $"{Player.Name}'s";
+            }
 
             game.Start();  // Start the game
 

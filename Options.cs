@@ -19,44 +19,44 @@ namespace DungeonExplorer
             "Room Description [D]",
             "Character Stats [C]",
             "Inventory [Tab]" };
-        private string[] RoomExploreOptionsArray = {
-            "Try Door [1]",
-            "Look On Table [2]",
-            "Look Under Table [3]",
-            "Try Chest [4]" };
         private string[] InventoryOptionsArray = {
             "Select Item [0-9]",
-            "Equip Item [Enter]",
+            "Equip/Use Item [Enter]",
             "Close Inventory [Tab]" };
 
+        private string[] RoomExploreOptionsArray = {
+            "Use Door [1]",
+            "Open Chest [2]",
+            "Look On Table [3]",
+            "Look Under Table [4]" };
 
         public Options()
         {
             currentOptionsConcatenation = "  ";
         }
 
-        public string GetGeneralOptions(int[] options)
+        public string GetGeneralOptions()
         {
             currentOptionsConcatenation = "  ";
 
-            for (int i = 0; i < options.Length; i++)
+            for (int i = 0; i < GeneralOptionsArray.Length; i++)
             {
+                currentOptionsConcatenation = currentOptionsConcatenation + "  " + GeneralOptionsArray[i];
+
                 // Check that the current iteration of the options array is not greater than the length of the array it is using
-                try { currentOptionsConcatenation = currentOptionsConcatenation + "  " + GeneralOptionsArray[options[i]]; }
-                catch { Debug.WriteLine("Options to be fetched surpass the length of the specified array."); }
+                //try {  }
+                //catch { Debug.WriteLine("Options to be fetched surpass the length of the specified array."); }
             }
 
             return currentOptionsConcatenation;
         }
-        public string GetRoomExploreOptions(int[] options)
+        public string GetRoomExploreOptions()
         {
-            currentOptionsConcatenation = "  ";
+            currentOptionsConcatenation = "   ";
 
-            for (int i = 0; i < options.Length; i++)
+            for (int i = 0; i < RoomExploreOptionsArray.Length; i++)
             {
-                Debug.Assert(options[i] < GeneralOptionsArray.Length, "Options to be fetched surpass the length of the specified array.");
-
-                currentOptionsConcatenation = currentOptionsConcatenation + "\n   " + RoomExploreOptionsArray[options[i]];
+                currentOptionsConcatenation = currentOptionsConcatenation + "\n   > " + RoomExploreOptionsArray[i];
             }
 
             return currentOptionsConcatenation;

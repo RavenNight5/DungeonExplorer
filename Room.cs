@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using DungeonExplorer.Levels;
+using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
 {
@@ -8,29 +11,54 @@ namespace DungeonExplorer
         public static int currentLevel = 1;
         public static int currentRoom = 1;
 
-        private string currentRoomDescription;
+        public static string currentRoomDescription = "";
+
+        public static string[] currentEquippedItem = Player.emptySlot;
 
         Level_1 level_1;
 
         public Room()
         {
             level_1 = new Level_1();
-
-            currentRoomDescription = "";
         }
 
-        public string GetRoomDescription()
+
+        public static string GetCurrentItemsAndStats()
         {
-            return currentRoomDescription;
+            string HealthVisual = "";
+
+            for (int i = 0; i < Player.Health; i++)
+            {
+                HealthVisual += "+ ";
+            }
+
+            string equippedBox = $@" Equipped:    Gold Coins:
+ --── ──--    ┌───--- - -  
+ │{currentEquippedItem[0]}│    ║ 10 
+ │{currentEquippedItem[1]}│    └───--- - - 
+ ║{currentEquippedItem[2]}║    {Player.NamePlural} Status:
+ │{currentEquippedItem[3]}│    ┌───--- - -
+ │ {currentEquippedItem[4]}│    ║ Health: {Player.Health}/{Player.MaxHealth} {HealthVisual}
+ --─ + ─--    └───--- - - 
+
+";
+
+            return equippedBox;
         }
 
-        public void ReturnToLevel(string[] itemToEquip = null)  //If player is in inventory or another screen this method will be called to continue the gameplay
+
+        public void ReturnToLevel()  //If player is in inventory or another screen this method will be called to continue the gameplay
         {
-            Console.WriteLine("Returning to " + currentLevel + " room: " + currentRoom);
+            //Console.WriteLine("Returning to " + currentLevel + " room: " + currentRoom);
+            
             if (currentLevel.Equals(1))
             {
                 level_1.Continue();
             }
+        }
+        public void NextRoom()
+        {
+            currentRoom++;
         }
 
         public void StartLevel(int levelNum)
@@ -47,23 +75,63 @@ namespace DungeonExplorer
 
         }
 
-        //public Tuple<string, string> StartLevel(int levelNum)
-        //{
-        //    currentLevel = levelNum;
+        public static int PlayerChoice(string[] optionsKeyBinds)
+        {
+            string optionChosen = Game.InputHandler.OptionsGetPlayerResponse(optionsKeyBinds);
 
-        //    if (levelNum.Equals(1))
-        //    {
-        //        string roomDisplay = newLevel1.GetRoom(1);
-        //        currentRoomDescription = newLevel1.GetDescription();
+            if (optionChosen != null)
+            {
+                try
+                {
+                    //General
+                    if (optionChosen.Equals("D"))
+                    {
+                        Console.Clear();
 
-        //        int[] newOptions = { 0, 1, 2 };
+                        new Description_Box(currentRoomDescription, 74);
 
-        //        string concatenatedOptions = options.GetGeneralOptions(newOptions);
+                        Console.WriteLine("\n   [D] to Return");
 
-        //        return Tuple.Create(roomDisplay, concatenatedOptions);
-        //    }
-        //    else return Tuple.Create(RoomNotFound, RoomOptionsDescriptionNotFound);
+                        Game.InputHandler.WaitOnKey("D");
 
-        //}
+                        Console.Clear();
+
+                        return -1;
+
+                    }
+                    else if (optionChosen.Equals("C"))
+                    {
+                        Console.WriteLine("Get stats..."); ///////////////// Like inventory but for strength etc, pick up things in dungeon that can level up a certain stat the player chooses - Inscryption
+
+                        PlayerChoice(optionsKeyBinds);
+
+                        return -1;
+
+                    }
+                    else if (optionChosen.Equals("Tab"))
+                    {
+                        Game.CurrentPlayer.DisplayInventory();
+
+                        return -1;
+
+                    }
+                    else return Array.IndexOf(optionsKeyBinds, optionChosen);
+
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(optionChosen + " was not recognised as a string in this instance. \nException caught: " + e);
+
+                    return -1;
+                }
+            }
+            else
+            {
+                PlayerChoice(optionsKeyBinds);
+
+                return -1;
+
+            }
+        }
     }
 }

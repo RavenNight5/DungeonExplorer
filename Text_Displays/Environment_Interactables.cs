@@ -8,6 +8,7 @@ namespace DungeonExplorer.Text_Displays
 {
     internal class Environment_Interactables
     {
+        
         public static string[] Open_Chest = {
         @"/--╧--\",
         "|░   ░|"
@@ -17,10 +18,9 @@ namespace DungeonExplorer.Text_Displays
         "|░░░░░|"
         };
 
-        public static string Open_Door = "┴";
-        public static string Closed_Door = "┼";
+        public static string[] Open_DoorVertiacl = { "┴" };
+        public static string[] Closed_DoorVertiacl = { "┼" };
 
-        public Environment_Interactables() { }
 
         public void GetAllLevelInteractables()
         {

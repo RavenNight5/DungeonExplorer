@@ -21,6 +21,15 @@ namespace DungeonExplorer.Levels
             {
             "With a hefty twist of the key you hear a ~kerplunk~ as the door unlocks and slowly creeks away from you."
             };
+        private string[] OpenChest =
+            {
+            "The box is unlocked. You wonder if it was there before you fell asleep.",
+            "You open it and find a key. How convenient..."
+            };
+        private string[] EmptyChest =
+            {
+            "You have already looked inside the box. It is empty."
+            };
         private string[] LookOnTable =
             {
             "You look at the table you were clearly sleeping on.",
@@ -31,10 +40,9 @@ namespace DungeonExplorer.Levels
             "Nothing here, no stains, no puddles to mop, no beast hiding.",
             "Just an ordinary underside to a table."
             };
-        private string[] LookInChest =
+        private string[] TableLookedAt =
             {
-            "The box is unlocked. You wonder if it was there before you fell asleep.",
-            "You open it and find a key. How convenient..."
+            "You have already taken the cup from the table, there is nothing else on it."
             };
 
         //Room 2
@@ -51,26 +59,48 @@ namespace DungeonExplorer.Levels
             "After all, you could have been held captive in these walls rather than scrubbing them."
             };
 
-        public List<string[]> Room1_Actions;
-        public List<string[]> Room2_Actions;
+        public List<List<string[]>> Room1_Actions;
+        private List<string[]> Door;
+        private List<string[]> Chest;
+        private List<string[]> Table;
+        
 
-        public List<List<string[]>> ALL_RoomActions;
+        public List<List<string[]>> Room2_Actions;
+        private List<string[]> Wall;
+        private List<string[]> Stand;
 
+        public List<List<List<string[]>>> L1_RoomActions;
+        
         public Level_1_Actions()
         {
-            Room1_Actions = new List<string[]> { TryDoor, OpenDoor, LookOnTable, LookUnderTable, LookInChest };
-            Room2_Actions = new List<string[]> { InspectWall, StandAround};
+            Door = new List<string[]> { TryDoor, OpenDoor };
+            Chest = new List<string[]> { OpenChest, EmptyChest };
+            Table = new List<string[]> { LookOnTable, LookUnderTable, TableLookedAt };
+            Room1_Actions = new List<List<string[]>> { Door, Chest, Table };
 
-            ALL_RoomActions = new List<List<string[]>> { Room1_Actions, Room2_Actions };
+            Wall = new List<string[]> { InspectWall };
+            Stand = new List<string[]> { StandAround };
+            Room2_Actions = new List<List<string[]>> { Wall, Stand};
+
+            L1_RoomActions = new List<List<List<string[]>>> { Room1_Actions, Room2_Actions };
         }
 
-        public void DoAction(int action)
+        public void DoAction(int primaryAction, bool alreadyActedOn, int secondaryAction = 0)  //Primary action (Door etc.), Secondary (On table, under etc.)
         {
             try
             {
-                string[] dialogue = ALL_RoomActions[Room.currentRoom][action];
+                string[] dialogue = L1_RoomActions[0][0][0];
 
-                Description_Box.ArrayDescription(dialogue);
+                if (!alreadyActedOn)
+                {
+                    dialogue = L1_RoomActions[Room.currentRoom - 1][primaryAction][secondaryAction];
+                }
+                else
+                {
+                    dialogue = L1_RoomActions[Room.currentRoom - 1][primaryAction][L1_RoomActions[Room.currentRoom][primaryAction].Count - 1];
+                }
+                
+                Description_Box.ArrayDescription(dialogue, 32);
 
                 Game.RoomHandler.ReturnToLevel();
             }

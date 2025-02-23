@@ -14,6 +14,10 @@ namespace DungeonExplorer.Levels
         public static Level_1_Displays L1_Displays { get; private set; }
         public static Level_1_Actions L1_Actions { get; private set; }
 
+        private List<bool> R1_ActionCompleted = new List<bool> { false, false, false, false };  //Door, Chest, OnTable, UnderTable
+        private List<string[]> R1_ActionRequiresItem = new List<string[]> { Inventory_Items.II_Key1[0], null, null, null };
+        
+        private List<bool> Room_DescriptionShown = new List<bool> { false, false, false, false };
 
         public Level_1()
         { 
@@ -24,11 +28,12 @@ namespace DungeonExplorer.Levels
             Game.CurrentPlayer.PickUpItem(Inventory_Items.II_DustpanBrush);
             Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Mop);
 
-            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Key1);
+            Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Key1);
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Longsword);
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Dagger);
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_CupEmpty);
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_CupFull);
+
         }
 
         public void Start()
@@ -36,66 +41,120 @@ namespace DungeonExplorer.Levels
             DisplayRooms(1);
         }
 
-        public void DisplayRooms(int roomToDisplay, string[] itemToEquip = null)
+        public void DisplayRooms(int roomToDisplay)
         {
+            Console.Clear(); Console.WriteLine("\x1b[3J");
+
+            Room.currentRoomDescription = L1_Displays.GetDescription();
+
+            string concatenatedOptions = Game.OptionHandler.GetGeneralOptions();
+
+            Console.Write(Room.GetCurrentItemsAndStats());
+            Console.Write(L1_Displays.GetRoom(roomToDisplay)); Console.Write("\n" + concatenatedOptions + "\n\n");
+
             if (roomToDisplay == 1)
             {
-                Console.Write(L1_Displays.GetRoom(roomToDisplay) + "\n");
-
-                if (itemToEquip != null && itemToEquip != Player.emptySlot)
+                if (Room_DescriptionShown[roomToDisplay].Equals(false))
                 {
-                    //Display item in a box
+                    // PlayerChoice ends when room description is shown and closed again
+                    Room.PlayerChoice(Options.GeneralOptionsKeyBinds);
+
+                    Room_DescriptionShown[roomToDisplay] = true;
+
+                    DisplayRooms(roomToDisplay);
+
                 }
-
-                int[] newOptions = { 0, 1, 2 };
-                string concatenatedOptions = Game.OptionHandler.GetGeneralOptions(newOptions);
-
-                Console.Write("\n" + concatenatedOptions + "\n\n");
-
-                PlayerChoice();
-
-                void PlayerChoice()
+                else
                 {
-                    string optionChosen = Game.InputHandler.OptionsGetPlayerResponse(Options.GeneralOptionsKeyBinds);
+                    concatenatedOptions = Game.OptionHandler.GetRoomExploreOptions();
+                    Console.Write(concatenatedOptions + "\n\n");
 
-                    if (optionChosen != null)
+                    int action = Room.PlayerChoice(Options.RoomExploreOptionsKeyBinds);
+
+                    if (action <= R1_ActionCompleted.Count)  // A valid action (such as use door) is taken
                     {
-                        try
+                        if (R1_ActionCompleted[action].Equals(false))
                         {
-                            if (optionChosen.Equals(Options.GeneralOptionsKeyBinds[0]))
+                            try
                             {
-                                Console.WriteLine("Desc...");  // Desc box
+                                if (R1_ActionRequiresItem[action] != null)
+                                {
+                                    if (Room.currentEquippedItem.Equals(R1_ActionRequiresItem[action]))
+                                    {
+                                        Game.CurrentPlayer.RemoveItemFromInventory(R1_ActionRequiresItem[action]);
+
+                                        R1_ActionCompleted[action] = true;
+
+                                        // Use door
+                                        if (action.Equals(0))
+                                        {
+                                            L1_Displays.R1_Interactables[action] = Environment_Interactables.Open_DoorVertiacl;
+                                        }
+
+                                        L1_Actions.DoAction(action, false, 1);
+
+                                    }
+                                    else { L1_Actions.DoAction(action, true); }
+                                }
+                                else
+                                {
+                                    R1_ActionCompleted[action] = true;
+
+                                    // Use Chest
+                                    if (action.Equals(1))
+                                    {
+                                        L1_Displays.R1_Interactables[action] = Environment_Interactables.Open_Chest;
+                                    }
+
+                                    L1_Actions.DoAction(action, true);
+                                }
                             }
-                            else if (optionChosen.Equals(Options.GeneralOptionsKeyBinds[1]))
-                            {
-                                Console.WriteLine("Get stats...");
-                            }
-                            else if (optionChosen.Equals(Options.GeneralOptionsKeyBinds[2]))
-                            {
-                                Game.CurrentPlayer.DisplayInventory();
-                            }
+                            catch { Debug.WriteLine("Selected option was out of bounds of the action options, and was caught."); }
                         }
-                        catch (Exception e)
+                        else
                         {
-                            Debug.WriteLine(optionChosen + " was not recognised as a string in this instance. \nException caught: " + e);
+                            // Use door
+                            if (action.Equals(0))
+                            {
+                                Room.currentRoom++;
+
+                                DisplayRooms(Room.currentRoom);
+                            }
+
                         }
                     }
-                    else
+
+                    
+                    // Open chest
+                    else if (action.Equals(1))
                     {
-                        PlayerChoice();
+
                     }
+                    // Look on table
+                    else if (action.Equals(2))
+                    {
+                        Console.WriteLine("Tried door...");
+                    }
+                    // Look under table
+                    else if (action.Equals(3))
+                    {
+                        Console.WriteLine("Tried door...");
+                    }
+
+                    DisplayRooms(roomToDisplay);
                 }
+
+            }
+            else if (roomToDisplay == 2)
+            {
+                Console.WriteLine("222222222222222");
             }
         }
 
-        public void Continue(string[] itemToEquip = null)
+        public void Continue()
         {
-            DisplayRooms(Room.currentRoom, itemToEquip);
+            DisplayRooms(Room.currentRoom);
         }
 
-        public string GetDescription()
-        {
-            return "";
-        }
     }
 }
