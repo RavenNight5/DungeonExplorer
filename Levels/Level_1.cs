@@ -14,13 +14,13 @@ namespace DungeonExplorer.Levels
         public static Level_1_Displays L1_Displays { get; private set; }
         public static Level_1_Actions L1_Actions { get; private set; }
 
-        private List<bool> R1_ActionCompleted = new List<bool> { false, false, false, false };  //Door, Chest, OnTable, UnderTable
-        private List<string[]> R1_ActionRequiresItem = new List<string[]> { Inventory_Items.II_Key1[0], null, null, null };
-        
-        private List<bool> Room_DescriptionShown = new List<bool> { false, false, false, false };
+        public bool[] R1_ActionCompleted = new bool[] { false, false, false, false };  //Door, Chest, LookOnTable, LookUnderTable
+        public bool[] R2_ActionCompleted = new bool[] { false, false, false, false, false };  //Door, Wall, N, S, StandAround
+
+        private bool[] Room_DescriptionShown = new bool[] { false, false, false, false };
 
         public Level_1()
-        { 
+        {
             L1_Displays = new Level_1_Displays();
             L1_Actions = new Level_1_Actions();
 
@@ -28,7 +28,7 @@ namespace DungeonExplorer.Levels
             Game.CurrentPlayer.PickUpItem(Inventory_Items.II_DustpanBrush);
             Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Mop);
 
-            Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Key1);
+            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Key1);
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Longsword);
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Dagger);
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_CupEmpty);
@@ -38,123 +38,219 @@ namespace DungeonExplorer.Levels
 
         public void Start()
         {
-            DisplayRooms(1);
+            DisplayRooms();
         }
 
-        public void DisplayRooms(int roomToDisplay)
+        public void DisplayRooms()
         {
             Console.Clear(); Console.WriteLine("\x1b[3J");
-
-            Room.currentRoomDescription = L1_Displays.GetDescription();
 
             string concatenatedOptions = Game.OptionHandler.GetGeneralOptions();
 
             Console.Write(Room.GetCurrentItemsAndStats());
-            Console.Write(L1_Displays.GetRoom(roomToDisplay)); Console.Write("\n" + concatenatedOptions + "\n\n");
+            Console.Write(L1_Displays.GetRoom(Room.currentRoom)); Console.Write("\n" + concatenatedOptions + "\n\n");
 
-            if (roomToDisplay == 1)
+
+            if (Room_DescriptionShown[Room.currentRoom].Equals(false))
             {
-                if (Room_DescriptionShown[roomToDisplay].Equals(false))
+                // PlayerChoice ends when room description is shown and closed again
+                Room.PlayerChoice(Options.GeneralOptionsKeyBinds);
+
+                Room_DescriptionShown[Room.currentRoom] = true;
+
+                DisplayRooms();
+
+            }
+            else  // Description has been shown so the player can choose what to explore
+            {
+                concatenatedOptions = Game.OptionHandler.GetRoomExploreOptions(L1_Displays.Room_ExploreOptions[Room.currentRoom - 1]);
+                Console.Write(concatenatedOptions + "\n\n");
+
+                string[] actions = GetActionKeybinds(L1_Displays.Room_ExploreOptions[Room.currentRoom - 1].Length);
+
+                int action = Room.PlayerChoice(actions);
+                //int action = actionIndex - 1;  // for the index of the action
+
+                if (Room.currentRoom == 1 && !(action <= -1))  // -1 is a different option is selected rather than an exploration action (such as D for description) then re-call DisplayRooms
                 {
-                    // PlayerChoice ends when room description is shown and closed again
-                    Room.PlayerChoice(Options.GeneralOptionsKeyBinds);
+                    Debug.Assert(!(action <= -1), "An invalid explore action was erroneously passed through.");
 
-                    Room_DescriptionShown[roomToDisplay] = true;
-
-                    DisplayRooms(roomToDisplay);
-
-                }
-                else
-                {
-                    concatenatedOptions = Game.OptionHandler.GetRoomExploreOptions();
-                    Console.Write(concatenatedOptions + "\n\n");
-
-                    int action = Room.PlayerChoice(Options.RoomExploreOptionsKeyBinds);
-
-                    if (action <= R1_ActionCompleted.Count)  // A valid action (such as use door) is taken
+                    if (action < R1_ActionCompleted.Length)  // A valid action is taken (not viewing the room's description or another general option)
                     {
-                        if (R1_ActionCompleted[action].Equals(false))
+                        string[] dialogue;
+
+                        // Door
+                        if (action.Equals(0))
                         {
-                            try
+                            if (R1_ActionCompleted[action] == false)
                             {
-                                if (R1_ActionRequiresItem[action] != null)
+                                if (Room.currentEquippedItem == Inventory_Items.II_Key1[0])  // If the currently equipped item is the correct required item
                                 {
-                                    if (Room.currentEquippedItem.Equals(R1_ActionRequiresItem[action]))
-                                    {
-                                        Game.CurrentPlayer.RemoveItemFromInventory(R1_ActionRequiresItem[action]);
+                                    Game.CurrentPlayer.RemoveItemFromInventory(Inventory_Items.II_Key1[0]);
 
-                                        R1_ActionCompleted[action] = true;
+                                    L1_Displays.R1_Interactables[action] = Environment_Interactables.Open_DoorVertical;
 
-                                        // Use door
-                                        if (action.Equals(0))
-                                        {
-                                            L1_Displays.R1_Interactables[action] = Environment_Interactables.Open_DoorVertiacl;
-                                        }
+                                    dialogue = L1_Actions.L1_RoomActions[Room.currentRoom - 1][action][1];
+                                    Description_Box.ArrayDescription(dialogue, 32);
 
-                                        L1_Actions.DoAction(action, false, 1);
-
-                                    }
-                                    else { L1_Actions.DoAction(action, true); }
+                                    R1_ActionCompleted[action] = true;
                                 }
                                 else
                                 {
-                                    R1_ActionCompleted[action] = true;
-
-                                    // Use Chest
-                                    if (action.Equals(1))
-                                    {
-                                        L1_Displays.R1_Interactables[action] = Environment_Interactables.Open_Chest;
-                                    }
-
-                                    L1_Actions.DoAction(action, true);
+                                    dialogue = L1_Actions.L1_RoomActions[Room.currentRoom - 1][action][0];
+                                    Description_Box.ArrayDescription(dialogue, 32);
                                 }
                             }
-                            catch { Debug.WriteLine("Selected option was out of bounds of the action options, and was caught."); }
-                        }
-                        else
-                        {
-                            // Use door
-                            if (action.Equals(0))
+                            else
                             {
-                                Room.currentRoom++;
+                                Room.currentRoom += 1;
+                            }
+                        }
+                        // Chest
+                        else if (action.Equals(1))
+                        {
+                            L1_Displays.R1_Interactables[action] = Environment_Interactables.Open_Chest;
 
-                                DisplayRooms(Room.currentRoom);
+                            if (R1_ActionCompleted[action] == false)
+                            {
+                                dialogue = L1_Actions.L1_RoomActions[Room.currentRoom - 1][action][0];
+
+                                Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Key1);
+
+                                R1_ActionCompleted[action] = true;
+                            }
+                            else
+                            {
+                                dialogue = L1_Actions.L1_RoomActions[Room.currentRoom - 1][action][1];
                             }
 
+                            Description_Box.ArrayDescription(dialogue, 32);
                         }
-                    }
+                        // LookOnTable
+                        else if (action.Equals(2))
+                        {
+                            if (R1_ActionCompleted[action] == false)
+                            {
+                                dialogue = L1_Actions.L1_RoomActions[Room.currentRoom - 1][action][0];
 
-                    
-                    // Open chest
-                    else if (action.Equals(1))
-                    {
+                                Game.CurrentPlayer.PickUpItem(Inventory_Items.II_CupEmpty);
+
+                                R1_ActionCompleted[action] = true;
+                            }
+                            else
+                            {
+                                dialogue = L1_Actions.L1_RoomActions[Room.currentRoom - 1][action][1];
+                            }
+
+                            Description_Box.ArrayDescription(dialogue, 32);
+                        }
+                        // LookUnderTable
+                        else if (action.Equals(3))
+                        {
+                            if (R1_ActionCompleted[action] == false)
+                            {
+                                dialogue = L1_Actions.L1_RoomActions[Room.currentRoom - 1][2][2];
+                                R1_ActionCompleted[action] = true;
+                            }
+                            else
+                            {
+                                dialogue = L1_Actions.L1_RoomActions[Room.currentRoom - 1][2][3];
+                            }
+
+                            Description_Box.ArrayDescription(dialogue, 32);
+                        }
+                        //
 
                     }
-                    // Look on table
-                    else if (action.Equals(2))
-                    {
-                        Console.WriteLine("Tried door...");
-                    }
-                    // Look under table
-                    else if (action.Equals(3))
-                    {
-                        Console.WriteLine("Tried door...");
-                    }
+                }
+                else if (Room.currentRoom == 2 && action != -1)
+                {
+                    Debug.Assert(!(action <= -1), "An invalid explore action was erroneously passed through.");
 
-                    DisplayRooms(roomToDisplay);
+                    if (action < R2_ActionCompleted.Length)  // A valid action is taken (not viewing the room's description or another general option)
+                    {
+                        string[] dialogue;
+
+                        // Door
+                        if (action.Equals(0))
+                        {
+                            Room.currentRoom -= 1;
+
+                            R2_ActionCompleted[action] = true;
+                        }
+                        // Wall / StandAround
+                        else if (action.Equals(1) || action.Equals(4))
+                        {
+                            if (R2_ActionCompleted[action] == false)
+                            {
+                                dialogue = L1_Actions.L1_RoomActions[Room.currentRoom - 1][action - 1][0];
+                                R2_ActionCompleted[action] = true;
+                            }
+                            else
+                            {
+                                dialogue = L1_Actions.L1_RoomActions[Room.currentRoom - 1][action - 1][1];
+                            }
+
+                            Description_Box.ArrayDescription(dialogue, 32);
+                        }
+                        // N
+                        else if (action.Equals(2))
+                        {
+                            if (R2_ActionCompleted[action] == false)
+                            {
+                                dialogue = new string[] { "You have come to the end of this version.", "But do not fret, there will be plenty of cleaning next time!" };
+                                Game.CurrentPlayer.PickUpItem(Inventory_Items.II_CupEmpty);
+
+                                R2_ActionCompleted[action] = true;
+                            }
+                            else
+                            {
+                                dialogue = new string[] { "You have come to the end of this version.", "But do not fret, there will be plenty of cleaning next time!" };
+                            }
+
+                            Description_Box.ArrayDescription(dialogue, 32);
+                        }
+                        // S
+                        else if (action.Equals(3))
+                        {
+                            if (R2_ActionCompleted[action] == false)
+                            {
+                                dialogue = new string[] { "You have come to the end of this version.", "But do not fret, there will be plenty of cleaning next time!" };
+                                R2_ActionCompleted[action] = true;
+                            }
+                            else
+                            {
+                                dialogue = new string[] { "You have come to the end of this version.", "But do not fret, there will be plenty of cleaning next time!" };
+                            }
+
+                            Description_Box.ArrayDescription(dialogue, 32);
+                        }
+                        //
+
+                    }
                 }
 
-            }
-            else if (roomToDisplay == 2)
-            {
-                Console.WriteLine("222222222222222");
+                DisplayRooms();
+
             }
         }
 
-        public void Continue()
+        private string[] GetActionKeybinds(int numOfActions)
         {
-            DisplayRooms(Room.currentRoom);
-        }
+            string[] actions = new string[numOfActions + 3];  // Would be -1 for the indexing, however I add 3 more keybinds outside the for loop
 
+            for (int i = 0; i < numOfActions; i++)
+            {
+                actions[i] = ("D" + (i + 1).ToString());  // As "D1" refers to the keyboard key 1
+            }
+
+            // Add the other general option the player can do when exploring a room
+            actions[numOfActions] = "D";
+            actions[numOfActions + 1] = "C";
+            actions[numOfActions + 2] = "Tab";
+
+            return actions;
+
+        }
     }
 }

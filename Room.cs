@@ -53,7 +53,7 @@ namespace DungeonExplorer
             
             if (currentLevel.Equals(1))
             {
-                level_1.Continue();
+                level_1.DisplayRooms();
             }
         }
         public void NextRoom()
@@ -75,6 +75,11 @@ namespace DungeonExplorer
 
         }
 
+        public static string GetDescription()
+        {
+            return currentRoomDescription;
+        }
+
         public static int PlayerChoice(string[] optionsKeyBinds)
         {
             string optionChosen = Game.InputHandler.OptionsGetPlayerResponse(optionsKeyBinds);
@@ -88,11 +93,11 @@ namespace DungeonExplorer
                     {
                         Console.Clear();
 
-                        new Description_Box(currentRoomDescription, 74);
+                        new Description_Box(GetDescription(), 74);
 
                         Console.WriteLine("\n   [D] to Return");
 
-                        Game.InputHandler.WaitOnKey("D");
+                        Game.InputHandler.WaitOnKey("D", "Enter", "Spacebar");
 
                         Console.Clear();
 
@@ -115,7 +120,7 @@ namespace DungeonExplorer
                         return -1;
 
                     }
-                    else return Array.IndexOf(optionsKeyBinds, optionChosen);
+                    else return Array.IndexOf(optionsKeyBinds, optionChosen);  // Player chose a number action such as Open Chest
 
                 }
                 catch (Exception e)

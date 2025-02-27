@@ -10,8 +10,8 @@ namespace DungeonExplorer
     internal class Options
     {
         public static string[] GeneralOptionsKeyBinds = { "D", "C", "Tab" };
-        public static string[] RoomExploreOptionsKeyBinds = { "D1", "D2", "D3", "D4",    "D", "C", "Tab" };  // D1 etc. is the name of the number keys the system recognises
-        public static string[] InventoryOptionsKeyBinds = { "D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9", "D0", "Enter", "Tab" };
+        public static List<string> RoomExploreOptionsKeyBinds = new List<string>();
+        public static string[] InventoryOptionsKeyBinds = { "D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9", "D0", "Enter", "Tab" };  // D1 etc. is the name of the number keys the system recognises
 
         private string currentOptionsConcatenation;
         ///
@@ -21,14 +21,9 @@ namespace DungeonExplorer
             "Inventory [Tab]" };
         private string[] InventoryOptionsArray = {
             "Select Item [0-9]",
-            "Equip/Use Item [Enter]",
+            "Equip/Use Item [Enter]", 
             "Close Inventory [Tab]" };
 
-        private string[] RoomExploreOptionsArray = {
-            "Use Door [1]",
-            "Open Chest [2]",
-            "Look On Table [3]",
-            "Look Under Table [4]" };
 
         public Options()
         {
@@ -50,13 +45,13 @@ namespace DungeonExplorer
 
             return currentOptionsConcatenation;
         }
-        public string GetRoomExploreOptions()
+        public string GetRoomExploreOptions(string[] roomExploreOptions)
         {
             currentOptionsConcatenation = "   ";
 
-            for (int i = 0; i < RoomExploreOptionsArray.Length; i++)
+            for (int i = 0; i < roomExploreOptions.Length; i++)
             {
-                currentOptionsConcatenation = currentOptionsConcatenation + "\n   > " + RoomExploreOptionsArray[i];
+                currentOptionsConcatenation = currentOptionsConcatenation + "\n   > " + roomExploreOptions[i];
             }
 
             return currentOptionsConcatenation;

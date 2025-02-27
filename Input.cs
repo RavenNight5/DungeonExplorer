@@ -50,7 +50,7 @@ namespace DungeonExplorer
 
             if (clearConsoleLine) ClearCurrentConsoleLine();
 
-            if (setOptions.Contains(keyInfo))  // If the set option keybinds contain the pressed key then return
+            if (setOptions.Contains(keyInfo))  // If the setOptions keybinds contain the pressed key then return
             {
                 if (keyInfo.Equals("Enter") && enter.Equals(false))
                 {
@@ -66,7 +66,6 @@ namespace DungeonExplorer
                 {
                     return keyInfo;
                 }
-               
             }
             else
             {
@@ -79,7 +78,7 @@ namespace DungeonExplorer
         }
 
         ///
-        public void WaitOnKey(string keyRequired)
+        public void WaitOnKey(string keyRequired, string optSecondKey = null, string optThirdKey = null)
         {
             var keyInfo = Console.ReadKey();
 
@@ -89,11 +88,19 @@ namespace DungeonExplorer
             {
                 return;
             }
+            else if (keyInfo.Key.ToString().Equals(optSecondKey) && optSecondKey != null)
+            {
+                return;
+            }
+            else if (keyInfo.Key.ToString().Equals(optThirdKey) && optThirdKey != null)
+            {
+                return;
+            }
             else
             {
                 Console.WriteLine("That is not an option, or the action has already been taken.");
 
-                WaitOnKey(keyRequired);
+                WaitOnKey(keyRequired, optSecondKey, optThirdKey);
 
             }
         }

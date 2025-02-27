@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,27 +13,48 @@ namespace DungeonExplorer.Levels
         //private List<string> Rooms_Initial = new List<string>();
         //private List<string> Rooms_North = new List<string>();
 
-        public List<string[]> R1_Interactables = new List<string[]> { Environment_Interactables.Closed_DoorVertiacl, Environment_Interactables.Closed_Chest };
+        public List<string[]> R1_Interactables = new List<string[]> { Environment_Interactables.Closed_DoorVertical, Environment_Interactables.Closed_Chest };
 
         private List<string> Rooms1_List = new List<string>();
-        private List<string> Room1_Descriptions_List = new List<string>();
+        private List<string> Descriptions_List = new List<string>();
 
         private int lastRoomFetched = 0;
 
         private string R1_Desc = "A small rectangular room surrounds you, furnished with a singular wooden table and a small battered box against the right wall. You don't notice anything out of the ordinary.";
-        private string R2_Desc = "This hallway serves as a primary passageway for staff navigating the dungeon. While cells line the walls, they hold fewer occupants since this area acts as an overflow quater. You look opposite you, a bit further up there seems to be a bump in the wall: perhaps you should check it out.";
+        private string R2_Desc = "This hallway serves as a primary passageway for staff navigating the dungeon. While cells line the walls, they hold fewer occupants: this area is usuially used as an overflow quater. You look opposite you, a bit further up there seems to be a bump in the wall... Perhaps you should check it out.";
         private string R3_Desc = "The hallway continues with empty cells appearing on your left as you progress. Nothing much to clean out here.";
+        //private string R4_Desc = "You walk south and find a puddle to clean.";
+
+        private string[] R1_ExploreOptions = {
+            "Use Door [1]",
+            "Open Chest [2]",
+            "Look On Table [3]",
+            "Look Under Table [4]" };
+        private string[] R2_ExploreOptions = {
+            "Use Cell Door [1]",
+            "Investigate Wall [2]",
+            "Go North [3]",
+            "Go South [4]",
+            "Stand Around [5]" };
+        private string[] R3_ExploreOptions = {
+            "Try Doors [1]",
+            "Go North [2]",
+            "Go South [3]" };
+
+        public List<string[]> Room_ExploreOptions = new List<string[]>();
 
         public Level_1_Displays()
         {
             
 			RefreshRoomDisplays();
 
-            Room1_Descriptions_List.Add(R1_Desc);
-            Room1_Descriptions_List.Add(R2_Desc);
-            Room1_Descriptions_List.Add(R3_Desc);
+            Descriptions_List.Add(R1_Desc);
+            Descriptions_List.Add(R2_Desc);
+            Descriptions_List.Add(R3_Desc);
 
-			//R1.Replace("{Environment_Interactables.Closed_Chest[0]}", Environment_Interactables.Open_Chest[0]);
+            Room_ExploreOptions.Add(R1_ExploreOptions);
+            Room_ExploreOptions.Add(R2_ExploreOptions);
+            Room_ExploreOptions.Add(R3_ExploreOptions);
         }
 
 		private void RefreshRoomDisplays()
@@ -63,13 +85,13 @@ namespace DungeonExplorer.Levels
 	║░│░░ ░░░ ░░░ ░░░ ░░░ ░░░ ░░░ ░░│░║
 	║░│ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ │░║
 	║▒│  ░   ░   ░   ░   ░   ░   ░  |░║
-	║▒│                        	   //░│
+	║▒│                            //░│
 	║▒│                            /░░|
 	║░│                            |░░|
 	╗░│                            \\░|
 	|┐                           	|░│
 	|│                           	│░║
-	|{R1_Interactables[0][0]}                           	│▒║
+	|┴                           	│▒║
 	|┘                           	│▒║
 	║░│                          	│▒║
 	║░│                          	│▒║
@@ -86,6 +108,8 @@ namespace DungeonExplorer.Levels
 	║▒│                          	│░║
 	║░│       ░                 	│░║
 	║░│        ░░               	│░║
+
+[End of this Game Version]
 	";
 
             string R3 = $@"
@@ -168,6 +192,10 @@ namespace DungeonExplorer.Levels
 
             lastRoomFetched = roomNumber - 1;
 
+			Debug.Assert(lastRoomFetched < Descriptions_List.Count(), "Room to be fetched does not exist.");
+
+			Room.currentRoomDescription = Descriptions_List[lastRoomFetched];
+
             try
             {
                 string roomDisplay = Rooms1_List[roomNumber - 1];
@@ -178,14 +206,10 @@ namespace DungeonExplorer.Levels
             {
                 Console.WriteLine("Room does not exist. Exception caught: " + e.Message);
 
-                return "Room does not exist.";
+                return "Room to be fetched does not exist.";
             }
         }
 
-        public string GetDescription()
-        {
-            return Room1_Descriptions_List[lastRoomFetched];
-        }
     }
 }
 

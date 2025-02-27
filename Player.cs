@@ -106,6 +106,7 @@ namespace DungeonExplorer
                 if (inventoryItem[i].Equals(item))
                 {
                     inventoryItem[i] = emptySlot;
+                    itemDescription = emptyDescription;
                     inventoryItem_Descriptions[i] = emptyDescription;
                 }
             }
