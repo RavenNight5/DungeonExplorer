@@ -24,7 +24,7 @@ namespace DungeonExplorer.Levels
         private string[] OpenChest =
             {
             "The box is unlocked. You wonder if it was there before you fell asleep.",
-            "You open it and find a key. How convenient..."
+            "You open it and find a key. How convenient... [Tab] to access inventory and select item"
             };
         private string[] OpenChest_Done =
             {

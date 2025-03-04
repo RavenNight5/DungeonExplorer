@@ -18,7 +18,7 @@ namespace DungeonExplorer.Text_Displays
         "|░░░░░|"
         };
 
-        public static string[] Open_DoorVertical = { "┴" };
+        public static string[] Open_DoorVertical = { "╧" };
         public static string[] Closed_DoorVertical = { "┼" };
 
 

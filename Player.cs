@@ -35,7 +35,7 @@ namespace DungeonExplorer
         };
 
         private string emptyNormal = "       ";
-        private string emptyBottom = "      ";  // As there is an inventory slot number so have one less space
+        private string emptyBottom = "      ";  // There is an inventory slot number so have one less space
 
         private string[] slot_1 = new string[5];  // Each string in the array represents the horizontal line in that inventory slot
         private string[] slot_2 = new string[5];

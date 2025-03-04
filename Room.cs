@@ -36,10 +36,10 @@ namespace DungeonExplorer
  --── ──--    ┌───--- - -  
  │{currentEquippedItem[0]}│    ║ 10 
  │{currentEquippedItem[1]}│    └───--- - - 
- ║{currentEquippedItem[2]}║    {Player.NamePlural} Status:
- │{currentEquippedItem[3]}│    ┌───--- - -
- │ {currentEquippedItem[4]}│    ║ Health: {Player.Health}/{Player.MaxHealth} {HealthVisual}
- --─ + ─--    └───--- - - 
+ ║{currentEquippedItem[2]}║    {Player.NamePlural} Health:
+ │{currentEquippedItem[3]}│    ┌───────----- - - - 
+ │ {currentEquippedItem[4]}│    ║ {HealthVisual} ({Player.Health}/{Player.MaxHealth})
+ --─ + ─--    └───────----- - - - 
 
 ";
 
@@ -102,23 +102,20 @@ namespace DungeonExplorer
                         Console.Clear();
 
                         return -1;
-
                     }
                     else if (optionChosen.Equals("C"))
                     {
-                        Console.WriteLine("Get stats..."); ///////////////// Like inventory but for strength etc, pick up things in dungeon that can level up a certain stat the player chooses - Inscryption
+                        Console.WriteLine("[Stats coming in a later version!]"); ///////////////// Like inventory but for strength etc, pick up things in dungeon that can level up a certain stat the player chooses - Inscryption
 
                         PlayerChoice(optionsKeyBinds);
 
                         return -1;
-
                     }
                     else if (optionChosen.Equals("Tab"))
                     {
                         Game.CurrentPlayer.DisplayInventory();
 
                         return -1;
-
                     }
                     else return Array.IndexOf(optionsKeyBinds, optionChosen);  // Player chose a number action such as Open Chest
 
