@@ -14,7 +14,7 @@ namespace DungeonExplorer
 
             ClearCurrentConsoleLine();
 
-            if (name.Equals(null) || name.Any(Char.IsWhiteSpace) || !name.All(Char.IsLetter))
+            if (name.Equals(null) || name.Any(char.IsWhiteSpace) || !name.All(char.IsLetter))
             {
                 ClearCurrentConsoleLine();
 
@@ -41,7 +41,7 @@ namespace DungeonExplorer
             }
         }
 
-        ///
+        //
         public string OptionsGetPlayerResponse(string[] setOptions, bool clearConsoleLine = true, bool enter = false)
         {
             string keyInfo = null;
@@ -77,7 +77,7 @@ namespace DungeonExplorer
             }
         }
 
-        ///
+        //
         public void WaitOnKey(string keyRequired, string optSecondKey = null, string optThirdKey = null)
         {
             var keyInfo = Console.ReadKey();
@@ -108,7 +108,7 @@ namespace DungeonExplorer
         {
             Console.ReadKey();
         }
-        ///
+        //
 
         public static void ClearCurrentConsoleLine()
         {

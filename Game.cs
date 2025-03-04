@@ -51,6 +51,7 @@ namespace DungeonExplorer
 
                 RoomHandler.StartLevel(i);
 
+                // Tuple
                 //var startLevel = currentRoom.StartLevel(i);
                 //// Returned items from the tuple
                 //var displayRoom = startLevel.Item1;

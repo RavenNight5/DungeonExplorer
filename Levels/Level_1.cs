@@ -28,12 +28,12 @@ namespace DungeonExplorer.Levels
             Game.CurrentPlayer.PickUpItem(Inventory_Items.II_DustpanBrush);
             Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Mop);
 
+            // For testing new items display in the inventory as intended
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Key1);
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Longsword);
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Dagger);
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_CupEmpty);
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_CupFull);
-
         }
 
         public void Start()
@@ -69,7 +69,6 @@ namespace DungeonExplorer.Levels
                 string[] actions = GetActionKeybinds(L1_Displays.Room_ExploreOptions[Room.currentRoom - 1].Length);
 
                 int action = Room.PlayerChoice(actions);
-                //int action = actionIndex - 1;  // for the index of the action
 
                 if (Room.currentRoom == 1 && !(action <= -1))  // -1 is a different option is selected rather than an exploration action (such as D for description) then re-call DisplayRooms
                 {
@@ -225,7 +224,6 @@ namespace DungeonExplorer.Levels
 
                             Description_Box.ArrayDescription(dialogue, 32);
                         }
-                        //
 
                     }
                 }

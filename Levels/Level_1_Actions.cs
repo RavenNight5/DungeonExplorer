@@ -105,6 +105,9 @@ namespace DungeonExplorer.Levels
         
         public Level_1_Actions()
         {
+            // Initialise lists - meaning action can easily be referenced based on the current room
+            // e.g. currentRoom is 1, all actions in that room can be found by L1_RoomActions[currentRoom - 1] (-1 to get the index) which points to Room1_Actions which contains
+            // a list of string arrays containing all actions that can be taken in that room.
             Door = new List<string[]> { TryDoor, OpenedDoor };
             Chest = new List<string[]> { OpenChest, OpenChest_Done };
             Table = new List<string[]> { LookOnTable, LookOnTable_Done, LookUnderTable, LookUnderTable_Done };

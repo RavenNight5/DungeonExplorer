@@ -21,10 +21,5 @@ namespace DungeonExplorer.Text_Displays
         public static string[] Open_DoorVertical = { "╧" };
         public static string[] Closed_DoorVertical = { "┼" };
 
-
-        public void GetAllLevelInteractables()
-        {
-            // Use for testing they are not Room.InteractableDisplayNotFound
-        }
     }
 }

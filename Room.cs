@@ -47,7 +47,7 @@ namespace DungeonExplorer
         }
 
 
-        public void ReturnToLevel()  //If player is in inventory or another screen this method will be called to continue the gameplay
+        public void ReturnToLevel()  // If player is in inventory or another screen this method will be called to continue the gameplay
         {
             //Console.WriteLine("Returning to " + currentLevel + " room: " + currentRoom);
             
@@ -105,7 +105,7 @@ namespace DungeonExplorer
                     }
                     else if (optionChosen.Equals("C"))
                     {
-                        Console.WriteLine("[Stats coming in a later version!]"); ///////////////// Like inventory but for strength etc, pick up things in dungeon that can level up a certain stat the player chooses - Inscryption
+                        Console.WriteLine("[Stats coming in a later version!]");  // Like inventory but for strength etc, pick up things in dungeon that can level up a certain stat the player chooses - Inscryption
 
                         PlayerChoice(optionsKeyBinds);
 
