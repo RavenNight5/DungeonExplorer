@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using DungeonExplorer.Levels;
 using DungeonExplorer.Text_Displays;
@@ -8,8 +7,8 @@ namespace DungeonExplorer
 {
     public class Room
     {
-        public static int currentLevel = 1;
-        public static int currentRoom = 1;
+        public static int CurrentLevel = 1;
+        public static int CurrentRoom = 1;
 
         public static string currentRoomDescription = "";
 
@@ -43,30 +42,32 @@ namespace DungeonExplorer
 
 ";
 
+            Level_1.UpdateOptions();
+
             return equippedBox;
         }
 
 
         public void ReturnToLevel()  // If player is in inventory or another screen this method will be called to continue the gameplay
         {
-            //Console.WriteLine("Returning to " + currentLevel + " room: " + currentRoom);
+            //Console.WriteLine("Returning to " + CurrentLevel + " room: " + CurrentRoom);
             
-            if (currentLevel.Equals(1))
+            if (CurrentLevel.Equals(1))
             {
                 level_1.DisplayRooms();
             }
         }
         public void NextRoom()
         {
-            currentRoom++;
+            CurrentRoom++;
         }
 
         public void StartLevel(int levelNum)
         {
             // Each time StartLevel is called it will be the next level (the iteration levelNum from class Game)
-            // Therefore currentRoom needs to be set back to 1 as it will be the first room of the new level
-            currentLevel = levelNum;
-            currentRoom = 1;
+            // Therefore CurrentRoom needs to be set back to 1 as it will be the first room of the new level
+            CurrentLevel = levelNum;
+            CurrentRoom = 1;
 
             if (levelNum.Equals(1))  // Statement is required to get the correct Level_x class
             {
@@ -91,7 +92,7 @@ namespace DungeonExplorer
                     //General
                     if (optionChosen.Equals("D"))
                     {
-                        Console.Clear();
+                        Program.CLEAR_CONSOLE();
 
                         new Description_Box(GetDescription(), 74);
 
@@ -99,7 +100,7 @@ namespace DungeonExplorer
 
                         Game.InputHandler.WaitOnKey("D", "Enter", "Spacebar");
 
-                        Console.Clear();
+                        Program.CLEAR_CONSOLE();
 
                         return -1;
                     }
@@ -117,7 +118,10 @@ namespace DungeonExplorer
 
                         return -1;
                     }
-                    else return Array.IndexOf(optionsKeyBinds, optionChosen);  // Player chose a number action such as Open Chest
+                    else  // Player chose a number action such as Open Chest
+                    {
+                        return Array.IndexOf(optionsKeyBinds, optionChosen); 
+                    }
 
                 }
                 catch (Exception e)
@@ -132,7 +136,6 @@ namespace DungeonExplorer
                 PlayerChoice(optionsKeyBinds);
 
                 return -1;
-
             }
         }
     }

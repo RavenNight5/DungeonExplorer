@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DungeonExplorer.Text_Displays
 {
@@ -83,7 +80,7 @@ namespace DungeonExplorer.Text_Displays
             for (int i = 0; i < arrayDesc.Length; i++)
             {
                 // Clears the current console screen and the scrollback buffer (characters that may be out of view but still there when you scroll up)
-                Console.Clear(); Console.WriteLine("\x1b[3J");
+                Program.CLEAR_CONSOLE();
 
                 new Description_Box(arrayDesc[i], maxCharLen);
 

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
 {
@@ -16,7 +14,6 @@ namespace DungeonExplorer
         private List<string[]> inventoryItem = new List<string[]>();
         private List<string[]> inventoryItem_Descriptions = new List<string[]>();
 
-        private string[] itemSelected = new string[5];
         private string[] itemDescription = new string[4];
 
         public static string[] emptySlot = {
@@ -78,8 +75,6 @@ namespace DungeonExplorer
 
                 inventoryItem_Descriptions.Add(emptyDescription);
             }
-
-            itemSelected = emptySlot;
         }
 
         public void PickUpItem(string[][] item)  //Passes the item to be added to the inventory - this is preset and passed from Inventory_Items (index 0 of the array is the item, index 1 is the description)
@@ -141,7 +136,7 @@ namespace DungeonExplorer
 
         public void DisplayInventory()
         {
-            Console.Clear();
+            Program.CLEAR_CONSOLE();
 
             Console.Write(GetInventoryDisplay()); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
 
@@ -157,14 +152,14 @@ namespace DungeonExplorer
                     {
                         if (optionChosen.Equals("Tab"))
                         {
-                            Console.Clear();
+                            Program.CLEAR_CONSOLE();
 
                             Game.RoomHandler.ReturnToLevel();
 
                         }
                         else if (optionChosen.Equals("Enter"))
                         {
-                            Console.Clear();
+                            Program.CLEAR_CONSOLE();
 
                             //To add:
                             //If selected and a useable item (health kit etc.) then use straight away and remove from inventory.
@@ -187,7 +182,7 @@ namespace DungeonExplorer
                         }
                         else  // Player has chosen an item
                         {
-                            Console.Clear();
+                            Program.CLEAR_CONSOLE();
 
                             int slotChosen = Array.IndexOf(Options.InventoryOptionsKeyBinds, optionChosen);
 

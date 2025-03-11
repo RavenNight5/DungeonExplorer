@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DungeonExplorer.Text_Displays
 {
@@ -16,6 +12,23 @@ namespace DungeonExplorer.Text_Displays
         public static string[] Closed_Chest = {
         @"/--╦--\",
         "|░░░░░|"
+        };
+
+        public static string[] Puddle_1 = {
+        "░░  ░",
+        "░░ ░▒▒░░",
+        "░   ░▒░ ░   ░",
+        "░   ░",
+        "░",
+        "▒░"
+        };
+        public static string[] Puddle_1_Clean = {
+        "    ░",
+        "        ",
+        "░            ",
+        "     ",
+        " ",
+        "  "
         };
 
         public static string[] Open_DoorVertical = { "╧" };

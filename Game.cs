@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Media;
+using System.Collections.Generic;
 using DungeonExplorer.Dialogue;
 using DungeonExplorer.Text_Displays;
 
@@ -7,8 +7,6 @@ namespace DungeonExplorer
 {
     internal class Game
     {
-        public static bool playing = true;
-
         // Here I set multiple classes to static as they will only be defined once per game. Therefore they and their methods can be accessed in the level classes
         public static Player CurrentPlayer { get; private set; }
         public static Room RoomHandler { get; private set; }
@@ -24,11 +22,12 @@ namespace DungeonExplorer
             Game.InputHandler = new Input();
 
             Game.OptionHandler = new Options();
+
         }
 
         public void Start()
         {
-            Console.Clear();
+            Program.CLEAR_CONSOLE();
 
             General_Info general_Info = new General_Info();
 
@@ -43,7 +42,7 @@ namespace DungeonExplorer
 
                 InputHandler.WaitOnKey("Spacebar");
 
-                Console.Clear();
+                Program.CLEAR_CONSOLE();
             }
 
             for (int i = 1; i <= Program.NumOfLevels; i++)
@@ -52,7 +51,7 @@ namespace DungeonExplorer
                 RoomHandler.StartLevel(i);
 
                 // Tuple
-                //var startLevel = currentRoom.StartLevel(i);
+                //var startLevel = CurrentRoom.StartLevel(i);
                 //// Returned items from the tuple
                 //var displayRoom = startLevel.Item1;
                 //var options = startLevel.Item2;

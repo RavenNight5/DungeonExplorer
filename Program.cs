@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using DungeonExplorer.Dialogue;
 using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
@@ -12,8 +6,6 @@ namespace DungeonExplorer
     internal class Program
     {
         public static int NumOfLevels = 1;  // Change locally based on how many levels are implemented
-
-        public static string RoomDisplayNotFound = "RD Not Found.";
 
         static void Main(string[] args)
         {
@@ -23,12 +15,11 @@ namespace DungeonExplorer
             Game game = new Game();
 
             Console.WriteLine(title);
-
             Console.WriteLine("\nPress [Space] to play.\n");
 
             Game.InputHandler.WaitOnKey("Spacebar");
 
-            Console.Clear();
+            CLEAR_CONSOLE();
 
             Console.WriteLine("\nInput your name, press [Enter] to confirm.\n");
 
@@ -47,6 +38,11 @@ namespace DungeonExplorer
 
             Console.WriteLine("\nPress any key to exit...");
             Console.ReadKey();
+        }
+
+        public static void CLEAR_CONSOLE()
+        {
+            Console.Clear(); Console.WriteLine("\x1b[3J");  // Clears the current console screen and the scrollback buffer (characters that may be out of view but still there when you scroll up)
         }
     }
 }

@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DungeonExplorer.Text_Displays
 {
@@ -91,8 +86,8 @@ namespace DungeonExplorer.Text_Displays
         },
         new string[4] {
         "~ Full Cup ~",
-        "A cup filled with blood you found",
-        "dripping from the ceiling...",
+        "A cup filled with some strange blood you found",
+        "dripping from the ceiling in the hallway...",
         ""
         }
         };
@@ -105,8 +100,8 @@ namespace DungeonExplorer.Text_Displays
         },
         new string[4] {
         "~ Dagger ~",
-        "A wide-bladed dagger, more useful for",
-        "self defense rather than cleaning.",
+        "A wide-bladed dagger, probably more useful for",
+        "self defense than cleaning.",
         ""
         }
         };
