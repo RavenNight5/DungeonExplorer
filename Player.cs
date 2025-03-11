@@ -47,7 +47,7 @@ namespace DungeonExplorer
 
         private string selectedSlotChar = "+";
 
-        private string[] slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
+        private string[] _slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
 
         public Player()
         {
@@ -106,7 +106,7 @@ namespace DungeonExplorer
                 }
             }
 
-            slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
+            _slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
 
             Room.currentEquippedItem = emptySlot;
         }
@@ -121,13 +121,13 @@ namespace DungeonExplorer
     │{inventoryItem[0][1]}│{inventoryItem[1][1]}│{inventoryItem[2][1]}│{inventoryItem[3][1]}│{inventoryItem[4][1]}│ ║ {itemDescription[0]}
     │{inventoryItem[0][2]}║{inventoryItem[1][2]}║{inventoryItem[2][2]}║{inventoryItem[3][2]}║{inventoryItem[4][2]}│ │ {itemDescription[1]}
     │{inventoryItem[0][3]}│{inventoryItem[1][3]}│{inventoryItem[2][3]}│{inventoryItem[3][3]}│{inventoryItem[4][3]}│ │ {itemDescription[2]}
-    ║{slotNumbers[0]}{inventoryItem[0][4]}│{slotNumbers[1]}{inventoryItem[1][4]}│{slotNumbers[2]}{inventoryItem[2][4]}│{slotNumbers[3]}{inventoryItem[3][4]}│{slotNumbers[4]}{inventoryItem[4][4]}║ │ {itemDescription[3]}
+    ║{_slotNumbers[0]}{inventoryItem[0][4]}│{_slotNumbers[1]}{inventoryItem[1][4]}│{_slotNumbers[2]}{inventoryItem[2][4]}│{_slotNumbers[3]}{inventoryItem[3][4]}│{_slotNumbers[4]}{inventoryItem[4][4]}║ │ {itemDescription[3]}
     ║ ───────────────────────────────────── ║ ║ [Enter] to Equip/Use
     ║{inventoryItem[5][0]}│{inventoryItem[6][0]}│{inventoryItem[7][0]}│{inventoryItem[8][0]}│{inventoryItem[9][0]}║ ╚══════=──────────---
     │{inventoryItem[5][1]}│{inventoryItem[6][1]}│{inventoryItem[7][1]}│{inventoryItem[8][1]}│{inventoryItem[9][1]}│
     │{inventoryItem[5][2]}║{inventoryItem[6][2]}║{inventoryItem[7][2]}║{inventoryItem[8][2]}║{inventoryItem[9][2]}│
     │{inventoryItem[5][3]}│{inventoryItem[6][3]}│{inventoryItem[7][3]}│{inventoryItem[8][3]}│{inventoryItem[9][3]}│
-    │{slotNumbers[5]}{inventoryItem[5][4]}│{slotNumbers[6]}{inventoryItem[6][4]}│{slotNumbers[7]}{inventoryItem[7][4]}│{slotNumbers[8]}{inventoryItem[8][4]}│{slotNumbers[9]}{inventoryItem[9][4]}│
+    │{_slotNumbers[5]}{inventoryItem[5][4]}│{_slotNumbers[6]}{inventoryItem[6][4]}│{_slotNumbers[7]}{inventoryItem[7][4]}│{_slotNumbers[8]}{inventoryItem[8][4]}│{_slotNumbers[9]}{inventoryItem[9][4]}│
     ---──────────═══════════════──────────---
         ";
 
@@ -186,22 +186,22 @@ namespace DungeonExplorer
 
                             int slotChosen = Array.IndexOf(Options.InventoryOptionsKeyBinds, optionChosen);
 
-                            if (slotNumbers[slotChosen].ToString() != selectedSlotChar)
+                            if (_slotNumbers[slotChosen].ToString() != selectedSlotChar)
                             {
                                 itemDescription = inventoryItem_Descriptions[slotChosen];
 
-                                slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
+                                _slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
 
-                                slotNumbers[slotChosen] = selectedSlotChar;
+                                _slotNumbers[slotChosen] = selectedSlotChar;
                             }
                             else
                             {
                                 itemDescription = emptyDescription;
 
-                                if (slotChosen.Equals(9)) slotNumbers[slotChosen] = "0";
+                                if (slotChosen.Equals(9)) _slotNumbers[slotChosen] = "0";
                                 else
                                 {
-                                    slotNumbers[slotChosen] = (slotChosen + 1).ToString();
+                                    _slotNumbers[slotChosen] = (slotChosen + 1).ToString();
                                 }
                             }
 
