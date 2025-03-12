@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Filename: Game.cs
+using System;
 using System.Collections.Generic;
 using DungeonExplorer.Dialogue;
 using DungeonExplorer.Text_Displays;
@@ -7,7 +8,12 @@ namespace DungeonExplorer
 {
     internal class Game
     {
-        // Here I set multiple classes to static as they will only be defined once per game. Therefore they and their methods can be accessed in the level classes
+        /// <summary>
+        /// Initialises four objects that will be the main objects throughout the game.
+        /// Starts the game throug the newly-initialised room object.
+        /// </summary>
+        
+        // Here I set multiple classes to static as they will only be defined once per game. Therefore, they and their methods can be accessed in other main classes (e.g. Level_1)
         public static Player CurrentPlayer { get; private set; }
         public static Room RoomHandler { get; private set; }
         public static Input InputHandler { get; private set; }
@@ -22,7 +28,6 @@ namespace DungeonExplorer
             Game.InputHandler = new Input();
 
             Game.OptionHandler = new Options();
-
         }
 
         public void Start()
@@ -47,21 +52,10 @@ namespace DungeonExplorer
 
             for (int i = 1; i <= Program.NumOfLevels; i++)
             {
-
                 RoomHandler.StartLevel(i);
-
-                // Tuple
-                //var startLevel = CurrentRoom.StartLevel(i);
-                //// Returned items from the tuple
-                //var displayRoom = startLevel.Item1;
-                //var options = startLevel.Item2;
-
-                ////if (!displayRoom.Equals(Room.RoomNotFound))  // Do in testing
-                //Console.WriteLine(displayRoom + "\n" + options + "\n\n");
             }
 
-            Console.WriteLine("\n\n---Game finished---\n");
-
+            Console.WriteLine("\n\n---Game Finished---\n");
         }
     }
 }

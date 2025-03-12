@@ -1,25 +1,33 @@
-﻿using System;
-using System.Diagnostics;
+﻿// Filename: Level_1.cs
+using System;
 using DungeonExplorer.Testing;
 using DungeonExplorer.Text_Displays;
-using static System.Collections.Specialized.BitVector32;
 
 namespace DungeonExplorer.Levels
 {
     internal class Level_1
     {
-        public static Level_1_Displays L1_Displays { get; private set; }
-        public static Level_1_Actions L1_Actions { get; private set; }
-
+        /// <summary>
+        /// Handles the main gameplay of level 1 and all of its rooms including:
+        ///     - Items that can be interacted with
+        ///     - Adding items to inventory (using Player class methods)
+        ///     - Removing items from inventory (using Player class methods)
+        ///     - Changing rooms
+        ///     - Showing dialogue (using Description_Box class)
+        /// </summary>
         public bool[] R1_ActionCompleted = new bool[] { false, false, false, false };  //Door, Chest, LookOnTable, LookUnderTable
         public bool[] R2_ActionCompleted = new bool[] { false, false, false, false, false };  //Door, Wall, N, S, StandAround
         public bool[] R3_ActionCompleted = new bool[] { false, false, false };
         public bool[] R4_ActionCompleted = new bool[] { false, false, false };
         public bool[] R5_ActionCompleted = new bool[] { false, false, false };
         public bool[] R6_ActionCompleted = new bool[] { false, false, false };
-        public static bool[] R7_ActionCompleted = new bool[] { false, false, false };  //N, Puddle, S
 
-        private readonly bool[] room_DescriptionShown = new bool[] { false, false, false, false, false, false, false };
+        public static bool[] R7_ActionCompleted = new bool[] { false, false, false };  //N, Puddle, S
+        
+        public static Level_1_Displays L1_Displays { get; private set; }
+        public static Level_1_Actions L1_Actions { get; private set; }
+        
+        private readonly bool[] _room_DescriptionShown = new bool[] { false, false, false, false, false, false, false };
 
         public Level_1()
         {
@@ -38,22 +46,24 @@ namespace DungeonExplorer.Levels
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_CupFull);
         }
 
+        // When the game starts room will call this function to display the first room
         public void Start()
         {
             DisplayRooms();
         }
 
-        public static void UpdateOptions()  // Called every time the stats of the player are re-written to the console - checks if the equipped item can be used in a current situation
+        // Called every time the quick-stats of the player are re-written to the console and checks if the equipped item can be used in a current situation
+        public static void UpdateOptions()
         {
             if (Room.CurrentRoom == 7)
             {
                 if (R7_ActionCompleted[1] == false)  // If the puddle has not already been mopped
                 {
-                    if (Room.currentEquippedItem == Inventory_Items.II_Mop[0])  // If the currently equipped item is the mop item
+                    if (Room.CurrentEquippedItem == Inventory_Items.II_Mop[0])  // If the currently equipped item is the mop item
                     {
                         Level_1_Displays.L1Room_ExploreOptions[Room.CurrentRoom - 1][1] = "Mop Puddle [2]";
                     }
-                    else if (Room.currentEquippedItem == Inventory_Items.II_CupEmpty[0])
+                    else if (Room.CurrentEquippedItem == Inventory_Items.II_CupEmpty[0])
                     {
                         Level_1_Displays.L1Room_ExploreOptions[Room.CurrentRoom - 1][1] = "Use Empty Cup [2]";
                     }
@@ -66,6 +76,7 @@ namespace DungeonExplorer.Levels
             }
         }
 
+        //Handles the main gameplay of level 1 and all of its rooms
         public void DisplayRooms()
         {
             Program.CLEAR_CONSOLE();
@@ -75,12 +86,12 @@ namespace DungeonExplorer.Levels
             Console.Write(Room.GetCurrentItemsAndStats());
             Console.Write(L1_Displays.GetRoom(Room.CurrentRoom)); Console.Write("\n" + concatenatedOptions + "\n\n");
 
-            if (room_DescriptionShown[Room.CurrentRoom - 1].Equals(false))
+            if (_room_DescriptionShown[Room.CurrentRoom - 1].Equals(false))
             {
                 // PlayerChoice ends when room description is shown and closed again
                 Room.PlayerChoice(Options.GeneralOptionsKeyBinds);
 
-                room_DescriptionShown[Room.CurrentRoom - 1] = true;
+                _room_DescriptionShown[Room.CurrentRoom - 1] = true;
 
                 DisplayRooms();
 
@@ -110,7 +121,7 @@ namespace DungeonExplorer.Levels
                         {
                             if (R1_ActionCompleted[action] == false)
                             {
-                                if (Room.currentEquippedItem == Inventory_Items.II_Key1[0])  // If the currently equipped item is the correct required item
+                                if (Room.CurrentEquippedItem == Inventory_Items.II_Key1[0])  // If the currently equipped item is the correct required item
                                 {
                                     Game.CurrentPlayer.RemoveItemFromInventory(Inventory_Items.II_Key1[0]);
 
@@ -276,7 +287,7 @@ namespace DungeonExplorer.Levels
                         {
                             if (R7_ActionCompleted[action] == false)
                             {
-                                if (Room.currentEquippedItem == Inventory_Items.II_Mop[0])
+                                if (Room.CurrentEquippedItem == Inventory_Items.II_Mop[0])
                                 {
                                     dialogue = L1_Actions.L1_RoomActions[Room.CurrentRoom - 1][action][1];
 
@@ -285,7 +296,7 @@ namespace DungeonExplorer.Levels
                                     L1_Displays.R1_Interactables[2] = Environment_Interactables.Puddle_1_Clean;
                                     Level_1_Displays.L1Room_ExploreOptions[Room.CurrentRoom - 1][1] = "Puddle Mopped!";
                                 }
-                                else if (Room.currentEquippedItem == Inventory_Items.II_CupEmpty[0])
+                                else if (Room.CurrentEquippedItem == Inventory_Items.II_CupEmpty[0])
                                 {
                                     dialogue = L1_Actions.L1_RoomActions[Room.CurrentRoom - 1][action][2];
 
@@ -325,6 +336,7 @@ namespace DungeonExplorer.Levels
             }
         }
 
+        // Returns all the keybinds the player can take when exploring a room (adds on the default option keys such as Tab for inventoy)
         private string[] GetActionKeybinds(int numOfActions)
         {
             string[] actions = new string[numOfActions + 3];  // Would be -1 for the indexing, however I add 3 more keybinds outside the for loop

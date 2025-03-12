@@ -1,21 +1,26 @@
-﻿using System;
+﻿// Filename: Options.cs
+using System;
 using System.Collections.Generic;
 
 namespace DungeonExplorer
 {
     internal class Options
     {
+        /// <summary>
+        /// Returns a string concatenated from the various options (based on the method called) and holds the keybinds for the main single-key options the player can take.
+        /// </summary>
+        private string _currentOptionsConcatenation;
+        
         public static string[] GeneralOptionsKeyBinds = { "D", "C", "Tab" };
-        public static List<string> RoomExploreOptionsKeyBinds = new List<string>();
         public static string[] InventoryOptionsKeyBinds = { "D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9", "D0", "Enter", "Tab" };  // D1 etc. is the name of the number keys the system recognises
+        
+        public static List<string> RoomExploreOptionsKeyBinds = new List<string>();
 
-        private string currentOptionsConcatenation;
-
-        private string[] GeneralOptionsArray = {
+        private readonly string[] _generalOptionsArray = {
             "Room Description [D]",
             "Character Stats [C]",
             "Inventory [Tab]" };
-        private string[] InventoryOptionsArray = {
+        private readonly string[] _inventoryOptionsArray = {
             "Select Item [0-9]",
             "Equip/Use Item [Enter]", 
             "Close Inventory [Tab]" };
@@ -23,37 +28,38 @@ namespace DungeonExplorer
 
         public Options()
         {
-            currentOptionsConcatenation = "  ";
+            _currentOptionsConcatenation = "  ";
         }
 
         public string GetGeneralOptions()
         {
-            currentOptionsConcatenation = "  ";
+            _currentOptionsConcatenation = "  ";
 
-            for (int i = 0; i < GeneralOptionsArray.Length; i++)
+            for (int i = 0; i < _generalOptionsArray.Length; i++)
             {
-                currentOptionsConcatenation = currentOptionsConcatenation + "  " + GeneralOptionsArray[i];
+                _currentOptionsConcatenation = _currentOptionsConcatenation + "  " + _generalOptionsArray[i];
             }
 
-            return currentOptionsConcatenation;
+            return _currentOptionsConcatenation;
         }
+
         public string GetRoomExploreOptions(string[] roomExploreOptions)
         {
-            currentOptionsConcatenation = "   ";
+            _currentOptionsConcatenation = "   ";
 
             for (int i = 0; i < roomExploreOptions.Length; i++)
             {
-                currentOptionsConcatenation = currentOptionsConcatenation + "\n   > " + roomExploreOptions[i];
+                _currentOptionsConcatenation = _currentOptionsConcatenation + "\n   > " + roomExploreOptions[i];
             }
 
-            return currentOptionsConcatenation;
+            return _currentOptionsConcatenation;
         }
 
         public string GetInventoryOptions()
         {
-            currentOptionsConcatenation = "   " + (string.Join("   ", InventoryOptionsArray));
+            _currentOptionsConcatenation = "   " + (string.Join("   ", _inventoryOptionsArray));
 
-            return currentOptionsConcatenation;
+            return _currentOptionsConcatenation;
         }
     }
 }

@@ -1,10 +1,13 @@
-﻿using System;
+﻿// Filename: Inventory_Items.cs
+using System;
 
 namespace DungeonExplorer.Text_Displays
 {
     internal class Inventory_Items
     {
-        private Inventory_Items() { }
+        /// <summary>
+        /// Holds the inventory items and their descriptions each in a jagged array.
+        /// </summary>
 
         public static string[][] II_Sponge = new string[][] { new string[5] {
         "       ",

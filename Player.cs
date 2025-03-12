@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Filename: Player.cs
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -6,17 +7,25 @@ namespace DungeonExplorer
 {
     public class Player
     {
+        /// <summary>
+        /// Initialises the player's name, max health & health.
+        /// Handles the inventory system (including its text display), including:
+        ///     - Picking up items
+        ///     - Removing items from the inventory
+        ///     - Returning the inventory's text display
+        ///     - Displaying the inventory's text display
+        ///     - Allowing selection between each item in the inventory, showing their descriptions when selected
+        ///     - Equipping an item from the inventory - which is then handled by the Room class
+        /// </summary>
+        private string[] _slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
+        private string[] _itemDescription = new string[4];
+
         public static string Name { get; set; }
         public static string NamePlural { get; set; }
         public static int MaxHealth { get; set; }
         public static int Health { get; set; }
 
-        private List<string[]> inventoryItem = new List<string[]>();
-        private List<string[]> inventoryItem_Descriptions = new List<string[]>();
-
-        private string[] itemDescription = new string[4];
-
-        public static string[] emptySlot = {
+        public static string[] EmptySlot = {
         "       ",
         "       ",
         "       ",
@@ -24,56 +33,57 @@ namespace DungeonExplorer
         "      "
         };
 
-        public static string[] emptyDescription = {
+        public static string[] EmptyDescription = {
         "",
         "",
         "",
         ""
         };
 
-        private string emptyNormal = "       ";
-        private string emptyBottom = "      ";  // There is an inventory slot number so have one less space
+        private readonly List<string[]> _inventoryItem = new List<string[]>();
+        private readonly List<string[]> _inventoryItem_Descriptions = new List<string[]>();
+        
+        private readonly string _emptyNormal = "       ";
+        private readonly string _emptyBottom = "      ";  // There is an inventory slot number so have one less space
 
-        private string[] slot_1 = new string[5];  // Each string in the array represents the horizontal line in that inventory slot
-        private string[] slot_2 = new string[5];
-        private string[] slot_3 = new string[5];
-        private string[] slot_4 = new string[5];
-        private string[] slot_5 = new string[5];
-        private string[] slot_6 = new string[5];
-        private string[] slot_7 = new string[5];
-        private string[] slot_8 = new string[5];
-        private string[] slot_9 = new string[5];
-        private string[] slot_0 = new string[5];
+        private readonly string _selectedSlotChar = "+";
 
-        private string selectedSlotChar = "+";
-
-        private string[] slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
+        private readonly string[] _slot_1 = new string[5];  // Each string in the array represents the horizontal line in that inventory slot
+        private readonly string[] _slot_2 = new string[5];
+        private readonly string[] _slot_3 = new string[5];
+        private readonly string[] _slot_4 = new string[5];
+        private readonly string[] _slot_5 = new string[5];
+        private readonly string[] _slot_6 = new string[5];
+        private readonly string[] _slot_7 = new string[5];
+        private readonly string[] _slot_8 = new string[5];
+        private readonly string[] _slot_9 = new string[5];
+        private readonly string[] _slot_0 = new string[5];
 
         public Player()
         {
             MaxHealth = 6;
             Health = MaxHealth;
 
-            inventoryItem.Add(slot_1);
-            inventoryItem.Add(slot_2);
-            inventoryItem.Add(slot_3);
-            inventoryItem.Add(slot_4);
-            inventoryItem.Add(slot_5);
-            inventoryItem.Add(slot_6);
-            inventoryItem.Add(slot_7);
-            inventoryItem.Add(slot_8);
-            inventoryItem.Add(slot_9);
-            inventoryItem.Add(slot_0);
+            _inventoryItem.Add(_slot_1);
+            _inventoryItem.Add(_slot_2);
+            _inventoryItem.Add(_slot_3);
+            _inventoryItem.Add(_slot_4);
+            _inventoryItem.Add(_slot_5);
+            _inventoryItem.Add(_slot_6);
+            _inventoryItem.Add(_slot_7);
+            _inventoryItem.Add(_slot_8);
+            _inventoryItem.Add(_slot_9);
+            _inventoryItem.Add(_slot_0);
 
-            for (int i = 0; i < inventoryItem.Count; i++)  //For each inventory slot array - initialise each string to the width of the inventory slot
+            for (int i = 0; i < _inventoryItem.Count; i++)  //For each inventory slot array - initialise each string to the width of the inventory slot
             {
-                inventoryItem[i][0] = emptyNormal;
-                inventoryItem[i][1] = emptyNormal;
-                inventoryItem[i][2] = emptyNormal;
-                inventoryItem[i][3] = emptyNormal;
-                inventoryItem[i][4] = emptyBottom;
+                _inventoryItem[i][0] = _emptyNormal;
+                _inventoryItem[i][1] = _emptyNormal;
+                _inventoryItem[i][2] = _emptyNormal;
+                _inventoryItem[i][3] = _emptyNormal;
+                _inventoryItem[i][4] = _emptyBottom;
 
-                inventoryItem_Descriptions.Add(emptyDescription);
+                _inventoryItem_Descriptions.Add(EmptyDescription);
             }
         }
 
@@ -81,34 +91,34 @@ namespace DungeonExplorer
         {
             bool itemAdded = false;
 
-            for (int i = 0; i < inventoryItem.Count; i++)
+            for (int i = 0; i < _inventoryItem.Count; i++)
             {
                 // Check if the current slot's middle line is equal to the empty slot string (as the middle line will always have text if an item is assigned to that slot)
-                if (inventoryItem[i][2].Equals(emptyNormal) && itemAdded.Equals(false))
+                if (_inventoryItem[i][2].Equals(_emptyNormal) && itemAdded.Equals(false))
                 {
                     itemAdded = true;
 
-                    inventoryItem[i] = item[0];
-                    inventoryItem_Descriptions[i] = item[1];
+                    _inventoryItem[i] = item[0];
+                    _inventoryItem_Descriptions[i] = item[1];
                 }
             }
         }
 
         public void RemoveItemFromInventory(string[] item)
         {
-            for (int i = 0; i < inventoryItem.Count; i++)
+            for (int i = 0; i < _inventoryItem.Count; i++)
             {
-                if (inventoryItem[i].Equals(item))
+                if (_inventoryItem[i].Equals(item))
                 {
-                    inventoryItem[i] = emptySlot;
-                    itemDescription = emptyDescription;
-                    inventoryItem_Descriptions[i] = emptyDescription;
+                    _inventoryItem[i] = EmptySlot;
+                    _itemDescription = EmptyDescription;
+                    _inventoryItem_Descriptions[i] = EmptyDescription;
                 }
             }
 
-            slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
+            _slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
 
-            Room.currentEquippedItem = emptySlot;
+            Room.CurrentEquippedItem = EmptySlot;
         }
 
         // Used to refresh the display after an item is selected etc.
@@ -117,17 +127,17 @@ namespace DungeonExplorer
             string inventoryDisplay = $@"
      Inventory:
     ---───══───═══════════════════───══───---  Description:
-    │{inventoryItem[0][0]}│{inventoryItem[1][0]}│{inventoryItem[2][0]}│{inventoryItem[3][0]}│{inventoryItem[4][0]}│ ╔══════=──────────---
-    │{inventoryItem[0][1]}│{inventoryItem[1][1]}│{inventoryItem[2][1]}│{inventoryItem[3][1]}│{inventoryItem[4][1]}│ ║ {itemDescription[0]}
-    │{inventoryItem[0][2]}║{inventoryItem[1][2]}║{inventoryItem[2][2]}║{inventoryItem[3][2]}║{inventoryItem[4][2]}│ │ {itemDescription[1]}
-    │{inventoryItem[0][3]}│{inventoryItem[1][3]}│{inventoryItem[2][3]}│{inventoryItem[3][3]}│{inventoryItem[4][3]}│ │ {itemDescription[2]}
-    ║{slotNumbers[0]}{inventoryItem[0][4]}│{slotNumbers[1]}{inventoryItem[1][4]}│{slotNumbers[2]}{inventoryItem[2][4]}│{slotNumbers[3]}{inventoryItem[3][4]}│{slotNumbers[4]}{inventoryItem[4][4]}║ │ {itemDescription[3]}
+    │{_inventoryItem[0][0]}│{_inventoryItem[1][0]}│{_inventoryItem[2][0]}│{_inventoryItem[3][0]}│{_inventoryItem[4][0]}│ ╔══════=──────────---
+    │{_inventoryItem[0][1]}│{_inventoryItem[1][1]}│{_inventoryItem[2][1]}│{_inventoryItem[3][1]}│{_inventoryItem[4][1]}│ ║ {_itemDescription[0]}
+    │{_inventoryItem[0][2]}║{_inventoryItem[1][2]}║{_inventoryItem[2][2]}║{_inventoryItem[3][2]}║{_inventoryItem[4][2]}│ │ {_itemDescription[1]}
+    │{_inventoryItem[0][3]}│{_inventoryItem[1][3]}│{_inventoryItem[2][3]}│{_inventoryItem[3][3]}│{_inventoryItem[4][3]}│ │ {_itemDescription[2]}
+    ║{_slotNumbers[0]}{_inventoryItem[0][4]}│{_slotNumbers[1]}{_inventoryItem[1][4]}│{_slotNumbers[2]}{_inventoryItem[2][4]}│{_slotNumbers[3]}{_inventoryItem[3][4]}│{_slotNumbers[4]}{_inventoryItem[4][4]}║ │ {_itemDescription[3]}
     ║ ───────────────────────────────────── ║ ║ [Enter] to Equip/Use
-    ║{inventoryItem[5][0]}│{inventoryItem[6][0]}│{inventoryItem[7][0]}│{inventoryItem[8][0]}│{inventoryItem[9][0]}║ ╚══════=──────────---
-    │{inventoryItem[5][1]}│{inventoryItem[6][1]}│{inventoryItem[7][1]}│{inventoryItem[8][1]}│{inventoryItem[9][1]}│
-    │{inventoryItem[5][2]}║{inventoryItem[6][2]}║{inventoryItem[7][2]}║{inventoryItem[8][2]}║{inventoryItem[9][2]}│
-    │{inventoryItem[5][3]}│{inventoryItem[6][3]}│{inventoryItem[7][3]}│{inventoryItem[8][3]}│{inventoryItem[9][3]}│
-    │{slotNumbers[5]}{inventoryItem[5][4]}│{slotNumbers[6]}{inventoryItem[6][4]}│{slotNumbers[7]}{inventoryItem[7][4]}│{slotNumbers[8]}{inventoryItem[8][4]}│{slotNumbers[9]}{inventoryItem[9][4]}│
+    ║{_inventoryItem[5][0]}│{_inventoryItem[6][0]}│{_inventoryItem[7][0]}│{_inventoryItem[8][0]}│{_inventoryItem[9][0]}║ ╚══════=──────────---
+    │{_inventoryItem[5][1]}│{_inventoryItem[6][1]}│{_inventoryItem[7][1]}│{_inventoryItem[8][1]}│{_inventoryItem[9][1]}│
+    │{_inventoryItem[5][2]}║{_inventoryItem[6][2]}║{_inventoryItem[7][2]}║{_inventoryItem[8][2]}║{_inventoryItem[9][2]}│
+    │{_inventoryItem[5][3]}│{_inventoryItem[6][3]}│{_inventoryItem[7][3]}│{_inventoryItem[8][3]}│{_inventoryItem[9][3]}│
+    │{_slotNumbers[5]}{_inventoryItem[5][4]}│{_slotNumbers[6]}{_inventoryItem[6][4]}│{_slotNumbers[7]}{_inventoryItem[7][4]}│{_slotNumbers[8]}{_inventoryItem[8][4]}│{_slotNumbers[9]}{_inventoryItem[9][4]}│
     ---──────────═══════════════──────────---
         ";
 
@@ -164,17 +174,17 @@ namespace DungeonExplorer
                             //To add:
                             //If selected and a useable item (health kit etc.) then use straight away and remove from inventory.
 
-                            if (!itemDescription[0].Equals(""))
+                            if (!_itemDescription[0].Equals(""))
                             {
-                                int itemIndex = inventoryItem_Descriptions.IndexOf(itemDescription);
+                                int itemIndex = _inventoryItem_Descriptions.IndexOf(_itemDescription);
 
-                                Room.currentEquippedItem = inventoryItem[itemIndex];
+                                Room.CurrentEquippedItem = _inventoryItem[itemIndex];
 
                                 Game.RoomHandler.ReturnToLevel();
                             }
                             else
                             {
-                                Room.currentEquippedItem = emptySlot;
+                                Room.CurrentEquippedItem = EmptySlot;
 
                                 Game.RoomHandler.ReturnToLevel();
                             }
@@ -186,22 +196,22 @@ namespace DungeonExplorer
 
                             int slotChosen = Array.IndexOf(Options.InventoryOptionsKeyBinds, optionChosen);
 
-                            if (slotNumbers[slotChosen].ToString() != selectedSlotChar)
+                            if (_slotNumbers[slotChosen].ToString() != _selectedSlotChar)
                             {
-                                itemDescription = inventoryItem_Descriptions[slotChosen];
+                                _itemDescription = _inventoryItem_Descriptions[slotChosen];
 
-                                slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
+                                _slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
 
-                                slotNumbers[slotChosen] = selectedSlotChar;
+                                _slotNumbers[slotChosen] = _selectedSlotChar;
                             }
                             else
                             {
-                                itemDescription = emptyDescription;
+                                _itemDescription = EmptyDescription;
 
-                                if (slotChosen.Equals(9)) slotNumbers[slotChosen] = "0";
+                                if (slotChosen.Equals(9)) _slotNumbers[slotChosen] = "0";
                                 else
                                 {
-                                    slotNumbers[slotChosen] = (slotChosen + 1).ToString();
+                                    _slotNumbers[slotChosen] = (slotChosen + 1).ToString();
                                 }
                             }
 

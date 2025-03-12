@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Filename: Room.cs
+using System;
 using System.Diagnostics;
 using DungeonExplorer.Levels;
 using DungeonExplorer.Text_Displays;
@@ -7,46 +8,25 @@ namespace DungeonExplorer
 {
     public class Room
     {
+        /// <summary>
+        /// - Checks the level number and calls start() on the corresponding class
+        /// - Handles the player's quick-view stats (such as the current equipped item, coins and health)
+        /// - Returns the current room's description
+        /// - Handles choices the player can make from the current room they are in
+        /// </summary>
         public static int CurrentLevel = 1;
         public static int CurrentRoom = 1;
 
-        public static string currentRoomDescription = "";
+        public static string CurrentRoomDescription = "";
 
-        public static string[] currentEquippedItem = Player.emptySlot;
+        public static string[] CurrentEquippedItem = Player.EmptySlot;
 
-        Level_1 level_1;
+        private readonly Level_1 _level_1;
 
         public Room()
         {
-            level_1 = new Level_1();
+            _level_1 = new Level_1();
         }
-
-
-        public static string GetCurrentItemsAndStats()
-        {
-            string HealthVisual = "";
-
-            for (int i = 0; i < Player.Health; i++)
-            {
-                HealthVisual += "+ ";
-            }
-
-            string equippedBox = $@" Equipped:    Gold Coins:
- --── ──--    ┌───--- - -  
- │{currentEquippedItem[0]}│    ║ 10 
- │{currentEquippedItem[1]}│    └───--- - - 
- ║{currentEquippedItem[2]}║    {Player.NamePlural} Health:
- │{currentEquippedItem[3]}│    ┌───────----- - - - 
- │ {currentEquippedItem[4]}│    ║ {HealthVisual} ({Player.Health}/{Player.MaxHealth})
- --─ + ─--    └───────----- - - - 
-
-";
-
-            Level_1.UpdateOptions();
-
-            return equippedBox;
-        }
-
 
         public void ReturnToLevel()  // If player is in inventory or another screen this method will be called to continue the gameplay
         {
@@ -54,12 +34,8 @@ namespace DungeonExplorer
             
             if (CurrentLevel.Equals(1))
             {
-                level_1.DisplayRooms();
+                _level_1.DisplayRooms();
             }
-        }
-        public void NextRoom()
-        {
-            CurrentRoom++;
         }
 
         public void StartLevel(int levelNum)
@@ -71,14 +47,41 @@ namespace DungeonExplorer
 
             if (levelNum.Equals(1))  // Statement is required to get the correct Level_x class
             {
-                level_1.Start();
+                _level_1.Start();
             }
 
         }
 
+
+        // Called before the room display is written to the console, returning the player's quick-veiw stats as a string.
+        public static string GetCurrentItemsAndStats()
+        {
+            string HealthVisual = "";
+
+            for (int i = 0; i < Player.Health; i++)
+            {
+                HealthVisual += "+ ";
+            }
+
+            string stats = $@" Equipped:    Gold Coins:
+ --── ──--    ┌───--- - -  
+ │{CurrentEquippedItem[0]}│    ║ 10 
+ │{CurrentEquippedItem[1]}│    └───--- - - 
+ ║{CurrentEquippedItem[2]}║    {Player.NamePlural} Health:
+ │{CurrentEquippedItem[3]}│    ┌───────----- - - - 
+ │ {CurrentEquippedItem[4]}│    ║ {HealthVisual} ({Player.Health}/{Player.MaxHealth})
+ --─ + ─--    └───────----- - - - 
+
+";
+
+            Level_1.UpdateOptions();
+
+            return stats;
+        }
+
         public static string GetDescription()
         {
-            return currentRoomDescription;
+            return CurrentRoomDescription;
         }
 
         public static int PlayerChoice(string[] optionsKeyBinds)
