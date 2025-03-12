@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Filename: General_Info.cs
+using System;
 
 namespace DungeonExplorer.Dialogue
 {
     internal class General_Info
     {
+        /// <summary>
+        /// Contains the dialogue first shown to the player when they enter the game.
+        /// </summary>
         public string[] WelcomeDialogue;
 
         public General_Info()

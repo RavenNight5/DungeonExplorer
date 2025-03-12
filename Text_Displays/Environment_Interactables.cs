@@ -1,9 +1,13 @@
-﻿using System;
+﻿// Filename: Environment_Interactables.cs
+using System;
 
 namespace DungeonExplorer.Text_Displays
 {
     internal class Environment_Interactables
     {
+        /// <summary>
+        /// Holds the interactable objects that can be found in the room displays.
+        /// </summary>
         
         public static string[] Open_Chest = {
         @"/--╧--\",

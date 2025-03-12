@@ -1,14 +1,18 @@
-﻿using System;
+﻿// Filename: Welcome.cs
+using System;
 
 namespace DungeonExplorer.Text_Displays
 {
     internal class Welcome
     {
-        private string welcomeTitle;
+        /// <summary>
+        /// Initialises the title of the game and returns it as a string.
+        /// </summary>
+        private readonly string _welcomeTitle;
 
         public Welcome()
         {
-            welcomeTitle = @"
+            _welcomeTitle = $@"
                                                                       
 ▀███▀▀▀██▄
   ██    ▀██▄
@@ -21,7 +25,7 @@ namespace DungeonExplorer.Text_Displays
 ▒ ▒ ▒ ▒ ▒    ▒▒▒▓▒ ▒▓▒▒ ▒▒▒  ▒▓▒ ▒▒ ▒▓▒ ▒  ▒ ▒ ▒▒  ▒ ▒▒▒ ▒ ▒▒▒  ▒▓▒ ▒
                                 ▒▒     ▒▒
                                  ▒▒▒▒ ▒▒    ▄▀▀ █   ██▀ ▄▀▄ █▄ █ ██▀ █▀▄
-                                            ▓▄▄ ▓▄▄ ▓▄▄ ▒▀▒ ▒ ▀▓ ▓▄▄ ▓▀▄  v0.1
+                                            ▓▄▄ ▓▄▄ ▓▄▄ ▒▀▒ ▒ ▀▓ ▓▄▄ ▓▀▄  {Program.VersionNumber}
 										    
                                            
 
@@ -32,7 +36,7 @@ namespace DungeonExplorer.Text_Displays
 
         public string GetWelcomeTitle()
         {
-            return welcomeTitle;
+            return _welcomeTitle;
         }
     }
 }
