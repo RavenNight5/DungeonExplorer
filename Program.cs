@@ -40,7 +40,7 @@ namespace DungeonExplorer
 
                 Console.WriteLine("Input your name, press [Enter] to confirm.\n");
 
-                Game.InputHandler.SetName(3, 18);  // int min char, int max char
+                Game.InputHandler.SetName(2, 18);  // int min char, int max char
 
                 Console.WriteLine($"Are you sure you want to set your name as {Player.Name}?\n\n > Yes [1]\n > No [2]");
 

@@ -1,5 +1,6 @@
 ﻿// Filename: Room.cs
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using DungeonExplorer.Levels;
 using DungeonExplorer.Text_Displays;
@@ -21,21 +22,27 @@ namespace DungeonExplorer
 
         public static string[] CurrentEquippedItem = Player.EmptySlot;
 
-        private readonly Level_1 _level_1;
+        //private readonly Level_1 _level_1;
+
+        private readonly List<Level_1> _levels = new List<Level_1>();  // Using a list containing the level objects so they can automatically be referenced
 
         public Room()
         {
-            _level_1 = new Level_1();
+            //_level_1 = new Level_1();
+
+            _levels.Add(new Level_1());
         }
 
         public void ReturnToLevel()  // If player is in inventory or another screen this method will be called to continue the gameplay
         {
             //Console.WriteLine("Returning to " + CurrentLevel + " room: " + CurrentRoom);
-            
-            if (CurrentLevel.Equals(1))
-            {
-                _level_1.DisplayRooms();
-            }
+
+            //if (CurrentLevel.Equals(1))
+            //{
+            //    _level_1.DisplayRooms();
+            //}
+
+            _levels[CurrentLevel - 1].DisplayRooms();
         }
 
         public void StartLevel(int levelNum)
@@ -45,11 +52,14 @@ namespace DungeonExplorer
             CurrentLevel = levelNum;
             CurrentRoom = 1;
 
-            if (levelNum.Equals(1))  // Statement is required to get the correct Level_x class
-            {
-                _level_1.Start();
-            }
+            // StartLevel calls Start() in the corresponding level class - however the exact number passed must be checked in an if statement
+            // to ensure the correct level class is called.
+            //if (levelNum.Equals(1))
+            //{
+            //    _level_1.Start();
+            //}
 
+            _levels[CurrentLevel - 1].Start();
         }
 
 
@@ -121,7 +131,8 @@ namespace DungeonExplorer
 
                         return -1;
                     }
-                    else  // Player chose a number action such as Open Chest
+                    // Player chose a number action such as Open Chest
+                    else
                     {
                         return Array.IndexOf(optionsKeyBinds, optionChosen); 
                     }

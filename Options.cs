@@ -25,7 +25,6 @@ namespace DungeonExplorer
             "Equip/Use Item [Enter]", 
             "Close Inventory [Tab]" };
 
-
         public Options()
         {
             _currentOptionsConcatenation = "  ";

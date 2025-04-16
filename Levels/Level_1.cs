@@ -1,5 +1,6 @@
 ﻿// Filename: Level_1.cs
 using System;
+using System.Diagnostics;
 using DungeonExplorer.Testing;
 using DungeonExplorer.Text_Displays;
 
@@ -350,6 +351,9 @@ namespace DungeonExplorer.Levels
             actions[numOfActions] = "D";
             actions[numOfActions + 1] = "C";
             actions[numOfActions + 2] = "Tab";
+
+            //Console.WriteLine(string.Join(", ", actions));
+            //Debug.WriteLine(Room.CurrentRoom);
 
             return actions;
 

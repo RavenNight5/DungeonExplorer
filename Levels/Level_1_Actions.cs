@@ -44,7 +44,7 @@ namespace DungeonExplorer.Levels
             };
         private readonly string[] _lookUnderTable_1 =
             {
-            "Nothing here, no stains, no puddles to mop, no monsters hiding.",
+            "Nothing here, no stains, no puddles to mop, no monsters.",
             "Just an ordinary underside to a table."
             };
         private readonly string[] _lookUnderTable_1_Done =
@@ -87,7 +87,8 @@ namespace DungeonExplorer.Levels
         private readonly string[] _standAround_2_Done =
             {
             "You have stood around for some time already.",
-            "If this is all you are going to do then don't be surprised if the next time you wake up you do not have a job...",
+            "If this is all you are going to do-",
+            "then don't be surprised when you wake up in another cell and there's no key...",
             "At the very least your sponge will be confiscated!",
             "I suggest you continue your job before someone finds you slacking."
             };
@@ -101,7 +102,7 @@ namespace DungeonExplorer.Levels
         private readonly string[] _puddle_7_Observe =
            {
             "This particular spot seems to always collect water from the floor above.",
-            "Taking a closer look, however, it doesn't seem to be water... A thicker red liquid is dripping from the ceiling.",
+            "But taking a closer look it doesn't appear to be water... A thicker red liquid is dripping from the ceiling.",
             "Probably will stain the stone floors if it's not cleaned up soon.",
             "[Equip an item from your inventory to change the action you take: having the Mop equipped will change the prompt to clean the puddle!]"
             };

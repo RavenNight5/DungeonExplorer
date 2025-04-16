@@ -17,13 +17,13 @@ namespace DungeonExplorer
         ///     - Allowing selection between each item in the inventory, showing their descriptions when selected
         ///     - Equipping an item from the inventory - which is then handled by the Room class
         /// </summary>
-        private string[] _slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
-        private string[] _itemDescription = new string[4];
-
         public static string Name { get; set; }
         public static string NamePlural { get; set; }
         public static int MaxHealth { get; set; }
         public static int Health { get; set; }
+
+        private string[] _slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
+        private string[] _itemDescription = new string[4];
 
         public static string[] EmptySlot = {
         "       ",
@@ -126,6 +126,7 @@ namespace DungeonExplorer
         {
             string inventoryDisplay = $@"
      Inventory:
+
     ---───══───═══════════════════───══───---  Description:
     │{_inventoryItem[0][0]}│{_inventoryItem[1][0]}│{_inventoryItem[2][0]}│{_inventoryItem[3][0]}│{_inventoryItem[4][0]}│ ╔══════=──────────---
     │{_inventoryItem[0][1]}│{_inventoryItem[1][1]}│{_inventoryItem[2][1]}│{_inventoryItem[3][1]}│{_inventoryItem[4][1]}│ ║ {_itemDescription[0]}
@@ -139,6 +140,7 @@ namespace DungeonExplorer
     │{_inventoryItem[5][3]}│{_inventoryItem[6][3]}│{_inventoryItem[7][3]}│{_inventoryItem[8][3]}│{_inventoryItem[9][3]}│
     │{_slotNumbers[5]}{_inventoryItem[5][4]}│{_slotNumbers[6]}{_inventoryItem[6][4]}│{_slotNumbers[7]}{_inventoryItem[7][4]}│{_slotNumbers[8]}{_inventoryItem[8][4]}│{_slotNumbers[9]}{_inventoryItem[9][4]}│
     ---──────────═══════════════──────────---
+                < Q  Content  E >
         ";
 
             return inventoryDisplay;
