@@ -7,61 +7,16 @@ using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
 {
-    public class Room
+    public class Room : Game_Map
     {
         /// <summary>
-        /// - Checks the level number and calls start() on the corresponding class
         /// - Handles the player's quick-view stats (such as the current equipped item, coins and health)
         /// - Returns the current room's description
         /// - Handles choices the player can make from the current room they are in
         /// </summary>
-        public static int CurrentLevel = 1;
-        public static int CurrentRoom = 1;
+        public static string[] CurrentEquippedItem = Inventory.InventoryEmptySlot;
 
         public static string CurrentRoomDescription = "";
-
-        public static string[] CurrentEquippedItem = Player.EmptySlot;
-
-        //private readonly Level_1 _level_1;
-
-        private readonly List<Level_1> _levels = new List<Level_1>();  // Using a list containing the level objects so they can automatically be referenced
-
-        public Room()
-        {
-            //_level_1 = new Level_1();
-
-            _levels.Add(new Level_1());
-        }
-
-        public void ReturnToLevel()  // If player is in inventory or another screen this method will be called to continue the gameplay
-        {
-            //Console.WriteLine("Returning to " + CurrentLevel + " room: " + CurrentRoom);
-
-            //if (CurrentLevel.Equals(1))
-            //{
-            //    _level_1.DisplayRooms();
-            //}
-
-            _levels[CurrentLevel - 1].DisplayRooms();
-        }
-
-        public void StartLevel(int levelNum)
-        {
-            // Each time StartLevel is called it will be the next level (the iteration levelNum from class Game)
-            // Therefore CurrentRoom needs to be set back to 1 as it will be the first room of the new level
-            CurrentLevel = levelNum;
-            CurrentRoom = 1;
-
-            // StartLevel calls Start() in the corresponding level class - however the exact number passed must be checked in an if statement
-            // to ensure the correct level class is called.
-            //if (levelNum.Equals(1))
-            //{
-            //    _level_1.Start();
-            //}
-
-            _levels[CurrentLevel - 1].Start();
-        }
-
 
         // Called before the room display is written to the console, returning the player's quick-veiw stats as a string.
         public static string GetCurrentItemsAndStats()
@@ -79,7 +34,7 @@ namespace DungeonExplorer
  │{CurrentEquippedItem[1]}│    └───--- - - 
  ║{CurrentEquippedItem[2]}║    {Player.NamePlural} Health:
  │{CurrentEquippedItem[3]}│    ┌───────----- - - - 
- │ {CurrentEquippedItem[4]}│    ║ {HealthVisual} ({Player.Health}/{Player.MaxHealth})
+ │ {CurrentEquippedItem[4]}│    ║ {HealthVisual} ({Player.Health}/{Game.CurrentPlayer.MaxHealth})
  --─ + ─--    └───────----- - - - 
 
 ";

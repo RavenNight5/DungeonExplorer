@@ -94,33 +94,33 @@ namespace DungeonExplorer.Text_Displays
         ""
         }
         };
-        public static string[][] II_Dagger = new string[][] { new string[5] {
-        "   ^   ",
-        @"  /░\  ",
-        "  │░│  ",
-        " -═▒═- ",
-        "  ▒   "
-        },
-        new string[4] {
-        "~ Dagger ~",
-        "A wide-bladed dagger, probably more useful for",
-        "self defense than cleaning.",
-        ""
-        }
-        };
-        public static string[][] II_Longsword = new string[][] { new string[5] {
-        "   ^   ",
-        "   ▒   ",
-        "  │▒│  ",
-        " -╒▒╕- ",
-        "  ▒   "
-        },
-        new string[4] {
-        "~ Longsword ~",
-        "I'm a cleaner. Now, let's not get",
-        "ahead of ourselves...",
-        ""
-        }
-        };
+        //public static string[][] II_Dagger = new string[][] { new string[5] {
+        //"   ^   ",
+        //@"  /░\  ",
+        //"  │░│  ",
+        //" -═▒═- ",
+        //"  ▒   "
+        //},
+        //new string[4] {
+        //"~ Dagger ~",
+        //"A wide-bladed dagger, probably more useful for",
+        //"self defense than cleaning.",
+        //""
+        //}
+        //};
+        //public static string[][] II_Longsword = new string[][] { new string[5] {
+        //"   ^   ",
+        //"   ▒   ",
+        //"  │▒│  ",
+        //" -╒▒╕- ",
+        //"  ▒   "
+        //},
+        //new string[4] {
+        //"~ Longsword ~",
+        //"I'm a cleaner. Now, let's not get",
+        //"ahead of ourselves...",
+        //""
+        //}
+        //};
     }
 }

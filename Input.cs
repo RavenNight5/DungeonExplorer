@@ -35,7 +35,7 @@ namespace DungeonExplorer
             {
                 if (name.Length >= min && name.Length <= max)
                 {
-                    Player.Name = name;
+                    Program.NameTemp = name;
                 }
                 else
                 {

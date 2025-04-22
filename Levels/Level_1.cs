@@ -1,6 +1,7 @@
 ﻿// Filename: Level_1.cs
 using System;
 using System.Diagnostics;
+using DungeonExplorer.Item_Types;
 using DungeonExplorer.Testing;
 using DungeonExplorer.Text_Displays;
 
@@ -35,14 +36,14 @@ namespace DungeonExplorer.Levels
             L1_Displays = new Level_1_Displays();
             L1_Actions = new Level_1_Actions();
 
-            Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Sponge);
-            Game.CurrentPlayer.PickUpItem(Inventory_Items.II_DustpanBrush);
-            Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Mop);
+            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Sponge);
+            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_DustpanBrush);
+            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Mop);
 
             // For testing new items display in the inventory as intended
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Key1);
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Longsword);
-            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Dagger);
+            //Game.CurrentPlayer.PickUpItem(Weapons.Weapon_Dagger);
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_CupEmpty);
             //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_CupFull);
         }
@@ -124,7 +125,7 @@ namespace DungeonExplorer.Levels
                             {
                                 if (Room.CurrentEquippedItem == Inventory_Items.II_Key1[0])  // If the currently equipped item is the correct required item
                                 {
-                                    Game.CurrentPlayer.RemoveItemFromInventory(Inventory_Items.II_Key1[0]);
+                                    Game.CurrentPlayer.RemoveItemFromInventory(Inventory_Items.II_Key1);
 
                                     L1_Displays.R1_Interactables[action] = Environment_Interactables.Open_DoorVertical;
 
@@ -301,7 +302,7 @@ namespace DungeonExplorer.Levels
                                 {
                                     dialogue = L1_Actions.L1_RoomActions[Room.CurrentRoom - 1][action][2];
 
-                                    Game.CurrentPlayer.RemoveItemFromInventory(Inventory_Items.II_CupEmpty[0]);
+                                    Game.CurrentPlayer.RemoveItemFromInventory(Inventory_Items.II_CupEmpty);
                                     Game.CurrentPlayer.PickUpItem(Inventory_Items.II_CupFull);
                                 }
                                 else

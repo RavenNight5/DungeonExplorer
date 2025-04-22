@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using DungeonExplorer.Dialogue;
+using DungeonExplorer.Item_Types;
 using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
@@ -15,15 +16,21 @@ namespace DungeonExplorer
         
         // Here I set multiple classes to static as they will only be defined once per game. Therefore, they and their methods can be accessed in other main classes (e.g. Level_1)
         public static Player CurrentPlayer { get; private set; }
-        public static Room RoomHandler { get; private set; }
+        public static Game_Map RoomHandler { get; private set; }
+        public static Item ItemHandler { get; private set; }
         public static Input InputHandler { get; private set; }
         public static Options OptionHandler { get; private set; }
 
         public Game()
         {
-            Game.CurrentPlayer = new Player();
+            Game.CurrentPlayer = new Player(Program.NameTemp, 60);
 
-            Game.RoomHandler = new Room();
+            Game.RoomHandler = new Game_Map();
+
+            Item weapons = new Weapons();
+            Item bonus_Items = new Bonus_Items();
+
+            Game.ItemHandler = new Item();
 
             Game.InputHandler = new Input();
 
@@ -32,6 +39,8 @@ namespace DungeonExplorer
 
         public void Start()
         {
+            string[] a = ItemHandler.GetItemImage("Longsword");
+
             Program.CLEAR_CONSOLE();
 
             General_Info general_Info = new General_Info();

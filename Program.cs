@@ -20,6 +20,8 @@ namespace DungeonExplorer
 
         public static int NumOfLevels = 1;  // Change locally based on how many levels are implemented
 
+        public static string NameTemp = "";
+
         static void Main(string[] args)
         {
             Welcome welcome = new Welcome();
@@ -42,7 +44,7 @@ namespace DungeonExplorer
 
                 Game.InputHandler.SetName(2, 18);  // int min char, int max char
 
-                Console.WriteLine($"Are you sure you want to set your name as {Player.Name}?\n\n > Yes [1]\n > No [2]");
+                Console.WriteLine($"Are you sure you want to set your name as {NameTemp}?\n\n > Yes [1]\n > No [2]");
 
                 int option = Room.PlayerChoice(new string[] { "D1", "D2" });
 
@@ -56,13 +58,13 @@ namespace DungeonExplorer
                 }
             }
 
-            if (Player.Name.EndsWith("s") || Player.Name.EndsWith("z"))
+            if (NameTemp.EndsWith("s") || NameTemp.EndsWith("z"))
             {
-                Player.NamePlural = $"{Player.Name}'";
+                Player.NamePlural = $"{NameTemp}'";
             }
             else
             {
-                Player.NamePlural = $"{Player.Name}'s";
+                Player.NamePlural = $"{NameTemp}'s";
             }
 
             game.Start();  // Start the game
