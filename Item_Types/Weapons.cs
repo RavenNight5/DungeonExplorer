@@ -19,7 +19,7 @@ namespace DungeonExplorer.Item_Types
             new string[6] {
             "Dagger",  // Name (used for filtering in search etc.)
             "25",  // Cost (if bought in a shop)
-            "",  // Uses (if perishable item)
+            "0",  // Uses (if perishable item), 0 = infinite
             "18",  // Base dmg
             "50",  // Difficulty of use (10-100) where 10 is an easy attack and 100 is extremely difficult - this number
                    // acts as the speed percentage the dial moves before an attack
@@ -34,8 +34,8 @@ namespace DungeonExplorer.Item_Types
             },
             new string[4] {
             "~ Dagger ~",
-            "A wide-bladed dagger, probably better",
-            "for self defense rather than cleaning.",
+            "A wide-bladed dagger, probably better for self defense rather than cleaning.",
+            "(18 Base Damage)",
             ""
             }
         };
@@ -58,8 +58,8 @@ namespace DungeonExplorer.Item_Types
             },
             new string[4] {
             "~ Longsword ~",
-            "I'm a cleaner.",
-            "Now, let's not get ahead of ourselves...",
+            "I'm a cleaner. Now, let's not get ahead of ourselves...",
+            "(24 Base Damage)",
             ""
             }
         };

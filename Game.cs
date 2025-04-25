@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using DungeonExplorer.Dialogue;
 using DungeonExplorer.Item_Types;
+using DungeonExplorer.Levels;
 using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
@@ -18,6 +19,7 @@ namespace DungeonExplorer
         // Here I set multiple classes to static as they will only be defined once per game. Therefore, they and their methods can be accessed in other main classes (e.g. Level_1)
         public static Player CurrentPlayer { get; private set; }
         public static List<Creature> Monster { get; private set; }
+        public static Combat CurrentCombatSession { get; set; }
         public static Game_Map RoomHandler { get; private set; }
         public static Item ItemHandler { get; private set; }
         public static Input InputHandler { get; private set; }

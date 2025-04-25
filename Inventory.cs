@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DungeonExplorer.Item_Types;
+using DungeonExplorer.Levels;
 
 namespace DungeonExplorer
 {
@@ -93,7 +94,7 @@ namespace DungeonExplorer
             return inventoryDisplay;
         }
 
-        public void DisplayInventory(List<string> inventoryItems)
+        public void DisplayInventory(List<string> inventoryItems, bool inCombat = false, string currentlyChoosing = "")
         {
             Program.CLEAR_CONSOLE();
 
@@ -127,17 +128,58 @@ namespace DungeonExplorer
                             {
                                 int itemIndex = _descriptionSlots.IndexOf(InventoryItemDescription);  // Get index of currently selected item
 
-                                Room.CurrentEquippedItem = Item.GetItemNameFromImage(_slots[itemIndex]);
-                                Room.CurrentEquippedItemImage = _slots[itemIndex];
+                                if (inCombat == false)
+                                {
+                                    Room.CurrentEquippedItem = Item.GetItemNameFromImage(_slots[itemIndex]);
+                                    Room.CurrentEquippedItemImage = _slots[itemIndex];
 
-                                Game.RoomHandler.ReturnToLevel();
+                                    Game.RoomHandler.ReturnToLevel();
+                                }
+                                else
+                                {
+                                    if (currentlyChoosing == "Weapon")
+                                    {
+                                        Combat.Combat_EquippedWeapon = Item.GetItemNameFromImage(_slots[itemIndex]);
+                                        Combat.Combat_EquippedWeaponImage = _slots[itemIndex];
+
+                                        Game.CurrentCombatSession.MainCombatScreen();  // Return to the main combat screen which will update the slots
+                                    }
+                                    else if (currentlyChoosing == "Bonus")
+                                    {
+                                        Combat.Combat_EquippedBonus = Item.GetItemNameFromImage(_slots[itemIndex]);
+                                        Combat.Combat_EquippedBonusImage = _slots[itemIndex];
+
+                                        Game.CurrentCombatSession.MainCombatScreen();
+                                    }
+                                }
+                               
                             }
-                            else
+                            else  // If a blank slot is chosen to be equipped then remove the items from their slots
                             {
-                                Room.CurrentEquippedItem = "";
-                                Room.CurrentEquippedItemImage = InventoryEmptySlot;
+                                if (inCombat == false)
+                                {
+                                    Room.CurrentEquippedItem = "";
+                                    Room.CurrentEquippedItemImage = InventoryEmptySlot;
 
-                                Game.RoomHandler.ReturnToLevel();
+                                    Game.RoomHandler.ReturnToLevel();
+                                }
+                                else
+                                {
+                                    if (currentlyChoosing == "Weapon")
+                                    {
+                                        Combat.Combat_EquippedWeapon = "";
+                                        Combat.Combat_EquippedWeaponImage = InventoryEmptySlot;
+
+                                        Game.CurrentCombatSession.MainCombatScreen();  // Return to the main combat screen which will update the slots
+                                    }
+                                    else if (currentlyChoosing == "Bonus")
+                                    {
+                                        Combat.Combat_EquippedBonus = "";
+                                        Combat.Combat_EquippedBonusImage = InventoryEmptySlot;
+
+                                        Game.CurrentCombatSession.MainCombatScreen();
+                                    }
+                                }
                             }
 
                         }

@@ -1,6 +1,8 @@
 ﻿// Filename: Input.cs
 using System;
+using System.Diagnostics;
 using System.Linq;
+using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
 {
@@ -108,6 +110,59 @@ namespace DungeonExplorer
 
                 WaitOnKey(keyRequired, optSecondKey, optThirdKey);
 
+            }
+        }
+
+        //Combat Inputs
+
+        public string CombatMainOptions(string[] optionsKeyBinds)
+        {
+            string optionChosen = OptionsGetPlayerResponse(optionsKeyBinds);
+
+            if (optionChosen != null)
+            {
+                try
+                {
+                    //General
+                    if (optionChosen.Equals("H"))
+                    {
+                        Program.CLEAR_CONSOLE();
+
+                        return null;
+                    }
+                    else if (optionChosen.Equals("P"))
+                    {
+                        Console.WriteLine("[Stats coming in a later version!]");  // Like inventory but for strength etc, pick up things in dungeon that can level up a certain stat the player chooses - Inscryption
+
+                        CombatMainOptions(optionsKeyBinds);
+
+                        return null;
+                    }
+                    else if (optionChosen.Equals("Tab"))
+                    {
+                        Game.CurrentPlayer.DisplayInventory();
+
+                        return null;
+                    }
+                    // Player chose a number action such as Open Chest
+                    else
+                    {
+                        return optionChosen;
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(optionChosen + " was not recognised as a string in this instance. \nException caught: " + e);
+
+                    return null;
+                }
+            }
+            else
+            {
+                CombatMainOptions(optionsKeyBinds);
+
+                return null;
             }
         }
 

@@ -64,7 +64,7 @@ namespace DungeonExplorer.Item_Types
         };
         public static string[][] Bonus_Item_DustpanBrush = new string[][] {
             new string[6] {
-            "Sponge",
+            "Dustpan",
             "20",
             "1",
             "0",

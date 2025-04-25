@@ -36,20 +36,11 @@ namespace DungeonExplorer.Levels
             L1_Displays = new Level_1_Displays();
             L1_Actions = new Level_1_Actions();
 
-            Game.CurrentPlayer.PickUpItem("Dagger");
-
             Game.CurrentPlayer.PickUpItem("Sponge");
+            Game.CurrentPlayer.PickUpItem("Mop");
+            Game.CurrentPlayer.PickUpItem("Dustpan");
 
-            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Sponge);
-            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_DustpanBrush);
-            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Mop);
-
-            // For testing new items display in the inventory as intended
-            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Key1);
-            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_Longsword);
-            //Game.CurrentPlayer.PickUpItem(Weapons.Weapon_Dagger);
-            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_CupEmpty);
-            //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_CupFull);
+            Game.CurrentPlayer.PickUpItem("Dagger");
         }
 
         // When the game starts room will call this function to display the first room
@@ -176,7 +167,7 @@ namespace DungeonExplorer.Levels
                             {
                                 dialogue = L1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][0];
 
-                                //Game.CurrentPlayer.PickUpItem(Inventory_Items.II_CupEmpty);
+                                Game.CurrentPlayer.PickUpItem("Empty Cup");
 
                                 R1_ActionCompleted[action] = true;
                             }
@@ -324,9 +315,11 @@ namespace DungeonExplorer.Levels
                         {
                             if (R7_ActionCompleted[action] == false)
                             {
-                                dialogue = new string[] { "You have come to the end of this version.", "But do not fret, there will be plenty more to clean next time!" };
+                                dialogue = new string[] { "You walk down into the large chamber.", "A piercing roar fills the room, you are now standing before a beast..." };
 
-                                R7_ActionCompleted[action] = true;
+                                //R7_ActionCompleted[action] = true;
+
+                                Game.CurrentCombatSession = new Combat(Game.Monster[0]);  // Enter combat
                             }
                             else
                             {

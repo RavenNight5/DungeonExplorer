@@ -87,11 +87,11 @@ namespace DungeonExplorer
         }
 
         // Uses the inventory class to display the passed list of items on a screen
-        public void DisplayInventory()
+        public void DisplayInventory(bool inCombat = false, string currentlyChoosing = "")
         {
             Inventory inventory = new Inventory();
 
-            inventory.DisplayInventory(_inventoryItems);
+            inventory.DisplayInventory(_inventoryItems, inCombat, currentlyChoosing);
         }
 
         //public override void Attack()
