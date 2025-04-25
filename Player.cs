@@ -18,16 +18,12 @@ namespace DungeonExplorer
         ///     - Allowing selection between each item in the inventory, showing their descriptions when selected
         ///     - Equipping an item from the inventory - which is then handled by the Room class
         /// </summary>
+        public List<string> _inventoryItems = new List<string>();  // Holds the current items the player has in their inventory
+
         public static string NamePlural { get; set; }
         public static int Health { get; set; }
 
-        private readonly List<string> _inventoryItems = new List<string>();  // Holds the current items the player has in their inventory
-        private readonly List<string[]> _inventoryItems_Descriptions = new List<string[]>();
-        
-        private readonly List<string[]> _slots = new List<string[]>();
-
-        private readonly string _emptyNormal = "       ";
-        private readonly string _emptyBottom = "      ";  // There is an inventory slot number so have one less space
+        public static int GoldCoins { get; set; }
 
         public override bool IsPlayer => true;
         public override bool IsEnemy => false;
@@ -40,28 +36,15 @@ namespace DungeonExplorer
         {
             Health = maxHealth;
 
-            for (int i = 0; i < 10; i++)  // For each slot in the inventory
-            {
-                _slots.Add(new string[5]);  // Add an empty slot - each string in the array represents the line of whitespace in that displayable inventory slot
-            }
+            GoldCoins = 10;
 
-            for (int i = 0; i < _slots.Count; i++)  //For each inventory slot array - initialise each string to the width of the inventory slot
-            {
-                _slots[i][0] = _emptyNormal;
-                _slots[i][1] = _emptyNormal;
-                _slots[i][2] = _emptyNormal;
-                _slots[i][3] = _emptyNormal;
-                _slots[i][4] = _emptyBottom;
-
-                //_inventoryItems_Descriptions.Add(Inventory.InventoryEmptyDescription);
-            }
-
+            
             //_inventoryItems = _slots;
         }
 
-        public void PickUpItem(string[][] item)  //Passes the item to be added to the inventory - this is preset and passed from Inventory_Items (index 0 of the array is the item, index 1 is the description)
+        public void PickUpItem(string item)  //Passes the item to be added to the inventory - this is preset and passed from Inventory_Items (index 0 of the array is the item, index 1 is the description)
         {
-            _inventoryItems.Add(item[0][0]);
+            _inventoryItems.Add(item);  // Only adds the name of the item to be stored in the player object
 
             //###############
             //For when the inventory is displayed - use this to fill the slots with the contents of _inventoryitems
@@ -80,7 +63,7 @@ namespace DungeonExplorer
             //}
         }
 
-        public void RemoveItemFromInventory(string[][] item)
+        public void RemoveItemFromInventory(string item)
         {
             //for (int i = 0; i < _inventoryItems.Count; i++)
             //{
@@ -92,13 +75,14 @@ namespace DungeonExplorer
             //    }
             //}
 
-            _inventoryItems.Remove(item[0][0]);  // item[0][0] = the name of the item
+            _inventoryItems.Remove(item);  // Removes the name of the item from the player object inventory
 
-            Inventory.InventorySlotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
+            Inventory.InventorySlotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };  // Resets the inventory slot numbers (so none are shown as selected)
 
-            if (item[1] == Room.CurrentEquippedItem)  // item[1] is the "image" of the item and would correspond to the CurrentEquippedItem slot
+            if (item == Room.CurrentEquippedItem)  // item[1] is the "image" of the item and would correspond to the CurrentEquippedItem slot
             {
-                Room.CurrentEquippedItem = Inventory.InventoryEmptySlot;
+                Room.CurrentEquippedItem = "";
+                Room.CurrentEquippedItemImage = Inventory.InventoryEmptySlot;
             }
         }
 
@@ -107,7 +91,7 @@ namespace DungeonExplorer
         {
             Inventory inventory = new Inventory();
 
-            inventory.DisplayInventory(_inventoryItems, _inventoryItems_Descriptions);
+            inventory.DisplayInventory(_inventoryItems);
         }
 
         //public override void Attack()

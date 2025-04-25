@@ -10,12 +10,14 @@ namespace DungeonExplorer
     internal class Game
     {
         /// <summary>
-        /// Initialises four objects that will be the main objects throughout the game.
+        /// Initialises the main objects that will be used and referenced throughout the game.
+        /// This now includes two Monsters, each with different stats and abilities.
         /// Starts the game throug the newly-initialised room object.
         /// </summary>
         
         // Here I set multiple classes to static as they will only be defined once per game. Therefore, they and their methods can be accessed in other main classes (e.g. Level_1)
         public static Player CurrentPlayer { get; private set; }
+        public static List<Creature> Monster { get; private set; }
         public static Game_Map RoomHandler { get; private set; }
         public static Item ItemHandler { get; private set; }
         public static Input InputHandler { get; private set; }
@@ -26,6 +28,12 @@ namespace DungeonExplorer
             Game.CurrentPlayer = new Player(Program.NameTemp, 60);
 
             Game.RoomHandler = new Game_Map();
+
+            Game.Monster = new List<Creature>();
+
+            Monster.Add(new Monster("Dragon", "Dungeon Dweller", 100, "stealTurn", 1, 18, 20, 35));
+
+            Monster.Add(new Monster("Gnome", "The Gardener", 250, "doubleBaseDmg", 3, 10, 5, 60));
 
             Item weapons = new Weapons();
             Item bonus_Items = new Bonus_Items();
@@ -39,8 +47,6 @@ namespace DungeonExplorer
 
         public void Start()
         {
-            string[] a = ItemHandler.GetItemImage("Longsword");
-
             Program.CLEAR_CONSOLE();
 
             General_Info general_Info = new General_Info();

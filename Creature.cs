@@ -24,6 +24,5 @@ namespace DungeonExplorer
         //public abstract void Attack();
         //public abstract void PassTurn();
         //public abstract void EquipItem();
-        //public abstract void AccessInventory();
     }
 }

@@ -16,7 +16,7 @@ namespace DungeonExplorer
         /// - Allows the player to input their name and sets it to the name attribute in the Player class (as only one player will ever be initialised per game)
         /// - Starts the game
         /// </summary>
-        public static string VersionNumber = "v0.1";
+        public static string VersionNumber = "v0.2";
 
         public static int NumOfLevels = 1;  // Change locally based on how many levels are implemented
 
@@ -44,7 +44,7 @@ namespace DungeonExplorer
 
                 Game.InputHandler.SetName(2, 18);  // int min char, int max char
 
-                Console.WriteLine($"Are you sure you want to set your name as {NameTemp}?\n\n > Yes [1]\n > No [2]");
+                Console.WriteLine($"Are you sure you want to set your name as {NameTemp}?\n\n > Yes [1]\n > No [2]\n");
 
                 int option = Room.PlayerChoice(new string[] { "D1", "D2" });
 

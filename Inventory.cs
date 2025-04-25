@@ -4,11 +4,16 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DungeonExplorer.Item_Types;
 
 namespace DungeonExplorer
 {
     public class Inventory
     {
+        private string _selectedSlotChar = "+";
+
+        private readonly List<string[]> _slots = new List<string[]>();
+        private readonly List<string[]> _descriptionSlots = new List<string[]>();
 
         public static string[] InventorySlotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
         public static string[] InventoryItemDescription = new string[4];  // Assigned values only when an item is selected
@@ -28,30 +33,59 @@ namespace DungeonExplorer
         ""
         };
 
-        private string _selectedSlotChar = "+";
+        private readonly string _emptyNormal = "       ";
+        private readonly string _emptyBottom = "      ";  // There is an inventory slot number so have one less space
 
-        
+
         // Used to refresh the display after an item is selected etc.
         private string GetInventoryDisplay(List<string> inventoryItems)
         {
-            //#######################
-            // use the _slots where for each inventoryItem , find the corresponding Weapon or other item and assign it's image to the slot
+            
+            if (_slots.Count <= 0 )
+            {     
+                for (int i = 0; i < 10; i++)  // For each slot in the inventory
+                {
+                    _slots.Add(new string[5]);  // Add an empty slot for each space in the inventory - each string in the array represents the line
+                                                // of whitespace in that displayable inventory slot
+                
+                    _descriptionSlots.Add(new string[4]);
+                }
+
+                for (int i = 0; i < _slots.Count; i++)  //For each inventory slot array - initialise each string to the width of the inventory slot
+                {
+                    _slots[i][0] = _emptyNormal;
+                    _slots[i][1] = _emptyNormal;
+                    _slots[i][2] = _emptyNormal;
+                    _slots[i][3] = _emptyNormal;
+                    _slots[i][4] = _emptyBottom;
+                }
+
+                //#######################
+                // use the _slots where for each inventoryItem , find the corresponding Weapon or other item and assign it's image to the slot
+
+                for (int i = 0; i < inventoryItems.Count; i++)
+                {
+                    _slots[i] = Item.GetItemImage(inventoryItems[i]);
+                    _descriptionSlots[i] = Item.GetItemDescription(inventoryItems[i]);
+                }
+            }
+
 
             string inventoryDisplay = $@"
      Inventory:
 
     ---───══───═══════════════════───══───---  Description:
-    │{inventoryItems[0][0]}│{inventoryItems[1][0]}│{inventoryItems[2][0]}│{inventoryItems[3][0]}│{inventoryItems[4][0]}│ ╔══════=──────────---
-    │{inventoryItems[0][1]}│{inventoryItems[1][1]}│{inventoryItems[2][1]}│{inventoryItems[3][1]}│{inventoryItems[4][1]}│ ║ {InventoryItemDescription[0]}
-    │{inventoryItems[0][2]}║{inventoryItems[1][2]}║{inventoryItems[2][2]}║{inventoryItems[3][2]}║{inventoryItems[4][2]}│ │ {InventoryItemDescription[1]}
-    │{inventoryItems[0][3]}│{inventoryItems[1][3]}│{inventoryItems[2][3]}│{inventoryItems[3][3]}│{inventoryItems[4][3]}│ │ {InventoryItemDescription[2]}
-    ║{InventorySlotNumbers[0]}{inventoryItems[0][4]}│{InventorySlotNumbers[1]}{inventoryItems[1][4]}│{InventorySlotNumbers[2]}{inventoryItems[2][4]}│{InventorySlotNumbers[3]}{inventoryItems[3][4]}│{InventorySlotNumbers[4]}{inventoryItems[4][4]}║ │ {InventoryItemDescription[3]}
+    │{_slots[0][0]}│{_slots[1][0]}│{_slots[2][0]}│{_slots[3][0]}│{_slots[4][0]}│ ╔══════=──────────---
+    │{_slots[0][1]}│{_slots[1][1]}│{_slots[2][1]}│{_slots[3][1]}│{_slots[4][1]}│ ║ {InventoryItemDescription[0]}
+    │{_slots[0][2]}║{_slots[1][2]}║{_slots[2][2]}║{_slots[3][2]}║{_slots[4][2]}│ │ {InventoryItemDescription[1]}
+    │{_slots[0][3]}│{_slots[1][3]}│{_slots[2][3]}│{_slots[3][3]}│{_slots[4][3]}│ │ {InventoryItemDescription[2]}
+    ║{InventorySlotNumbers[0]}{_slots[0][4]}│{InventorySlotNumbers[1]}{_slots[1][4]}│{InventorySlotNumbers[2]}{_slots[2][4]}│{InventorySlotNumbers[3]}{_slots[3][4]}│{InventorySlotNumbers[4]}{_slots[4][4]}║ │ {InventoryItemDescription[3]}
     ║ ───────────────────────────────────── ║ ║ [Enter] to Equip/Use
-    ║{inventoryItems[5][0]}│{inventoryItems[6][0]}│{inventoryItems[7][0]}│{inventoryItems[8][0]}│{inventoryItems[9][0]}║ ╚══════=──────────---
-    │{inventoryItems[5][1]}│{inventoryItems[6][1]}│{inventoryItems[7][1]}│{inventoryItems[8][1]}│{inventoryItems[9][1]}│
-    │{inventoryItems[5][2]}║{inventoryItems[6][2]}║{inventoryItems[7][2]}║{inventoryItems[8][2]}║{inventoryItems[9][2]}│
-    │{inventoryItems[5][3]}│{inventoryItems[6][3]}│{inventoryItems[7][3]}│{inventoryItems[8][3]}│{inventoryItems[9][3]}│
-    │{InventorySlotNumbers[5]}{inventoryItems[5][4]}│{InventorySlotNumbers[6]}{inventoryItems[6][4]}│{InventorySlotNumbers[7]}{inventoryItems[7][4]}│{InventorySlotNumbers[8]}{inventoryItems[8][4]}│{InventorySlotNumbers[9]}{inventoryItems[9][4]}│
+    ║{_slots[5][0]}│{_slots[6][0]}│{_slots[7][0]}│{_slots[8][0]}│{_slots[9][0]}║ ╚══════=──────────---
+    │{_slots[5][1]}│{_slots[6][1]}│{_slots[7][1]}│{_slots[8][1]}│{_slots[9][1]}│
+    │{_slots[5][2]}║{_slots[6][2]}║{_slots[7][2]}║{_slots[8][2]}║{_slots[9][2]}│
+    │{_slots[5][3]}│{_slots[6][3]}│{_slots[7][3]}│{_slots[8][3]}│{_slots[9][3]}│
+    │{InventorySlotNumbers[5]}{_slots[5][4]}│{InventorySlotNumbers[6]}{_slots[6][4]}│{InventorySlotNumbers[7]}{_slots[7][4]}│{InventorySlotNumbers[8]}{_slots[8][4]}│{InventorySlotNumbers[9]}{_slots[9][4]}│
     ---──────────═══════════════──────────---
 
         ";
@@ -59,7 +93,7 @@ namespace DungeonExplorer
             return inventoryDisplay;
         }
 
-        public void DisplayInventory(List<string> inventoryItems, List<string[]> inventoryItemDescriptions)
+        public void DisplayInventory(List<string> inventoryItems)
         {
             Program.CLEAR_CONSOLE();
 
@@ -89,17 +123,19 @@ namespace DungeonExplorer
                             //To add:
                             //If selected and a useable item (health kit etc.) then use straight away and remove from inventory.
 
-                            if (!InventoryItemDescription[0].Equals(""))
+                            if (!(InventoryItemDescription[0] == null || InventoryItemDescription[0] == ""))  // If not no item selected
                             {
-                                int itemIndex = inventoryItemDescriptions.IndexOf(InventoryItemDescription);
+                                int itemIndex = _descriptionSlots.IndexOf(InventoryItemDescription);  // Get index of currently selected item
 
-                                //#####################Room.CurrentEquippedItem = inventoryItems[itemIndex];
+                                Room.CurrentEquippedItem = Item.GetItemNameFromImage(_slots[itemIndex]);
+                                Room.CurrentEquippedItemImage = _slots[itemIndex];
 
                                 Game.RoomHandler.ReturnToLevel();
                             }
                             else
                             {
-                                Room.CurrentEquippedItem = InventoryEmptySlot;
+                                Room.CurrentEquippedItem = "";
+                                Room.CurrentEquippedItemImage = InventoryEmptySlot;
 
                                 Game.RoomHandler.ReturnToLevel();
                             }
@@ -113,7 +149,7 @@ namespace DungeonExplorer
 
                             if (InventorySlotNumbers[slotChosen].ToString() != _selectedSlotChar)
                             {
-                                InventoryItemDescription = inventoryItemDescriptions[slotChosen];
+                                InventoryItemDescription = _descriptionSlots[slotChosen];
 
                                 InventorySlotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
 

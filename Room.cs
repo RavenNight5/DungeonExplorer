@@ -14,7 +14,8 @@ namespace DungeonExplorer
         /// - Returns the current room's description
         /// - Handles choices the player can make from the current room they are in
         /// </summary>
-        public static string[] CurrentEquippedItem = Inventory.InventoryEmptySlot;
+        public static string CurrentEquippedItem = "";
+        public static string[] CurrentEquippedItemImage = Inventory.InventoryEmptySlot;
 
         public static string CurrentRoomDescription = "";
 
@@ -23,18 +24,19 @@ namespace DungeonExplorer
         {
             string HealthVisual = "";
 
-            for (int i = 0; i < Player.Health; i++)
+            for (int i = 0; i < Player.Health; i += 10)
             {
                 HealthVisual += "+ ";
             }
 
+            
             string stats = $@" Equipped:    Gold Coins:
  --── ──--    ┌───--- - -  
- │{CurrentEquippedItem[0]}│    ║ 10 
- │{CurrentEquippedItem[1]}│    └───--- - - 
- ║{CurrentEquippedItem[2]}║    {Player.NamePlural} Health:
- │{CurrentEquippedItem[3]}│    ┌───────----- - - - 
- │ {CurrentEquippedItem[4]}│    ║ {HealthVisual} ({Player.Health}/{Game.CurrentPlayer.MaxHealth})
+ │{CurrentEquippedItemImage[0]}│    ║ {Player.GoldCoins} 
+ │{CurrentEquippedItemImage[1]}│    └───--- - - 
+ ║{CurrentEquippedItemImage[2]}║    {Player.NamePlural} Health:
+ │{CurrentEquippedItemImage[3]}│    ┌───────----- - - - 
+ │ {CurrentEquippedItemImage[4]}│    ║ {HealthVisual} ({Player.Health}/{Game.CurrentPlayer.MaxHealth})
  --─ + ─--    └───────----- - - - 
 
 ";
@@ -81,7 +83,7 @@ namespace DungeonExplorer
                         return -1;
                     }
                     else if (optionChosen.Equals("Tab"))
-                    {
+                    {   
                         Game.CurrentPlayer.DisplayInventory();
 
                         return -1;
