@@ -7,13 +7,14 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace DungeonExplorer
 {
-    public class Monster : Creature, IDamageable
+    public class Monster : Creature
     {
         public override bool IsPlayer => false;
         public override bool IsEnemy => true;
         public override bool IsNPC => false;
 
         public override string Name { get; set; }
+        public override string Plural { get; set; }
         public override int MaxHealth { get; set; }
 
         public int Health { get; set; }
@@ -27,10 +28,13 @@ namespace DungeonExplorer
         public int CRITDamage { get; set; }  // A % that determines the additional damage dealt if the attack is a CRIT HIT
         public int CRITRate { get; set; }  // A % chance out of 100 that the attack will be a CRIT HIT
 
-        public Monster(string species, string name, int maxHealth, string specialAbility, int specialAbilityUses, int baseDamage, int critDamage, int critRate) : base(name, maxHealth)
+        public Monster(string species, string name, int maxHealth, string specialAbility, int specialAbilityUses, int baseDamage, int critDamage, int critRate) : base(name, null, maxHealth)
         {
             Species = species;
+
             Name = name;
+            Plural = null;
+
             Health = maxHealth;
 
             SpecialAbility = specialAbility;
@@ -100,14 +104,9 @@ namespace DungeonExplorer
             
         }
 
-        //public override void EquipItem()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public override void PassTurn()
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public override void Damage(int dmg)
+        {
+            Console.WriteLine($"'{Name}' took {dmg} damage.");
+        }
     }
 }

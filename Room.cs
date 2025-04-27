@@ -34,7 +34,7 @@ namespace DungeonExplorer
  --── ──--    ┌───--- - -  
  │{CurrentEquippedItemImage[0]}│    ║ {Player.GoldCoins} 
  │{CurrentEquippedItemImage[1]}│    └───--- - - 
- ║{CurrentEquippedItemImage[2]}║    {Player.NamePlural} Health:
+ ║{CurrentEquippedItemImage[2]}║    {Program.NameTemp}{Program.TempPlural} Health:
  │{CurrentEquippedItemImage[3]}│    ┌───────----- - - - 
  │ {CurrentEquippedItemImage[4]}│    ║ {HealthVisual} ({Player.Health}/{Game.CurrentPlayer.MaxHealth})
  --─ + ─--    └───────----- - - - 

@@ -22,6 +22,7 @@ namespace DungeonExplorer
         public static int NumOfLevels = 1;  // Change locally based on how many levels are implemented
 
         public static string NameTemp = "";
+        public static string TempPlural = "";
 
         public static Game game { get; private set; }
 
@@ -66,20 +67,20 @@ namespace DungeonExplorer
 
                 if (option == 0)  // Yes
                 {
+                    if (NameTemp.EndsWith("s") || NameTemp.EndsWith("z"))
+                    {
+                        TempPlural = $"'";
+                    }
+                    else
+                    {
+                        TempPlural = $"'s";
+                    }
+
                     return;
                 }
                 else if (option == 1)  // No
                 {
                     EnterName();
-                }
-
-                if (NameTemp.EndsWith("s") || NameTemp.EndsWith("z"))
-                {
-                    Player.NamePlural = $"{NameTemp}'";
-                }
-                else
-                {
-                    Player.NamePlural = $"{NameTemp}'s";
                 }
             }
 

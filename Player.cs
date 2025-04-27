@@ -6,7 +6,7 @@ using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
 {
-    public class Player : Creature, IDamageable
+    public class Player : Creature
     {
         /// <summary>
         /// Initialises the player's name, max health, health & gold coins.
@@ -15,9 +15,8 @@ namespace DungeonExplorer
         ///     - Removing items from the inventory
         ///     - Calling on the Inventory class to display the content of the player's inventory
         /// </summary>
-        public List<string> _inventoryItems = new List<string>();  // Holds the current items the player has in their inventory
+        public List<string> InventoryItems = new List<string>();  // Holds the current items the player has in their inventory
 
-        public static string NamePlural { get; set; }
         public static int Health { get; set; }
 
         public static int GoldCoins { get; set; }
@@ -27,10 +26,14 @@ namespace DungeonExplorer
         public override bool IsNPC => false;
 
         public override string Name { get; set; }
+        public override string Plural { get; set; }
         public override int MaxHealth { get; set; }
 
-        public Player(string name, int maxHealth) : base(name, maxHealth)
+        public Player(string name, string plural, int maxHealth) : base(name, plural, maxHealth)
         {
+            Name = name;
+            Plural = plural;
+            
             Health = maxHealth;
 
             GoldCoins = 10;
@@ -38,12 +41,15 @@ namespace DungeonExplorer
 
         public void PickUpItem(string item)  //Passes the item to be added to the inventory - this is preset and passed from Inventory_Items (index 0 of the array is the item, index 1 is the description)
         {
-            _inventoryItems.Add(item);  // Only adds the name of the item to be stored in the player object
+            if (!InventoryItems.Contains(item))
+            {
+                InventoryItems.Add(item);  // Only adds the name of the item to be stored in the player object
+            }
         }
 
         public void RemoveItemFromInventory(string item)
         {
-            _inventoryItems.Remove(item);  // Removes the name of the item from the player object inventory
+            InventoryItems.Remove(item);  // Removes the name of the item from the player object inventory
 
             Inventory.InventorySlotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };  // Resets the inventory slot numbers (so none are shown as selected)
 
@@ -55,11 +61,11 @@ namespace DungeonExplorer
         }
 
         // Uses the inventory class to display the passed list of items on a screen
-        public void DisplayInventory(bool inCombat = false, string currentlyChoosing = "")
+        public void DisplayInventory(string currentlyChoosing = "")
         {
             Inventory inventory = new Inventory();
 
-            inventory.DisplayInventory(_inventoryItems, inCombat, currentlyChoosing);
+            inventory.DisplayInventory(InventoryItems, currentlyChoosing);
         }
 
         public override void Attack(bool miss = false, bool hitWeakSpot = false)
@@ -67,19 +73,9 @@ namespace DungeonExplorer
             
         }
 
-        //public override void PassTurn()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public override void EquipItem()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public override void AccessInventory()
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public override void Damage(int dmg)
+        {
+            Console.WriteLine($"'{Name}' took {dmg} damage.");
+        }
     }
 }

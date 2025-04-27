@@ -15,9 +15,9 @@ namespace DungeonExplorer
         /// These objects then assign the item string arrays to a list then that list to All_Items
         /// </summary>
 
-        public static List<List<string[][]>> AllItems = new List<List<string[][]>>();  // AllItems[index] where index directly correlates to _itemTypeIndex
+        public static List<List<string[][]>> AllItems = new List<List<string[][]>>();  // AllItems[index] where index directly correlates to ItemTypeIndex
 
-        private static readonly string[] _itemTypeIndex = new string[] { "Weapon", "Bonus Item" };
+        public static readonly string[] ItemTypeIndex = new string[] { "Weapon", "Bonus Item" };
 
         public static string[] GetItemStats(string item)
         {
@@ -63,7 +63,25 @@ namespace DungeonExplorer
             return null;
         }
 
-        public static string[] GetItemNameAndTypeFromImage(string[] item)
+        public static string GetItemTypeFromImage(string[] item)
+        {
+            //foreach (var itemType in AllItems)
+            //{
+            //    for (var i = 0; i < itemType.Count; i++)
+            //    {
+            //        if (itemType[i][1] == item)
+            //        {
+            //            Console.WriteLine(ItemTypeIndex[i]);
+            //            Console.ReadKey();
+            //            return ItemTypeIndex[i];
+            //        }
+            //    }
+            //}
+
+            return null;
+        }
+
+        public static string GetItemNameFromImage(string[] item)
         {
             foreach (var itemType in AllItems)
             {
@@ -71,7 +89,7 @@ namespace DungeonExplorer
                 {
                     if (itemType[i][1] == item)
                     {
-                        return new string[] { itemType[i][0][0], _itemTypeIndex[i] };
+                        return itemType[i][0][0];
                     }
                 }
             }
@@ -105,7 +123,7 @@ namespace DungeonExplorer
                 {
                     if (itemType[i][0][0] == item)
                     {
-                        return _itemTypeIndex[i];
+                        return ItemTypeIndex[i];
                     }
                 }
             }

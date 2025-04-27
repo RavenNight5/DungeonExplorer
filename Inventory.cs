@@ -53,7 +53,7 @@ namespace DungeonExplorer
 
 
         // Used to refresh the display after an item is selected, filters based on player preferences and combat selections.
-        private string GetInventoryDisplay(List<string> inventoryItems, string currentlyChoosing)
+        private string GetInventoryDisplay(List<string> inventoryItems)
         {
             if (_slots.Count <= 0 )
             {     
@@ -107,11 +107,16 @@ namespace DungeonExplorer
             return inventoryDisplay;
         }
 
-        public void DisplayInventory(List<string> inventoryItems, bool inCombat = false, string currentlyChoosing = "")
+        public void DisplayInventory(List<string> inventoryItems, string currentlyChoosing = "", bool incorrectInput = false)
         {
             Program.CLEAR_CONSOLE();
 
-            Console.Write(GetInventoryDisplay(inventoryItems, currentlyChoosing)); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
+            Console.Write(GetInventoryDisplay(inventoryItems)); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
+            
+            if (incorrectInput)
+            {
+                Console.WriteLine($"You are currently choosing a {currentlyChoosing} to equip for combat. Make sure your selection matches the {currentlyChoosing} type.");
+            }
 
             PlayerChoiceInventory();
 
@@ -125,15 +130,22 @@ namespace DungeonExplorer
                     {
                         if (optionChosen.Equals("Tab"))
                         {
-                            Program.CLEAR_CONSOLE();
+                            if (Combat.InCombat == false)
+                            {
+                                Program.CLEAR_CONSOLE();
 
-                            Game.RoomHandler.ReturnToLevel();
+                                Game.RoomHandler.ReturnToLevel();
+                            }
+                            else
+                            {
+                                Program.CLEAR_CONSOLE();
 
+                                Game.CurrentCombatSession.MainCombatScreen();
+                            }
                         }
                         else if (optionChosen.Equals("Enter"))
                         {
                             Program.CLEAR_CONSOLE();
-
                             //To add:
                             //If selected and a useable item (health kit etc.) then use straight away and remove from inventory.
 
@@ -141,52 +153,56 @@ namespace DungeonExplorer
                             {
                                 int itemIndex = _descriptionSlots.IndexOf(InventoryItemDescription);  // Get index of currently selected item
 
-                                if (inCombat == false)
+                                if (Combat.InCombat == false)
                                 {
-                                    Room.CurrentEquippedItem = Item.GetItemNameAndTypeFromImage(_slots[itemIndex])[0];  // GetItemNameAndTypeFromImage returns a string[] where index 0 = item name, index 1 = item type
+                                    Room.CurrentEquippedItem = Item.GetItemNameFromImage(_slots[itemIndex]);  // GetItemNameAndTypeFromImage returns a string[] where index 0 = item name, index 1 = item type
                                     Room.CurrentEquippedItemImage = _slots[itemIndex];
 
                                     Game.RoomHandler.ReturnToLevel();
                                 }
                                 else
                                 {
-                                    string[] item = Item.GetItemNameAndTypeFromImage(_slots[itemIndex]);
+                                    string itemType = Item.GetItemTypeFromImage(_slots[itemIndex]);
 
                                     if (currentlyChoosing == "Weapon")
                                     {
-                                        if (item[1] == currentlyChoosing)  // item[1] = item type - if the same as currently choosing type then continue to equip
+                                        if (itemType == currentlyChoosing)  // item[1] = item type - if the same as currently choosing type then continue to equip
                                         {
-                                            Combat.Combat_EquippedWeapon = Item.GetItemNameAndTypeFromImage(_slots[itemIndex])[0];
+                                            Combat.Combat_EquippedWeapon = Item.GetItemNameFromImage(_slots[itemIndex]);
                                             Combat.Combat_EquippedWeaponImage = _slots[itemIndex];
 
                                             Game.CurrentCombatSession.MainCombatScreen();  // Return to the main combat screen which will update the slots
                                         }
                                         else
                                         {
-                                            Console.WriteLine("You are not currently choosing an item to equip, exit the inventory then choose an item type.");
+                                            DisplayInventory(inventoryItems, currentlyChoosing, true);
                                         }
 
                                     }
-                                    else if (currentlyChoosing == "Bonus")
+                                    else if (currentlyChoosing == "Bonus Item")
                                     {
-                                        if (item[1] == currentlyChoosing)  // item[1] = item type - if the same as currently choosing type then continue to equip
+                                        if (itemType == currentlyChoosing)  // item[1] = item type - if the same as currently choosing type then continue to equip
                                         {
-                                            Combat.Combat_EquippedBonus = Item.GetItemNameAndTypeFromImage(_slots[itemIndex])[0];
+                                            Combat.Combat_EquippedBonus = Item.GetItemNameFromImage(_slots[itemIndex]);
                                             Combat.Combat_EquippedBonusImage = _slots[itemIndex];
 
                                             Game.CurrentCombatSession.MainCombatScreen();
                                         }
                                         else
                                         {
-                                            Console.WriteLine("You are not currently choosing an item to equip, exit the inventory then choose an item type.");
+                                            DisplayInventory(inventoryItems, currentlyChoosing, true);
                                         }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"The item '{currentlyChoosing}' is not recognised.");
                                     }
                                 }
                                
                             }
                             else  // If a blank slot is chosen to be equipped then remove the items from their slots
                             {
-                                if (inCombat == false)
+                                if (Combat.InCombat == false)
                                 {
                                     Room.CurrentEquippedItem = "";
                                     Room.CurrentEquippedItemImage = InventoryEmptySlot;
@@ -238,7 +254,7 @@ namespace DungeonExplorer
                                 }
                             }
 
-                            Console.Write(GetInventoryDisplay(inventoryItems, currentlyChoosing)); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
+                            Console.Write(GetInventoryDisplay(inventoryItems)); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
 
                             PlayerChoiceInventory();
 

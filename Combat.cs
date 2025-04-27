@@ -11,12 +11,22 @@ namespace DungeonExplorer
 {
     public class Combat
     {
+        private Random rand = new Random();
+
+        private string randBarPattern = "";
+
+        private string weaponStatus = "Choose";
+        private string bonusItemStatus = "Choose";
 
         private int player_BaseDamage = 0;
         private int player_CRITDmg = 0;
         private int player_CRITRate = 0;
 
+        private int attacksMade = 0;
+        private int turnsPassed = 0;
         private int opportunities = 0;
+
+        private bool notPassing = true;
 
         private Monster MonsterObject { get; set; }
 
@@ -25,7 +35,7 @@ namespace DungeonExplorer
         private string marker = "^";
         private int markerPos = 0;
 
-        private static System.Timers.Timer refreshBarTimer;
+        public static bool InCombat = false;
 
         public static string Combat_EquippedWeapon = "";
         public static string[] Combat_EquippedWeaponImage = Inventory.InventoryEmptySlot;
@@ -58,8 +68,9 @@ namespace DungeonExplorer
         {
             MonsterObject = monster;
 
+            randBarPattern = _barPatterns[0];
             barLength = _barPatterns[0].Length;
-
+            
             MainCombatScreen();
         }
 
@@ -68,6 +79,10 @@ namespace DungeonExplorer
         {
             Program.CLEAR_CONSOLE();
 
+            InCombat = true;
+
+            notPassing = true;
+
             string HealthVisual = "";
 
             for (int i = 0; i < Player.Health; i += 10)
@@ -75,13 +90,31 @@ namespace DungeonExplorer
                 HealthVisual += "+ ";
             }
 
+            if (Combat_EquippedWeapon == "")
+            {
+                weaponStatus = "Choose";
+            }
+            else
+            {
+                weaponStatus = "Switch";
+            }
+
+            if (Combat_EquippedBonus == "")
+            {
+                bonusItemStatus = "Choose";
+            }
+            else
+            {
+                bonusItemStatus = "Switch";
+            }
+
             string playerStats = $@"
           Vs...
 
-    '{Program.NameTemp}'
+    '{Program.NameTemp}' | Species: Cleaner
 
     Weapon     Bonus
-    --── ──--  --── ──--    {Player.NamePlural} Health:
+    --── ──--  --── ──--    {Program.NameTemp}{Program.TempPlural} Health:
     │{Combat_EquippedWeaponImage[0]}│  │{Combat_EquippedBonusImage[0]}│    ┌───────----- - - -
     │{Combat_EquippedWeaponImage[1]}│  │{Combat_EquippedBonusImage[1]}│    ║ {HealthVisual} ({Player.Health}/{Game.CurrentPlayer.MaxHealth}
     ║{Combat_EquippedWeaponImage[2]}║  ║{Combat_EquippedBonusImage[2]}║    └───────----- - - -
@@ -96,49 +129,74 @@ namespace DungeonExplorer
     │ [ {player_CRITRate} ]%  Chance of CRIT hit
     ╚══─=───────---
 
+";
+
+            Console.Write(MonsterObject.MonsterInterface);
+
+            System.Threading.Thread.Sleep(300);
+
+            Console.WriteLine(playerStats);
+
+            System.Threading.Thread.Sleep(150);
+
+            Console.WriteLine($@"
 
  > Start Attack [Space]
+   | Total Attacks Made: {attacksMade}
+   | Turns Passed: {turnsPassed}
 
- > Switch Weapon [1]
- > Switch Extra Item [2]
+ > {weaponStatus} Weapon [1]
+ > {bonusItemStatus} Bonus Item [2]
 
  > Pass Your Turn [P]
 
  > Help [H]
-
-";
-
-            Console.Write(MonsterObject.MonsterInterface + playerStats);
+");
 
             void playerAction()
             {
-                string playerInput = Game.InputHandler.CombatMainOptions(new string[] { "Spacebar", "97", "98", "P", "H" });  // Enum keys: 97 = 1, 98 = 2
+                string playerInput = Game.InputHandler.CombatMainOptions(new string[] { "Spacebar", "D1", "D2", "P", "H" });
 
-                if (playerInput != null)
+                if (playerInput == "Spacebar")
                 {
-                    if (playerInput == "Spacebar")
-                    {
-                        SubCombatScreen();
-                    }
-                    ////////////////////////////////////////
+                    attacksMade += 1;
+
+                    SubCombatScreen();
                 }
-                else
+                else if (playerInput == "D1")
                 {
-                    playerAction();
+                    Game.CurrentPlayer.DisplayInventory(Item.ItemTypeIndex[0]);  // Weapon
+                }
+                else if (playerInput == "D2")
+                {
+                    Game.CurrentPlayer.DisplayInventory(Item.ItemTypeIndex[1]);  // Bonus Item
+                }
+                else if (playerInput == "P" && notPassing == true)
+                {
+                    Program.CLEAR_CONSOLE();
+
+                    notPassing = false;
+
+                    turnsPassed += 1;
+
+                    Console.WriteLine("You passed your turn.\n\nPress [any key] to continue.");
+
+                    Console.ReadKey();
+
+                    MainCombatScreen();
+                }
+                else if (playerInput == "H")
+                {
+                    HelpScreen();
                 }
             }
-
             playerAction();
             
         }
 
         private string GetAttackBar()
         {
-            Random rand = new Random();
-
-            string randBarPattern = _barPatterns[0];
-
-            if (markerPos == 0)  // Get a new random bar pattern every time the marker is at pos 0
+            if (markerPos <= 0)  // Get a new random bar pattern every time the marker is at pos 0
             {
                 randBarPattern = _barPatterns[rand.Next(_barPatterns.Length)];
             }
@@ -174,45 +232,58 @@ namespace DungeonExplorer
             //While wait for x * easness of weapon selected...
 
             opportunities = 0;  // Reset number of opportunities to strike
+            
+            bool attacked = false;
 
-            while (opportunities < 5)
+            while (opportunities < 5 && attacked == false)
             {
                 markerPos = 0;
 
-                while (!Console.KeyAvailable && markerPos < barLength)
+                while (markerPos < barLength)
+                {
+                    while (!Console.KeyAvailable)
+                    {
+                        Program.CLEAR_CONSOLE();
+
+                        Console.Write(GetAttackBar());
+
+                        System.Threading.Thread.Sleep(weaponEaseOfUse * 10);
+
+                        markerPos += 2;  //Increment the marker's position
+                    }
+
+                    attacked = true;
+
+                    result();
+                }
+
+                opportunities += 1;
+            }
+
+            void result()
+            {
+                if (opportunities >= 5)
                 {
                     Program.CLEAR_CONSOLE();
 
-                    Console.Write(GetAttackBar());
+                    Console.Write($"{opportunities} You took too long... The enemy attacks.\n\n");
 
-                    System.Threading.Thread.Sleep(300);
+                    Thread.Sleep(1500);
 
-                    markerPos += 2;  //Increment the marker's position
+                    EnemyAttack();
                 }
+                else
+                {
+                    Program.CLEAR_CONSOLE();
 
-                opportunities++;
+                    Console.Write("You hit the enemy.\n\n");  /////////////// dependant
+
+                    Thread.Sleep(1000);
+
+                    PlayerAttack(false, false);  //////////// dependant
+                }
             }
-
-            if (opportunities >= 5)
-            {
-                Program.CLEAR_CONSOLE();
-
-                Console.Write($"{opportunities} You took too long... The enemy attacks.\n\n");
-
-                Thread.Sleep(1500);
-
-                EnemyAttack();
-            }
-            else
-            {
-                Program.CLEAR_CONSOLE();
-
-                Console.Write("You hit the enemy.\n\n");  /////////////// dependant
-
-                Thread.Sleep(1000);
-
-                PlayerAttack(false, false);  //////////// dependant
-            }
+            
         }
 
         private void EnemyAttack()
@@ -225,6 +296,72 @@ namespace DungeonExplorer
             Game.CurrentPlayer.Attack(miss, hitWeakSpot);
         }
 
+        private void HelpScreen()
+        {
+            Program.CLEAR_CONSOLE();
 
+            Console.Write(@"                               Combat Help
+                               -──~ + ~──-
+
+ Before starting an attack:
+ --------------------------
+     > make sure you have an equipped WEAPON and BONUS ITEM (if available)
+     > Check your stats (WEAPONS will affect Base Damage and CRIT Damage)
+
+ During an attack:
+ -----------------
+
+     x - - - x - - - - x - - - < + > - - x
+                 ^
+
+     A bar (see above) will be shown with a marker  ^  displayed below.
+
+     This marker will move across the bar at a speed relevant to the ease of use of the selected WEAPON.
+     
+
+     When the marker reaches the end of the bar a different bar will be shown and you will have missed
+     an OPPORTUNITY.
+
+     Press [Space] to stop the marker and attack the opponent.
+
+     Characters the marker can hit:
+     ------------------------------
+
+         x   Miss
+
+         -   Regular Hit
+
+         +   WEAK SPOT Hit (+10% Damage which gets less each OPPORTUNITY missed)
+
+        < >  Regular Hit
+
+ After an attack:
+ ----------------
+     Provided you have hit the opponent, Base Damage will be applied, followed by CRIT Damage (if the hit 
+     was critical - 30% chance, see your CRIT Rate), then finally WEAK SPOT Damage if the hit was
+     at the weak spot.
+
+     This is all calculated and shown as a final Damage TOTAL. Which is taken off the opponent's health.
+
+
+ Opponent attack:
+ ----------------
+     Similar to a player attack with only the Base Damage, CRIT Damage, CRIT Rate
+     and a BONUS ACTION (such as steal one turn from the player) that occur at random
+     intervals in the combat session.
+
+
+ > Press [any key] to close.
+");
+
+            Console.ReadKey();
+            
+            MainCombatScreen();
+        }
+        
+        private void ExitCombat()
+        {
+
+        }
     }
 }

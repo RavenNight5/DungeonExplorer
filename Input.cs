@@ -123,40 +123,7 @@ namespace DungeonExplorer
 
             if (optionChosen != null)
             {
-                try
-                {
-                    //General
-                    if (optionChosen.Equals("H"))
-                    {
-                        Program.CLEAR_CONSOLE();
-
-                        return null;
-                    }
-                    else if (optionChosen.Equals("P"))
-                    {
-                        Program.CLEAR_CONSOLE();
-
-                        return null;
-                    }
-                    else if (optionChosen.Equals("Tab"))
-                    {
-                        Game.CurrentPlayer.DisplayInventory(true);
-
-                        return null;
-                    }
-                    else
-                    {
-                        Console.WriteLine(optionChosen);
-                        return optionChosen;
-                    }
-
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(optionChosen + " was not recognised as a string in this instance. \nException caught: " + e);
-
-                    return null;
-                }
+                return optionChosen;
             }
             else
             {
@@ -164,11 +131,6 @@ namespace DungeonExplorer
 
                 return null;
             }
-        }
-
-        public void WaitOnAnyKey()
-        {
-            Console.ReadKey();
         }
 
         public static void ClearCurrentConsoleLine()

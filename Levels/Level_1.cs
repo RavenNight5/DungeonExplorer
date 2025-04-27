@@ -1,5 +1,6 @@
 ﻿// Filename: Level_1.cs
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using DungeonExplorer.Item_Types;
 using DungeonExplorer.Testing;
@@ -41,6 +42,7 @@ namespace DungeonExplorer.Levels
             Game.CurrentPlayer.PickUpItem("Dustpan");
 
             Game.CurrentPlayer.PickUpItem("Dagger");
+
         }
 
         // When the game starts room will call this function to display the first room
@@ -315,18 +317,20 @@ namespace DungeonExplorer.Levels
                         {
                             if (R7_ActionCompleted[action] == false)
                             {
-                                dialogue = new string[] { "You walk down into the large chamber.", "A piercing roar fills the room, you are now standing before a beast..." };
+                                dialogue = new string[] { "You walk down into the large chamber.", "A piercing roar fills the room and you are now standing before a beast..." };
+                                
+                                Description_Box.ArrayDescription(dialogue, 32);
 
-                                //R7_ActionCompleted[action] = true;
+                                R7_ActionCompleted[action] = true;
 
                                 Game.CurrentCombatSession = new Combat(Game.Monster[0]);  // Enter combat
                             }
                             else
                             {
-                                dialogue = new string[] { "Do not fret, there will be plenty more to clean next time!", "Also it's pretty dark in there, it would be better to wait until they switched the lights on." };
-                            }
+                                dialogue = new string[] { "The memories from that battle stain your mind like the dungeon puddles..." };
 
-                            Description_Box.ArrayDescription(dialogue, 32);
+                                Description_Box.ArrayDescription(dialogue, 32);
+                            }
                         }
 
                     }

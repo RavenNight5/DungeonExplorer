@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace DungeonExplorer
 {
     // Player, Monster
-    interface IDamageable
+    internal interface IDamageable
     {
-
+        void Damage(int dmg);
     }
 
     // Weapons, Bonus_Items
-    interface ICollectible
+    internal interface ICollectible
     {
         bool CanCollect(); 
     }
