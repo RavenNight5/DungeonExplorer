@@ -21,7 +21,7 @@ namespace DungeonExplorer
             this.MaxHealth = maxHealth;
         }
 
-        //public abstract void Attack();
+        public abstract void Attack(bool miss = false, bool hitWeakSpot = false);
         //public abstract void PassTurn();
         //public abstract void EquipItem();
     }

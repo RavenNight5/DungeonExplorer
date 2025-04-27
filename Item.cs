@@ -11,11 +11,13 @@ namespace DungeonExplorer
     public class Item
     {
         /// <summary>
-        /// Uses dynamic polymorphism to create the subclass objects of Items
+        /// Uses dynamic polymorphism to create the subclass objects of Items  ////////////////////////////////////
         /// These objects then assign the item string arrays to a list then that list to All_Items
         /// </summary>
 
-        public static List<List<string[][]>> AllItems = new List<List<string[][]>>();
+        public static List<List<string[][]>> AllItems = new List<List<string[][]>>();  // AllItems[index] where index directly correlates to _itemTypeIndex
+
+        private static readonly string[] _itemTypeIndex = new string[] { "Weapon", "Bonus Item" };
 
         public static string[] GetItemStats(string item)
         {
@@ -61,7 +63,7 @@ namespace DungeonExplorer
             return null;
         }
 
-        public static string GetItemNameFromImage(string[] item)
+        public static string[] GetItemNameAndTypeFromImage(string[] item)
         {
             foreach (var itemType in AllItems)
             {
@@ -69,7 +71,7 @@ namespace DungeonExplorer
                 {
                     if (itemType[i][1] == item)
                     {
-                        return itemType[i][0][0];
+                        return new string[] { itemType[i][0][0], _itemTypeIndex[i] };
                     }
                 }
             }
@@ -94,7 +96,22 @@ namespace DungeonExplorer
             return null;
         }
 
+        public static string GetItemType(string item)
+        {
 
+            foreach (var itemType in AllItems)
+            {
+                for (var i = 0; i < itemType.Count; i++)
+                {
+                    if (itemType[i][0][0] == item)
+                    {
+                        return _itemTypeIndex[i];
+                    }
+                }
+            }
+
+            return null;
+        }
 
         //Check if item can be collected with CanCollect(), if true is returned then proceed
     }

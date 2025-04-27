@@ -28,12 +28,12 @@ namespace DungeonExplorer
             _levels[CurrentLevel - 1].DisplayRooms();
         }
 
-        public void StartLevel(int levelNum)
+        public void StartLevel(int levelNum, int room = 1)
         {
             // Each time StartLevel is called it will be the next level (the iteration levelNum from class Game)
             // Therefore CurrentRoom needs to be set back to 1 as it will be the first room of the new level
             CurrentLevel = levelNum;
-            CurrentRoom = 1;
+            CurrentRoom = room;
 
             _levels[CurrentLevel - 1].Start();
         }

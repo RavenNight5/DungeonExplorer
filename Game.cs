@@ -18,7 +18,7 @@ namespace DungeonExplorer
         
         // Here I set multiple classes to static as they will only be defined once per game. Therefore, they and their methods can be accessed in other main classes (e.g. Level_1)
         public static Player CurrentPlayer { get; private set; }
-        public static List<Creature> Monster { get; private set; }
+        public static List<Monster> Monster { get; private set; }
         public static Combat CurrentCombatSession { get; set; }
         public static Game_Map RoomHandler { get; private set; }
         public static Item ItemHandler { get; private set; }
@@ -27,11 +27,11 @@ namespace DungeonExplorer
 
         public Game()
         {
-            Game.CurrentPlayer = new Player(Program.NameTemp, 60);
+            CurrentPlayer = new Player(Program.NameTemp, 60);
 
-            Game.RoomHandler = new Game_Map();
+            RoomHandler = new Game_Map();
 
-            Game.Monster = new List<Creature>();
+            Monster = new List<Monster>();
 
             Monster.Add(new Monster("Dragon", "Dungeon Dweller", 100, "stealTurn", 1, 18, 20, 35));
 
@@ -40,14 +40,14 @@ namespace DungeonExplorer
             Item weapons = new Weapons();
             Item bonus_Items = new Bonus_Items();
 
-            Game.ItemHandler = new Item();
+            ItemHandler = new Item();
 
-            Game.InputHandler = new Input();
+            InputHandler = new Input();
 
-            Game.OptionHandler = new Options();
+            OptionHandler = new Options();
         }
 
-        public void Start()
+        public void Start(int roomToStartAt = 1)  // roomToStartAt is used when the player selects a room from the testing menu
         {
             Program.CLEAR_CONSOLE();
 
@@ -69,7 +69,7 @@ namespace DungeonExplorer
 
             for (int i = 1; i <= Program.NumOfLevels; i++)
             {
-                RoomHandler.StartLevel(i);
+                RoomHandler.StartLevel(i, roomToStartAt);
             }
 
             Console.WriteLine("\n\n---Game Finished---\n");

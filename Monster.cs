@@ -56,7 +56,8 @@ namespace DungeonExplorer
             if (species == "Dragon")
             {
                 MonsterInterface = $@"
-    '{Name}' Species: {species}
+    '{Name}' | Species: {species}
+
     ╔═──  ─~─  ──═╗   ╔════─════─════=────────────---
     │ (         ) │   │ Health: {HealthVisual} [ {Health}/{MaxHealth} ]
       ░\       /░     ╚════─════─════=────────────---
@@ -75,7 +76,8 @@ namespace DungeonExplorer
             else if (species == "Gnome")
             {
                 MonsterInterface = $@"
-    '{Name}' Species: {species}
+    '{Name}' | Species: {species}
+
     ╔═──  ─~─  ──═╗   ╔════─════─════=────────────---
     │  /════+     │   │ Health: {HealthVisual} [ {Health}/{MaxHealth} ]
       // -  \\        ╚════─════─════=────────────---
@@ -93,10 +95,10 @@ namespace DungeonExplorer
             }
         }
 
-        //public override void Attack()
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public override void Attack(bool miss = false, bool hitWeakSpot = false)
+        {
+            
+        }
 
         //public override void EquipItem()
         //{

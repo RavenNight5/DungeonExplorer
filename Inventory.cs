@@ -11,6 +11,20 @@ namespace DungeonExplorer
 {
     public class Inventory
     {
+        /// <summary>
+        /// The Inventory class takes a list of strings and displays them in a visual grid for the user to select an item.
+        /// The functionalities are as follows:
+        ///     - Allows selection between each item in the grid, showing their descriptions when selected
+        ///     
+        ///     For the Regular Inventory (not in combat):
+        ///     - Player can equip an item from the grid - which is then displayed on the main game screen (where the room is shown)
+        ///     
+        ///     For the Combat Inventory:
+        ///     - Player can equip an item from the grid:
+        ///         - If selecting a weapon then the combat equipped weapon is set
+        ///         - If selecting a bonus item then the combat equipped bonus item is set
+        ///     
+        /// </summary>
         private string _selectedSlotChar = "+";
 
         private readonly List<string[]> _slots = new List<string[]>();
@@ -38,10 +52,9 @@ namespace DungeonExplorer
         private readonly string _emptyBottom = "      ";  // There is an inventory slot number so have one less space
 
 
-        // Used to refresh the display after an item is selected etc.
-        private string GetInventoryDisplay(List<string> inventoryItems)
+        // Used to refresh the display after an item is selected, filters based on player preferences and combat selections.
+        private string GetInventoryDisplay(List<string> inventoryItems, string currentlyChoosing)
         {
-            
             if (_slots.Count <= 0 )
             {     
                 for (int i = 0; i < 10; i++)  // For each slot in the inventory
@@ -98,7 +111,7 @@ namespace DungeonExplorer
         {
             Program.CLEAR_CONSOLE();
 
-            Console.Write(GetInventoryDisplay(inventoryItems)); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
+            Console.Write(GetInventoryDisplay(inventoryItems, currentlyChoosing)); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
 
             PlayerChoiceInventory();
 
@@ -130,26 +143,43 @@ namespace DungeonExplorer
 
                                 if (inCombat == false)
                                 {
-                                    Room.CurrentEquippedItem = Item.GetItemNameFromImage(_slots[itemIndex]);
+                                    Room.CurrentEquippedItem = Item.GetItemNameAndTypeFromImage(_slots[itemIndex])[0];  // GetItemNameAndTypeFromImage returns a string[] where index 0 = item name, index 1 = item type
                                     Room.CurrentEquippedItemImage = _slots[itemIndex];
 
                                     Game.RoomHandler.ReturnToLevel();
                                 }
                                 else
                                 {
+                                    string[] item = Item.GetItemNameAndTypeFromImage(_slots[itemIndex]);
+
                                     if (currentlyChoosing == "Weapon")
                                     {
-                                        Combat.Combat_EquippedWeapon = Item.GetItemNameFromImage(_slots[itemIndex]);
-                                        Combat.Combat_EquippedWeaponImage = _slots[itemIndex];
+                                        if (item[1] == currentlyChoosing)  // item[1] = item type - if the same as currently choosing type then continue to equip
+                                        {
+                                            Combat.Combat_EquippedWeapon = Item.GetItemNameAndTypeFromImage(_slots[itemIndex])[0];
+                                            Combat.Combat_EquippedWeaponImage = _slots[itemIndex];
 
-                                        Game.CurrentCombatSession.MainCombatScreen();  // Return to the main combat screen which will update the slots
+                                            Game.CurrentCombatSession.MainCombatScreen();  // Return to the main combat screen which will update the slots
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("You are not currently choosing an item to equip, exit the inventory then choose an item type.");
+                                        }
+
                                     }
                                     else if (currentlyChoosing == "Bonus")
                                     {
-                                        Combat.Combat_EquippedBonus = Item.GetItemNameFromImage(_slots[itemIndex]);
-                                        Combat.Combat_EquippedBonusImage = _slots[itemIndex];
+                                        if (item[1] == currentlyChoosing)  // item[1] = item type - if the same as currently choosing type then continue to equip
+                                        {
+                                            Combat.Combat_EquippedBonus = Item.GetItemNameAndTypeFromImage(_slots[itemIndex])[0];
+                                            Combat.Combat_EquippedBonusImage = _slots[itemIndex];
 
-                                        Game.CurrentCombatSession.MainCombatScreen();
+                                            Game.CurrentCombatSession.MainCombatScreen();
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("You are not currently choosing an item to equip, exit the inventory then choose an item type.");
+                                        }
                                     }
                                 }
                                
@@ -208,7 +238,7 @@ namespace DungeonExplorer
                                 }
                             }
 
-                            Console.Write(GetInventoryDisplay(inventoryItems)); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
+                            Console.Write(GetInventoryDisplay(inventoryItems, currentlyChoosing)); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
 
                             PlayerChoiceInventory();
 

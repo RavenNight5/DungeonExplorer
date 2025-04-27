@@ -1,5 +1,6 @@
 ﻿// Filename: Program.cs
 using System;
+using DungeonExplorer.Testing;
 using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
@@ -22,19 +23,34 @@ namespace DungeonExplorer
 
         public static string NameTemp = "";
 
+        public static Game game { get; private set; }
+
         static void Main(string[] args)
         {
             Welcome welcome = new Welcome();
             string title = welcome.GetWelcomeTitle();
 
-            Game game = new Game();
+            game = new Game();
 
             Console.WriteLine(title);
-            Console.WriteLine("\nPress [Space] to play.\n");
+            Console.WriteLine("\nPress [Space] to play.\nPress [T] for the Testing Menu.\n\n");
 
-            Game.InputHandler.WaitOnKey("Spacebar");
+            string playerInput = Game.InputHandler.WaitOnKey("Spacebar", "T");
 
-            EnterName();
+            if (playerInput == "Spacebar")
+            {
+                EnterName();
+
+                game.Start();  // Start the game
+            }
+            else
+            {
+                EnterName();
+
+                Tests testingMenu = new Tests();
+
+                testingMenu.TestingMenu();  // Brings up the testing menu
+            }
 
             void EnterName()
             {
@@ -56,18 +72,16 @@ namespace DungeonExplorer
                 {
                     EnterName();
                 }
-            }
 
-            if (NameTemp.EndsWith("s") || NameTemp.EndsWith("z"))
-            {
-                Player.NamePlural = $"{NameTemp}'";
+                if (NameTemp.EndsWith("s") || NameTemp.EndsWith("z"))
+                {
+                    Player.NamePlural = $"{NameTemp}'";
+                }
+                else
+                {
+                    Player.NamePlural = $"{NameTemp}'s";
+                }
             }
-            else
-            {
-                Player.NamePlural = $"{NameTemp}'s";
-            }
-
-            game.Start();  // Start the game
 
             Console.WriteLine("\nPress any key to exit...");
             Console.ReadKey();

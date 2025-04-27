@@ -86,7 +86,7 @@ namespace DungeonExplorer
             }
         }
 
-        public void WaitOnKey(string keyRequired, string optSecondKey = null, string optThirdKey = null)
+        public string WaitOnKey(string keyRequired, string optSecondKey = null, string optThirdKey = null)
         {
             var keyInfo = Console.ReadKey();
 
@@ -94,15 +94,15 @@ namespace DungeonExplorer
 
             if (keyInfo.Key.ToString().Equals(keyRequired))
             {
-                return;
+                return keyInfo.Key.ToString();
             }
             else if (keyInfo.Key.ToString().Equals(optSecondKey) && optSecondKey != null)
             {
-                return;
+                return keyInfo.Key.ToString();
             }
             else if (keyInfo.Key.ToString().Equals(optThirdKey) && optThirdKey != null)
             {
-                return;
+                return keyInfo.Key.ToString();
             }
             else
             {
@@ -111,11 +111,13 @@ namespace DungeonExplorer
                 WaitOnKey(keyRequired, optSecondKey, optThirdKey);
 
             }
+
+            return null;
         }
 
         //Combat Inputs
 
-        public string CombatMainOptions(string[] optionsKeyBinds)
+        public string CombatMainOptions(string[] optionsKeyBinds, string currentlyChoosing = "")
         {
             string optionChosen = OptionsGetPlayerResponse(optionsKeyBinds);
 
@@ -132,21 +134,19 @@ namespace DungeonExplorer
                     }
                     else if (optionChosen.Equals("P"))
                     {
-                        Console.WriteLine("[Stats coming in a later version!]");  // Like inventory but for strength etc, pick up things in dungeon that can level up a certain stat the player chooses - Inscryption
-
-                        CombatMainOptions(optionsKeyBinds);
+                        Program.CLEAR_CONSOLE();
 
                         return null;
                     }
                     else if (optionChosen.Equals("Tab"))
                     {
-                        Game.CurrentPlayer.DisplayInventory();
+                        Game.CurrentPlayer.DisplayInventory(true);
 
                         return null;
                     }
-                    // Player chose a number action such as Open Chest
                     else
                     {
+                        Console.WriteLine(optionChosen);
                         return optionChosen;
                     }
 
