@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -9,7 +10,7 @@ using Microsoft.SqlServer.Server;
 
 namespace DungeonExplorer
 {
-    public class Combat
+    public class Combat : Game
     {
         private Random rand = new Random();
 
@@ -18,15 +19,20 @@ namespace DungeonExplorer
         private string weaponStatus = "Choose";
         private string bonusItemStatus = "Choose";
 
+        private string player_BonusEffect = "";  // The bonus effect of the equipped bonus item (if any)
+
         private int player_BaseDamage = 0;
         private int player_CRITDmg = 0;
         private int player_CRITRate = 0;
+
+        private int weakSpotDamage = 5;  // The % damage added to the attack if the weak spot is hit
 
         private int attacksMade = 0;
         private int turnsPassed = 0;
         private int opportunities = 0;
 
         private bool notPassing = true;
+        private bool attacking = false;
 
         private Monster MonsterObject { get; set; }
 
@@ -43,9 +49,9 @@ namespace DungeonExplorer
         public static string Combat_EquippedBonus = "";
         public static string[] Combat_EquippedBonusImage = Inventory.InventoryEmptySlot;
 
-        private static int weaponEaseOfUse = 10;
+        private static int weaponEaseOfUse = 20;
 
-        private readonly string[] _barPatterns = new string[] {
+        private string[] barPatterns = new string[] {  // Using the patterns would require a loop and same user input to stop the marker. (For a later date)
         "x - - - x - - - - x - - - < + > - - x",
 
         "- - - - - - - - x < + > - - - - - - x",
@@ -61,27 +67,48 @@ namespace DungeonExplorer
         "x - - - - x < + > - - - x - - - - - -"
         };
 
-        private readonly string _markerCharacter = "^";
+        private string currentBarPattern = "";
 
+        private readonly string _markerCharacter = "^";
 
         public Combat(Monster monster)
         {
             MonsterObject = monster;
 
-            randBarPattern = _barPatterns[0];
-            barLength = _barPatterns[0].Length;
-            
+            randBarPattern = barPatterns[0];
+            barLength = barPatterns[0].Length;
+
+            player_BaseDamage = Player.BaseDamage;
+            player_CRITDmg = Player.CRITDamage;
+            player_CRITRate = Player.CRITRate;
+
             MainCombatScreen();
         }
 
-
-        public void MainCombatScreen()
+        public void MainCombatScreen(bool incorrectInput = false)
         {
             Program.CLEAR_CONSOLE();
 
             InCombat = true;
 
             notPassing = true;
+
+            if (Player.Health <= 0)
+            {
+                Console.WriteLine("You have been defeated...\n\nPress [any key] to continue.\n");
+
+                Console.ReadKey();
+
+                ExitCombat(false);
+            }
+            else if (MonsterObject.Health <= 0)
+            {
+                Console.WriteLine($"You have defeated {MonsterObject.Name}!\n\nPress [any key] to continue.\n");
+
+                Console.ReadKey();
+
+                ExitCombat(true);
+            }
 
             string HealthVisual = "";
 
@@ -108,39 +135,63 @@ namespace DungeonExplorer
                 bonusItemStatus = "Switch";
             }
 
+            if (Combat_EquippedWeapon != "" && Combat_EquippedWeapon != null)
+            {
+                string[] weaponStats = Item.GetItemStats(Combat_EquippedWeapon);
+
+                try
+                {
+                    player_BaseDamage = Player.BaseDamage + int.Parse(weaponStats[3]);
+                    player_CRITDmg = Player.BaseDamage + int.Parse(weaponStats[4]);
+                    player_CRITRate = Player.BaseDamage + int.Parse(weaponStats[5]);
+                    weaponEaseOfUse = int.Parse(weaponStats[6]);
+                }
+                catch
+                {
+                    Debug.WriteLine($"Error parsing Weapon stats.");
+                }
+            }
+
+            if (Combat_EquippedBonus != "" && Combat_EquippedBonus != null)
+            {
+                string[] bonusStats = Item.GetItemStats(Combat_EquippedBonus);
+
+                try
+                {
+                    player_BonusEffect = bonusStats[5];
+                }
+                catch
+                {
+                    Debug.WriteLine($"Error parsing Bonus Item stats.");
+                }
+            }
+
             string playerStats = $@"
           Vs...
 
     '{Program.NameTemp}' | Species: Cleaner
 
-    Weapon     Bonus
-    --── ──--  --── ──--    {Program.NameTemp}{Program.TempPlural} Health:
-    │{Combat_EquippedWeaponImage[0]}│  │{Combat_EquippedBonusImage[0]}│    ┌───────----- - - -
-    │{Combat_EquippedWeaponImage[1]}│  │{Combat_EquippedBonusImage[1]}│    ║ {HealthVisual} ({Player.Health}/{Game.CurrentPlayer.MaxHealth}
-    ║{Combat_EquippedWeaponImage[2]}║  ║{Combat_EquippedBonusImage[2]}║    └───────----- - - -
-    │{Combat_EquippedWeaponImage[3]}│  │{Combat_EquippedBonusImage[3]}│
-    │ {Combat_EquippedWeaponImage[4]}│  │ {Combat_EquippedBonusImage[4]}│
-    --─ ! ─--  --─ + ─--
-
-    My Combat Stats
-    ╔══─=───────---
-    │   {player_BaseDamage}     Base Damage
-    ║+[ {player_CRITDmg} ]%  CRIT dmg
-    │ [ {player_CRITRate} ]%  Chance of CRIT hit
-    ╚══─=───────---
-
+    Weapon     Bonus        {Program.NameTemp}{Program.TempPlural} Health:
+    --── ──--  --── ──--    ┌───────----- - - -
+    │{Combat_EquippedWeaponImage[0]}│  │{Combat_EquippedBonusImage[0]}│    ║ {HealthVisual} ({Player.Health}/{Game.CurrentPlayer.MaxHealth}
+    │{Combat_EquippedWeaponImage[1]}│  │{Combat_EquippedBonusImage[1]}│    └───────----- - - -
+    ║{Combat_EquippedWeaponImage[2]}║  ║{Combat_EquippedBonusImage[2]}║    My Combat Stats
+    │{Combat_EquippedWeaponImage[3]}│  │{Combat_EquippedBonusImage[3]}│    ╔══─=───────---
+    │ {Combat_EquippedWeaponImage[4]}│  │ {Combat_EquippedBonusImage[4]}│    │   {player_BaseDamage}     Base Damage
+    --─ ! ─--  --─ + ─--    ║+[ {player_CRITDmg} ]%  CRIT dmg
+                            │ [ {player_CRITRate} ]%  Chance of CRIT hit
+                            ╚══─=───────---
 ";
 
             Console.Write(MonsterObject.MonsterInterface);
 
-            System.Threading.Thread.Sleep(300);
+            System.Threading.Thread.Sleep(200);
 
             Console.WriteLine(playerStats);
 
-            System.Threading.Thread.Sleep(150);
+            System.Threading.Thread.Sleep(100);
 
             Console.WriteLine($@"
-
  > Start Attack [Space]
    | Total Attacks Made: {attacksMade}
    | Turns Passed: {turnsPassed}
@@ -153,23 +204,30 @@ namespace DungeonExplorer
  > Help [H]
 ");
 
+            if (incorrectInput)
+            {
+                Console.WriteLine($"Option entered was invalid. Please choose again.");
+            }
+
             void playerAction()
             {
-                string playerInput = Game.InputHandler.CombatMainOptions(new string[] { "Spacebar", "D1", "D2", "P", "H" });
+                string playerInput = InputHandler.CombatMainOptions(new string[] { "Spacebar", "D1", "D2", "P", "H" });
 
                 if (playerInput == "Spacebar")
                 {
                     attacksMade += 1;
 
+                    attacking = true;
+
                     SubCombatScreen();
                 }
                 else if (playerInput == "D1")
                 {
-                    Game.CurrentPlayer.DisplayInventory(Item.ItemTypeIndex[0]);  // Weapon
+                    CurrentPlayer.DisplayInventory(Item.ItemTypeIndex[0]);  // Weapon
                 }
                 else if (playerInput == "D2")
                 {
-                    Game.CurrentPlayer.DisplayInventory(Item.ItemTypeIndex[1]);  // Bonus Item
+                    CurrentPlayer.DisplayInventory(Item.ItemTypeIndex[1]);  // Bonus Item
                 }
                 else if (playerInput == "P" && notPassing == true)
                 {
@@ -189,7 +247,12 @@ namespace DungeonExplorer
                 {
                     HelpScreen();
                 }
+                else
+                {
+                    MainCombatScreen(true);
+                }
             }
+
             playerAction();
             
         }
@@ -198,7 +261,8 @@ namespace DungeonExplorer
         {
             if (markerPos <= 0)  // Get a new random bar pattern every time the marker is at pos 0
             {
-                randBarPattern = _barPatterns[rand.Next(_barPatterns.Length)];
+                randBarPattern = barPatterns[rand.Next(barPatterns.Length)];
+                currentBarPattern = randBarPattern;
             }
 
             marker = "";  // Reset the spaces in the marker
@@ -217,56 +281,115 @@ namespace DungeonExplorer
       {marker}
     ╚══──────────-----      -----──────────═╝
 
-    ({opportunities}/5 opportunities passed | +5% weak spot dmg)
+    ({opportunities}/5 opportunities passed | +{weakSpotDamage}% weak spot dmg)
 
 ";
 
             return bar;
         }
+
         private void SubCombatScreen()
         {
             Program.CLEAR_CONSOLE();
 
             Console.Write(GetAttackBar());
 
-            //While wait for x * easness of weapon selected...
-
-            opportunities = 0;  // Reset number of opportunities to strike
+            opportunities = 0;  // Reset number of opportunities to strike  
             
-            bool attacked = false;
-
-            while (opportunities < 5 && attacked == false)
+            void oneStepAttack()
             {
-                markerPos = 0;
-
-                while (markerPos < barLength)
-                {
-                    while (!Console.KeyAvailable)
-                    {
-                        Program.CLEAR_CONSOLE();
-
-                        Console.Write(GetAttackBar());
-
-                        System.Threading.Thread.Sleep(weaponEaseOfUse * 10);
-
-                        markerPos += 2;  //Increment the marker's position
-                    }
-
-                    attacked = true;
-
-                    result();
-                }
-
-                opportunities += 1;
-            }
-
-            void result()
-            {
-                if (opportunities >= 5)
+                while (!Console.KeyAvailable && attacking)
                 {
                     Program.CLEAR_CONSOLE();
 
-                    Console.Write($"{opportunities} You took too long... The enemy attacks.\n\n");
+                    Console.Write(GetAttackBar());
+
+                    Thread.Sleep(weaponEaseOfUse * 10);
+
+                    markerPos += 2;  // Increment the marker's position
+
+                    if (markerPos >= barLength)
+                    {
+                        opportunities++;
+
+                        markerPos = 0;
+
+                        break;
+
+                    }
+                }
+
+                return;
+            }
+
+            oneStepAttack();
+
+            result();
+
+            //while (opportunities < 5 && attacking)
+            //{
+            //    while (markerPos < barLength && attacking)
+            //    {
+            //        //while (!Console.KeyAvailable && markerPos < barLength && attacking)
+            //        //{
+            //        if (!attacking)
+            //        {
+            //            break;
+            //        }
+            //        else
+            //        {
+            //            while (!Console.KeyAvailable && attacking)
+            //            {
+            //                Program.CLEAR_CONSOLE();
+
+            //                Console.Write(GetAttackBar());
+
+            //                Thread.Sleep(weaponEaseOfUse * 10);
+
+            //                markerPos += 2;  // Increment the marker's position
+
+            //                if (markerPos >= barLength)
+            //                {
+            //                    opportunities++;
+
+            //                    markerPos = 0;
+
+            //                    if (weakSpotDamage > 0)
+            //                    {
+            //                        weakSpotDamage--;
+            //                    }
+
+            //                    break;
+            //                }
+            //            }
+
+            //            attacking = false;
+
+            //            result();
+
+            //            return;  // Exit the method after the attack is resolved
+            //        }
+            //        //}
+
+            //    }
+
+            //    opportunities++;
+
+            //    if (!attacking)
+            //    {
+            //        break;
+            //    }
+            //}
+
+            void result()
+            {
+                attacking = false;
+
+                if (opportunities >= 1)
+                {
+                    Program.CLEAR_CONSOLE();
+
+                    Console.Write($"You took too long... The enemy attacks.\n\n");
 
                     Thread.Sleep(1500);
 
@@ -276,24 +399,55 @@ namespace DungeonExplorer
                 {
                     Program.CLEAR_CONSOLE();
 
-                    Console.Write("You hit the enemy.\n\n");  /////////////// dependant
+                    string hitCharacter = "";
 
-                    Thread.Sleep(1000);
+                    if (!(currentBarPattern[markerPos] == ' '))
+                    {
+                        hitCharacter = randBarPattern[markerPos].ToString();
+                    }
 
-                    PlayerAttack(false, false);  //////////// dependant
+                    Console.Write(hitCharacter + "\n\n");
+
+                    Thread.Sleep(500);
+
+                    int attackResult = 0;
+
+                    if (hitCharacter == "x")
+                    {
+                        Console.Write("You missed.\n\n");
+                        Thread.Sleep(400);
+                        attackResult = PlayerAttack(true, false);
+                    }
+                    else if (hitCharacter == "-" || hitCharacter == "<" || hitCharacter == ">")
+                    {
+                        Console.Write("You hit the enemy.\n\n");
+                        Thread.Sleep(400);
+                        attackResult = PlayerAttack(false, false);
+                    }
+                    else
+                    {
+                        Console.Write($"You hit the weak spot! +{weakSpotDamage}% Attack Damage\n\n");
+                        Thread.Sleep(400);
+                        attackResult = PlayerAttack(false, true);
+                    }
+
+                    MonsterObject.DamageMonster(MonsterObject, attackResult);
                 }
+
+                MainCombatScreen();
+
+                return;
             }
-            
         }
 
-        private void EnemyAttack()
+        private int EnemyAttack()
         {
-            MonsterObject.Attack();
+            return MonsterObject.Attack();
         }
 
-        private void PlayerAttack(bool miss, bool hitWeakSpot)
+        private int PlayerAttack(bool miss, bool hitWeakSpot)
         {
-            Game.CurrentPlayer.Attack(miss, hitWeakSpot);
+            return CurrentPlayer.Attack(miss, hitWeakSpot, new List<int>() { player_BaseDamage, player_CRITDmg, player_CRITRate, weakSpotDamage });
         }
 
         private void HelpScreen()
@@ -359,9 +513,12 @@ namespace DungeonExplorer
             MainCombatScreen();
         }
         
-        private void ExitCombat()
+        private void ExitCombat(bool victorious)
         {
+            InCombat = false;
+
 
         }
+
     }
 }

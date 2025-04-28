@@ -6,7 +6,7 @@ using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
 {
-    internal class Input
+    public class Input
     {
         /// <summary>
         /// Handles multiple inputs the player can make, ensuring the provided input is valid regarding the provided criteria (passed as parameters).

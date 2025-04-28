@@ -99,14 +99,24 @@ namespace DungeonExplorer
             }
         }
 
-        public override void Attack(bool miss = false, bool hitWeakSpot = false)
+        public override int Attack(bool miss = false, bool hitWeakSpot = false, List<int> availableDamage = null)
         {
-            
+
+            return 1;
         }
 
-        public override void Damage(int dmg)
+        public override void DamageMonster(Monster monster, int dmg)
         {
-            Console.WriteLine($"'{Name}' took {dmg} damage.");
+            if (monster.Health - dmg <= 0)
+            {
+                monster.Health = 0;
+            }
+            else
+            {
+                monster.Health -= dmg;
+            }
+
+            AssignInterface(monster.Species);  // Update the monsters interfaces
         }
     }
 }

@@ -9,7 +9,7 @@ using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
 {
-    internal class Game
+    public class Game
     {
         /// <summary>
         /// Initialises the main objects that will be used and referenced throughout the game.
@@ -19,6 +19,8 @@ namespace DungeonExplorer
 
         private string playerPlural = "";
 
+        public static Combat CurrentCombatSession { get; set; }
+
         // Here I set multiple objects as static since they will only be defined once per game. Therefore, they and their methods can be accessed in other main classes (e.g. Level_1)
         public static Player CurrentPlayer { get; private set; }
         public static List<Monster> Monster { get; private set; }
@@ -27,8 +29,6 @@ namespace DungeonExplorer
         public static Input InputHandler { get; private set; }
         public static Options OptionHandler { get; private set; }
 
-        public static Combat CurrentCombatSession = null;
-        
         public Game()
         {
             CurrentPlayer = new Player(Program.NameTemp, playerPlural, 60);
@@ -81,6 +81,21 @@ namespace DungeonExplorer
             }
 
             Console.WriteLine("\n\n---Game Finished---\n");
+        }
+
+        public static void StartCombat(int monsterIndex = 0)
+        {
+            if (CurrentCombatSession == null)
+            {
+                CurrentCombatSession = new Combat(Monster[monsterIndex]);
+            }
+
+            CurrentCombatSession.MainCombatScreen();
+        }
+
+        public static void ReturnToCombat()
+        {
+            StartCombat();
         }
     }
 }

@@ -23,12 +23,16 @@ namespace DungeonExplorer
             this.MaxHealth = maxHealth;
         }
 
-        public virtual void Damage(int dmg)
+        public virtual void DamageMonster(Monster monster, int dmg)
         {
-            Console.WriteLine("No damage was dealt.");  // The default output for IDamageable
+            Console.WriteLine("No damage was dealt to the monster.");  // The default outputs for IDamageable
+        }
+        public virtual void DamagePlayer(int dmg)
+        {
+            Console.WriteLine("No damage was dealt to you.");
         }
 
-        public abstract void Attack(bool miss = false, bool hitWeakSpot = false);
+        public abstract int Attack(bool miss = false, bool hitWeakSpot = false, List<int> availableDamage = null);
 
     }
 }

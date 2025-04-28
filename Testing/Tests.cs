@@ -44,7 +44,7 @@ namespace DungeonExplorer.Testing
             {
                 AddAllInventoryItems();
 
-                Game.CurrentCombatSession = new Combat(Game.Monster[0]);  // Dragon
+                Game.StartCombat(0);  // Dragon
 
                 Console.WriteLine("Testing combat session has ended, press [any key] to return to the Testing Menu.");
 
@@ -55,8 +55,8 @@ namespace DungeonExplorer.Testing
             else if (playerInput == "G")
             {
                 AddAllInventoryItems();
-                
-                Game.CurrentCombatSession = new Combat(Game.Monster[1]);  // Gnome
+
+                Game.StartCombat(1);  // Gnome
 
                 Console.WriteLine("Testing combat session has ended, press [any key] to return to the Testing Menu.");
 

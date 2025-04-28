@@ -53,15 +53,24 @@ namespace DungeonExplorer
 
 
         // Used to refresh the display after an item is selected, filters based on player preferences and combat selections.
-        private string GetInventoryDisplay(List<string> inventoryItems)
+        private string GetInventoryDisplay(List<string> inventoryItems, string currentlyChoosing = "")
         {
-            if (_slots.Count <= 0 )
-            {     
+            // If the player is selecting for a specific item (e.g. a Weapon) filter out all items that are not by creating a new list
+            if (!(currentlyChoosing == ""))
+            {
+                inventoryItems = GetAllItemOfType(inventoryItems, currentlyChoosing);
+
+                // Sort the items in alphabetical order
+                inventoryItems.OrderBy(n => n);  // Use LINQ to order the filtered items in alphabetical order
+            }
+
+            if (_slots.Count <= 0)
+            {
                 for (int i = 0; i < 10; i++)  // For each slot in the inventory
                 {
                     _slots.Add(new string[5]);  // Add an empty slot for each space in the inventory - each string in the array represents the line
                                                 // of whitespace in that displayable inventory slot
-                
+
                     _descriptionSlots.Add(new string[4]);
                 }
 
@@ -83,7 +92,6 @@ namespace DungeonExplorer
                     _descriptionSlots[i] = Item.GetItemDescription(inventoryItems[i]);
                 }
             }
-
 
             string inventoryDisplay = $@"
      Inventory:
@@ -140,7 +148,7 @@ namespace DungeonExplorer
                             {
                                 Program.CLEAR_CONSOLE();
 
-                                Game.CurrentCombatSession.MainCombatScreen();
+                                Game.ReturnToCombat();
                             }
                         }
                         else if (optionChosen.Equals("Enter"))
@@ -162,40 +170,23 @@ namespace DungeonExplorer
                                 }
                                 else
                                 {
-                                    string itemType = Item.GetItemTypeFromImage(_slots[itemIndex]);
-
                                     if (currentlyChoosing == "Weapon")
                                     {
-                                        if (itemType == currentlyChoosing)  // item[1] = item type - if the same as currently choosing type then continue to equip
-                                        {
-                                            Combat.Combat_EquippedWeapon = Item.GetItemNameFromImage(_slots[itemIndex]);
-                                            Combat.Combat_EquippedWeaponImage = _slots[itemIndex];
+                                        Combat.Combat_EquippedWeapon = Item.GetItemNameFromImage(_slots[itemIndex]);
+                                        Combat.Combat_EquippedWeaponImage = _slots[itemIndex];
 
-                                            Game.CurrentCombatSession.MainCombatScreen();  // Return to the main combat screen which will update the slots
-                                        }
-                                        else
-                                        {
-                                            DisplayInventory(inventoryItems, currentlyChoosing, true);
-                                        }
-
+                                        Game.ReturnToCombat();  // Return to the main combat screen which will update the slots
                                     }
                                     else if (currentlyChoosing == "Bonus Item")
                                     {
-                                        if (itemType == currentlyChoosing)  // item[1] = item type - if the same as currently choosing type then continue to equip
-                                        {
-                                            Combat.Combat_EquippedBonus = Item.GetItemNameFromImage(_slots[itemIndex]);
-                                            Combat.Combat_EquippedBonusImage = _slots[itemIndex];
+                                        Combat.Combat_EquippedBonus = Item.GetItemNameFromImage(_slots[itemIndex]);
+                                        Combat.Combat_EquippedBonusImage = _slots[itemIndex];
 
-                                            Game.CurrentCombatSession.MainCombatScreen();
-                                        }
-                                        else
-                                        {
-                                            DisplayInventory(inventoryItems, currentlyChoosing, true);
-                                        }
+                                        Game.ReturnToCombat();
                                     }
                                     else
                                     {
-                                        Console.WriteLine($"The item '{currentlyChoosing}' is not recognised.");
+                                        DisplayInventory(inventoryItems, currentlyChoosing, true);
                                     }
                                 }
                                
@@ -216,14 +207,18 @@ namespace DungeonExplorer
                                         Combat.Combat_EquippedWeapon = "";
                                         Combat.Combat_EquippedWeaponImage = InventoryEmptySlot;
 
-                                        Game.CurrentCombatSession.MainCombatScreen();  // Return to the main combat screen which will update the slots
+                                        Game.ReturnToCombat();
                                     }
-                                    else if (currentlyChoosing == "Bonus")
+                                    else if (currentlyChoosing == "Bonus Item")
                                     {
                                         Combat.Combat_EquippedBonus = "";
                                         Combat.Combat_EquippedBonusImage = InventoryEmptySlot;
 
-                                        Game.CurrentCombatSession.MainCombatScreen();
+                                        Game.ReturnToCombat();
+                                    }
+                                    else
+                                    {
+                                        DisplayInventory(inventoryItems, currentlyChoosing, true);
                                     }
                                 }
                             }
@@ -268,6 +263,25 @@ namespace DungeonExplorer
                 else PlayerChoiceInventory();
             }
 
+        }
+
+
+        private static List<string> GetAllItemOfType(List<string> inventoryItems, string itemType)
+        {
+            List<string> result = new List<string>();
+
+            // For each item in the inventory, if the item matches the item that the player is looking for (e.g. "Weapon") then add it to a new list of strings
+            foreach (string item in inventoryItems)
+            {
+                string thisItemType = Item.GetItemType(itemType);
+
+                if (item.Equals(thisItemType))
+                {
+                    result.Add(item);
+                }
+            }
+
+            return result;
         }
     }
 }

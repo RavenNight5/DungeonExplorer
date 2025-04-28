@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace DungeonExplorer
 {
-    internal class Options
+    public class Options
     {
         /// <summary>
         /// Returns a string concatenated from the various options (based on the method called) and holds the keybinds for the main single-key options the player can take.
