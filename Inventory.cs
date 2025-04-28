@@ -53,31 +53,17 @@ namespace DungeonExplorer
         private readonly string _emptyBottom = "      ";  // There is an inventory slot number so have one less space
 
 
-        // Used to refresh the display after an item is selected, filters based on player preferences and combat selections.
+        // Used to refresh the display after an item is selected, filters the list based on the combat selection
         private string GetInventoryDisplay(List<string> inventoryItems, string currentlyChoosing = "")
         {
-            // If the player is selecting for a specific item (e.g. a Weapon) filter out all items that are not by creating a new list
+            // Filter out all items that are not of type currentlyChoosing by creating a new list
+            if (!string.IsNullOrEmpty(currentlyChoosing))
+            {
+                inventoryItems = GetAllItemOfType(inventoryItems, currentlyChoosing);
 
-            //if (!string.IsNullOrEmpty(currentlyChoosing))
-            //{
-            //    inventoryItems = GetAllItemOfType(inventoryItems, currentlyChoosing);
-
-            //    // Sort the items in alphabetical order  
-            //    //inventoryItems = inventoryItems.OrderBy(n => n).ToList(); // Ensure the result is materialized into a list  
-
-            //    Console.WriteLine(string.Join(", ", inventoryItems));
-
-            //    Console.ReadKey();
-            //}
-
-            //inventoryItems = GetAllItemOfType(inventoryItems, currentlyChoosing);
-
-            //// Sort the items in alphabetical order
-            //inventoryItems.OrderBy(n => n);  // Use LINQ to order the filtered items in alphabetical order
-
-            //Console.WriteLine(string.Join(" ,", inventoryItems));
-
-            //Console.ReadKey();
+                // Sort the items in alphabetical order  
+                inventoryItems = inventoryItems.OrderBy(n => n).ToList();
+            }
 
             if (_slots.Count <= 0)
             {
@@ -97,9 +83,6 @@ namespace DungeonExplorer
                     _slots[i][3] = _emptyNormal;
                     _slots[i][4] = _emptyBottom;
                 }
-
-                //#######################
-                // use the _slots where for each inventoryItem , find the corresponding Weapon or other item and assign it's image to the slot
 
                 for (int i = 0; i < inventoryItems.Count; i++)
                 {
@@ -127,6 +110,7 @@ namespace DungeonExplorer
 
         ";
             //                < Q  Content  E >
+          
             return inventoryDisplay;
         }
 
@@ -249,7 +233,7 @@ namespace DungeonExplorer
                             {
                                 InventoryItemDescription = _descriptionSlots[slotChosen];
 
-                                InventorySlotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
+                                InventorySlotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
 
                                 InventorySlotNumbers[slotChosen] = _selectedSlotChar;
                             }
@@ -280,7 +264,7 @@ namespace DungeonExplorer
 
         }
 
-
+        // Gets the itemType of the item that the player is selecting (e.g. "Weapon") and returns a list of all items in the inventory that match that type
         private static List<string> GetAllItemOfType(List<string> inventoryItems, string itemType)
         {
             List<string> result = new List<string>();
@@ -290,13 +274,10 @@ namespace DungeonExplorer
             {
                 string thisItemType = Item.GetItemType(item);
 
-                if (item.Equals(thisItemType))
+                if (thisItemType == itemType)
                 {
                     result.Add(item);
                 }
-
-                Console.ReadKey();
-
             }
 
             return result;
