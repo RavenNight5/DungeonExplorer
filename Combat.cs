@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using DungeonExplorer.Testing;
 using Microsoft.SqlServer.Server;
 
 namespace DungeonExplorer
@@ -32,7 +33,6 @@ namespace DungeonExplorer
         private int opportunities = 0;
 
         private bool notPassing = true;
-        private bool attacking = false;
 
         private Monster MonsterObject { get; set; }
 
@@ -70,6 +70,14 @@ namespace DungeonExplorer
         private string currentBarPattern = "";
 
         private readonly string _markerCharacter = "^";
+
+
+        // Used for the threads that handle player input and console output simultaneously
+        
+        static CancellationTokenSource cts = new CancellationTokenSource();
+        private static bool attacking = false;
+
+        //
 
         public Combat(Monster monster)
         {
@@ -171,17 +179,18 @@ namespace DungeonExplorer
 
     '{Program.NameTemp}' | Species: Cleaner
 
-    Weapon     Bonus        {Program.NameTemp}{Program.TempPlural} Health:
-    --── ──--  --── ──--    ┌───────----- - - -
-    │{Combat_EquippedWeaponImage[0]}│  │{Combat_EquippedBonusImage[0]}│    ║ {HealthVisual} ({Player.Health}/{Game.CurrentPlayer.MaxHealth}
-    │{Combat_EquippedWeaponImage[1]}│  │{Combat_EquippedBonusImage[1]}│    └───────----- - - -
-    ║{Combat_EquippedWeaponImage[2]}║  ║{Combat_EquippedBonusImage[2]}║    My Combat Stats
-    │{Combat_EquippedWeaponImage[3]}│  │{Combat_EquippedBonusImage[3]}│    ╔══─=───────---
-    │ {Combat_EquippedWeaponImage[4]}│  │ {Combat_EquippedBonusImage[4]}│    │   {player_BaseDamage}     Base Damage
-    --─ ! ─--  --─ + ─--    ║+[ {player_CRITDmg} ]%  CRIT dmg
-                            │ [ {player_CRITRate} ]%  Chance of CRIT hit
-                            ╚══─=───────---
-";
+      Weapons        Bonus        {Program.NameTemp}{Program.TempPlural} Health:
+    --── ! ──--   --── + ──--     ┌───────----- - - -
+    | {Combat_EquippedWeaponImage[0]} |   │ {Combat_EquippedBonusImage[0]} │     ║ {HealthVisual} ({Player.Health}/{Game.CurrentPlayer.MaxHealth}
+    │ {Combat_EquippedWeaponImage[1]} │   | {Combat_EquippedBonusImage[1]} |     └───────----- - - -
+    ! {Combat_EquippedWeaponImage[2]} !   + {Combat_EquippedBonusImage[2]} +
+    │ {Combat_EquippedWeaponImage[3]} │   | {Combat_EquippedBonusImage[3]} |     My Combat Stats:
+    |  {Combat_EquippedWeaponImage[4]} |   │  {Combat_EquippedBonusImage[4]} │     ╔══─=───────---
+    --── ! ──--   --── + ──--     │   {player_BaseDamage}     Base Damage
+                                  │ ------
+                                  │+[ {player_CRITDmg} ]%  CRIT dmg
+                                  │ [ {player_CRITRate} ]%  Chance of CRIT hit
+                                  ╚══─=───────---";
 
             Console.Write(MonsterObject.MonsterInterface);
 
@@ -191,12 +200,11 @@ namespace DungeonExplorer
 
             System.Threading.Thread.Sleep(100);
 
-            Console.WriteLine($@"
- > Start Attack [Space]
+            Console.WriteLine($@" > Start Attack [Space]
    | Total Attacks Made: {attacksMade}
    | Turns Passed: {turnsPassed}
 
- > {weaponStatus} Weapon [1]
+ > {weaponStatus} Weapon(s) [1]
  > {bonusItemStatus} Bonus Item [2]
 
  > Pass Your Turn [P]
@@ -259,31 +267,31 @@ namespace DungeonExplorer
 
         private string GetAttackBar()
         {
-            if (markerPos <= 0)  // Get a new random bar pattern every time the marker is at pos 0
+            if (markerPos <= 0)  // Get a new random bar pattern every time the marker is at pos 0  
             {
                 randBarPattern = barPatterns[rand.Next(barPatterns.Length)];
                 currentBarPattern = randBarPattern;
             }
 
-            marker = "";  // Reset the spaces in the marker
+            marker = "";  // Reset the spaces in the marker  
 
             for (int i = 0; i < markerPos; i++)
             {
-                marker += " ";  // Re-add a space for each position the marker has moved
+                marker += " ";  // Re-add a space for each position the marker has moved  
             }
 
-            marker += _markerCharacter;  // Add the character ^ at the end
+            marker += _markerCharacter;  // Add the character ^ at the end  
 
-            string bar = $@"
-    Your turn to attack [Any Key]:
-    ╔══──────────-----      -----──────────═╗
-    │ {randBarPattern} │
-      {marker}
-    ╚══──────────-----      -----──────────═╝
+            string bar = $@"  
+ Your turn to attack [Any Key]:  
+ ╔══──────────-----      -----──────────═╗  
+ │ {currentBarPattern} │  
+     {marker}  
+ ╚══──────────-----      -----──────────═╝  
 
-    ({opportunities}/5 opportunities passed | +{weakSpotDamage}% weak spot dmg)
+ ({opportunities}/5 opportunities passed | +{weakSpotDamage}% weak spot dmg)  
 
-";
+        ";
 
             return bar;
         }
@@ -294,104 +302,101 @@ namespace DungeonExplorer
 
             Console.Write(GetAttackBar());
 
-            opportunities = 0;  // Reset number of opportunities to strike  
-            
-            void oneStepAttack()
+            // Reset number of opportunities and the marker position
+            opportunities = 0;
+            markerPos = 0;
+
+            cts = new CancellationTokenSource(); // Reset the cancellation token source  
+
+            Thread attackThread = new Thread(AttackThread);
+            attackThread.Start();
+
+            Thread inputThread = new Thread(InputThread);
+            inputThread.Start();
+
+            // Wait for the threads to finish before continuing
+            attackThread.Join();
+            inputThread.Join();
+
+            void AttackThread()
             {
-                while (!Console.KeyAvailable && attacking)
+                try
                 {
-                    Program.CLEAR_CONSOLE();
-
-                    Console.Write(GetAttackBar());
-
-                    Thread.Sleep(weaponEaseOfUse * 10);
-
-                    markerPos += 2;  // Increment the marker's position
-
-                    if (markerPos >= barLength)
+                    while (!cts.Token.IsCancellationRequested)
                     {
-                        opportunities++;
+                        if (attacking)
+                        {
+                            while (attacking)
+                            {
+                                Program.CLEAR_CONSOLE();
+                                Console.Write(GetAttackBar());
 
-                        markerPos = 0;
+                                markerPos += 2; // Increment the marker's position  
 
-                        break;
+                                Thread.Sleep(weaponEaseOfUse * 10);
 
+                                if (markerPos >= barLength)
+                                {
+                                    opportunities++;
+                                    markerPos = 0;
+
+                                    if (opportunities >= 5)
+                                    {
+                                        Console.WriteLine("You took too long... The enemy attacks.\n\n");
+                                        Thread.Sleep(1500);
+
+                                        attacking = false;
+
+                                        cts.Cancel(); // Stop the thread  
+
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
-
-                return;
+                catch (OperationCanceledException)
+                {
+                    Debug.WriteLine("Attack thread cancelled.");
+                }
             }
 
-            oneStepAttack();
-
-            result();
-
-            //while (opportunities < 5 && attacking)
-            //{
-            //    while (markerPos < barLength && attacking)
-            //    {
-            //        //while (!Console.KeyAvailable && markerPos < barLength && attacking)
-            //        //{
-            //        if (!attacking)
-            //        {
-            //            break;
-            //        }
-            //        else
-            //        {
-            //            while (!Console.KeyAvailable && attacking)
-            //            {
-            //                Program.CLEAR_CONSOLE();
-
-            //                Console.Write(GetAttackBar());
-
-            //                Thread.Sleep(weaponEaseOfUse * 10);
-
-            //                markerPos += 2;  // Increment the marker's position
-
-            //                if (markerPos >= barLength)
-            //                {
-            //                    opportunities++;
-
-            //                    markerPos = 0;
-
-            //                    if (weakSpotDamage > 0)
-            //                    {
-            //                        weakSpotDamage--;
-            //                    }
-
-            //                    break;
-            //                }
-            //            }
-
-            //            attacking = false;
-
-            //            result();
-
-            //            return;  // Exit the method after the attack is resolved
-            //        }
-            //        //}
-
-            //    }
-
-            //    opportunities++;
-
-            //    if (!attacking)
-            //    {
-            //        break;
-            //    }
-            //}
-
-            void result()
+            void InputThread()
             {
-                attacking = false;
+                try
+                {
+                    while (!cts.Token.IsCancellationRequested)
+                    {
+                        if (Console.KeyAvailable)
+                        {
+                            var key = Console.ReadKey(true);
+                            if (key.Key == ConsoleKey.Spacebar)
+                            {
+                                attacking = false;
 
-                if (opportunities >= 1)
+                                cts.Cancel();
+
+                                attackedResult();
+                            }
+                        }
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    Debug.WriteLine("Input thread cancelled.");
+                }
+            }
+
+            void attackedResult()
+            {
+                if (opportunities >= 5)
                 {
                     Program.CLEAR_CONSOLE();
 
                     Console.Write($"You took too long... The enemy attacks.\n\n");
 
-                    Thread.Sleep(1500);
+                    Thread.Sleep(750);
 
                     EnemyAttack();
                 }
@@ -406,10 +411,6 @@ namespace DungeonExplorer
                         hitCharacter = randBarPattern[markerPos].ToString();
                     }
 
-                    Console.Write(hitCharacter + "\n\n");
-
-                    Thread.Sleep(500);
-
                     int attackResult = 0;
 
                     if (hitCharacter == "x")
@@ -420,14 +421,10 @@ namespace DungeonExplorer
                     }
                     else if (hitCharacter == "-" || hitCharacter == "<" || hitCharacter == ">")
                     {
-                        Console.Write("You hit the enemy.\n\n");
-                        Thread.Sleep(400);
                         attackResult = PlayerAttack(false, false);
                     }
                     else
                     {
-                        Console.Write($"You hit the weak spot! +{weakSpotDamage}% Attack Damage\n\n");
-                        Thread.Sleep(400);
                         attackResult = PlayerAttack(false, true);
                     }
 
@@ -435,8 +432,6 @@ namespace DungeonExplorer
                 }
 
                 MainCombatScreen();
-
-                return;
             }
         }
 
@@ -517,8 +512,22 @@ namespace DungeonExplorer
         {
             InCombat = false;
 
+            Program.CLEAR_CONSOLE();
 
+            if (Tests.InTestingMode)
+            {
+                Console.WriteLine("As testing mode is enabled, the program will need to restart.\n\nPress [any key] to continue.\n");
+
+                Console.ReadKey();
+
+                System.Diagnostics.Process.Start(System.AppDomain.CurrentDomain.FriendlyName);
+
+                Environment.Exit(0);
+            }
+            
+            // Automatically returns the player to the room or testing menu
         }
+
 
     }
 }

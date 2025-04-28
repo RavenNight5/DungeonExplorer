@@ -323,7 +323,7 @@ namespace DungeonExplorer.Levels
 
                                 R7_ActionCompleted[action] = true;
 
-                                Game.StartCombat(0);  // Enter combat with the Dragon Monster
+                                Program.game.StartCombat(0);  // Enter combat with the Dragon Monster
                             }
                             else
                             {

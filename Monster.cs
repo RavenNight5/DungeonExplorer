@@ -70,8 +70,8 @@ namespace DungeonExplorer
     │   \▒▓ ▓▒/   │   │ ------
     │   )▓▓^▓▓(   │   │+[ {CRITDamage} ]%  CRIT dmg
     │ ~)\╤▓▒▓╤/(~ │   │ [ {CRITRate} ]%  Chance of CRIT hit
-    |  \▒│░^░│▒/  |   │ ------
-    |   \░▓▒▓░/   |   │ Ability: Has one opportunity to steal your turn.
+    |  \▒│▒^▒│▒/  |   │ ------
+    |   \▒░▒░▒/   |   │ Ability: Has one opportunity to steal your turn.
          |vvv|        ╚══──══=───---
     │     \V/     │
     ╚═──  ─~─  ──═╝

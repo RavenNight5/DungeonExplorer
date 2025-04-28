@@ -63,23 +63,6 @@ namespace DungeonExplorer
             return null;
         }
 
-        public static string GetItemTypeFromImage(string[] item)
-        {
-            //foreach (var itemType in AllItems)
-            //{
-            //    for (var i = 0; i < itemType.Count; i++)
-            //    {
-            //        if (itemType[i][1] == item)
-            //        {
-            //            Console.WriteLine(ItemTypeIndex[i]);
-            //            Console.ReadKey();
-            //            return ItemTypeIndex[i];
-            //        }
-            //    }
-            //}
-
-            return null;
-        }
 
         public static string GetItemNameFromImage(string[] item)
         {
@@ -117,11 +100,11 @@ namespace DungeonExplorer
         public static string GetItemType(string item)
         {
 
-            foreach (var itemType in AllItems)
+            for (int i = 0; i < AllItems.Count; i++)
             {
-                for (var i = 0; i < itemType.Count; i++)
+                foreach (var newItem in AllItems[i])
                 {
-                    if (itemType[i][0][0] == item)
+                    if (newItem[0][0] == item)
                     {
                         return ItemTypeIndex[i];
                     }

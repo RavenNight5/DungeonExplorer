@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
@@ -79,88 +80,78 @@ namespace DungeonExplorer
         {
             Program.CLEAR_CONSOLE();
 
-            int result = 0;
-
-            int baseDamage = 0;
-            int critDamage = 0;
-            int critRate = 0;
-            int weakSpotDmg = 0;
+            float result = 0;
 
             if (!(availableDamage == null) && miss == false)
             {
-                baseDamage = availableDamage[0];
-                critDamage = availableDamage[1];
-                critRate = availableDamage[2];
-                weakSpotDmg = availableDamage[3];
+                int baseDamage = availableDamage[0];
+                int critDamage = availableDamage[1];
+                int critRate = availableDamage[2];
+                int weakSpotDmg = availableDamage[3];
 
-                // If the attack is a crit hit (from random chance of crit rate), add the base damage and crit damage
                 Random critRateChance = new Random();
 
-                if (critRateChance.Next(0, 100) <= critRate)  // CRIT Hit
+                if (critRateChance.Next(0, 100) <= critRate)  // CRIT Hit  
                 {
-                    result = baseDamage + (baseDamage * (critDamage/100));  // Adds the percentage of crit damage to the base damage
-                    
+                    result = baseDamage + (baseDamage * critDamage / 100);  // Adds the percentage of crit damage to the base damage
+
                     if (hitWeakSpot)
                     {
-                        result = result + (result * (weakSpotDmg / 100));  // Adds the percentage of weak spot damage to the result damage
-                        
-                        Console.Write($@"
- WEAK SPOT CRIT HIT!
- [ {baseDamage} ] Weapon Base
- +[ {critDamage} ]% CRIT Dmg
-  +[ {weakSpotDmg} ]% Weak Spot Dmg
- ---
- [ {result} ] Total Dmg
+                        result += (result * weakSpotDmg / 100);  // Adds the percentage of weak spot damage to the result damage
 
-                        ");
+                        Console.WriteLine($" WEAK SPOT CRIT HIT!\n");
+                        Thread.Sleep(300);
+                        Console.WriteLine($" [ {baseDamage} ] Weapon Base Dmg");
+                        Thread.Sleep(200);
+                        Console.WriteLine($" +[ {critDamage} ]% CRIT Dmg");
+                        Thread.Sleep(100);
+                        Console.WriteLine($"  +[ {weakSpotDmg} ]% Weak Spot Dmg");
+                        Thread.Sleep(50);
+                        Console.WriteLine($" ---\n [ {(int)Math.Ceiling(result)} ] Total Dmg");
                     }
                     else
                     {
-                        Console.Write($@"
- CRIT HIT!
- [ {baseDamage} ] Weapon Base
- +[ {critDamage} ]% CRIT Dmg
- ---
- [ {result} ] Total Dmg
-
-                        ");
+                        Console.WriteLine($" CRIT HIT!\n");
+                        Thread.Sleep(200);
+                        Console.WriteLine($" [ {baseDamage} ] Weapon Base Dmg");
+                        Thread.Sleep(100);
+                        Console.WriteLine($" +[ {critDamage} ]% CRIT Dmg");
+                        Thread.Sleep(50);
+                        Console.WriteLine($" ---\n [ {(int)Math.Ceiling(result)} ] Total Dmg");
                     }
                 }
-                else  // Regular hit
+                else  // Regular hit  
                 {
                     result = baseDamage;
 
                     if (hitWeakSpot)
                     {
-                        result = result + (result * (weakSpotDmg / 100));
+                        result += (result * weakSpotDmg / 100);
 
-                        Console.Write($@"
- WEAK SPOT HIT!
- [ {baseDamage} ] Weapon Base
-  +[ {weakSpotDmg} ]% Weak Spot Dmg
- ---
- [ {result} ] Total Dmg
-
-                        ");
+                        Console.WriteLine($" WEAK SPOT HIT!\n");
+                        Thread.Sleep(200);
+                        Console.WriteLine($" [ {baseDamage} ] Weapon Base Dmg");
+                        Thread.Sleep(100);
+                        Console.WriteLine($"  +[ {weakSpotDmg} ]% Weak Spot Dmg");
+                        Thread.Sleep(50);
+                        Console.WriteLine($" ---\n [ {(int)Math.Ceiling(result)} ] Total Dmg");
                     }
                     else
                     {
-                        Console.Write($@"
- HIT!
- [ {baseDamage} ] Weapon Base
- ---
- [ {result} ] Total Dmg
-
-                        ");
+                        Console.WriteLine($" HIT!\n");
+                        Thread.Sleep(200);
+                        Console.WriteLine($" [ {baseDamage} ] Weapon Base Dmg");
+                        Thread.Sleep(100);
+                        Console.WriteLine($" ---\n [ {(int)Math.Ceiling(result)} ] Total Dmg");
                     }
                 }
 
-               
+                Console.WriteLine($"\n\nPress [any key] to continue.\n");
+
+                Console.ReadKey();
             }
 
-           
-
-            return result;
+            return (int)Math.Ceiling(result);
         }
 
         public override void DamagePlayer(int dmg)

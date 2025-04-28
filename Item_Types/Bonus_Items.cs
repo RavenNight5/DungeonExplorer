@@ -23,7 +23,7 @@ namespace DungeonExplorer.Item_Types
             "0",  // Base dmg (if 0 then it is a bonus item/has different effects)
             "0",  // Difficulty of use (10-100) where 10 is an easy attack and 100 is extremely difficult - this number
                    // acts as the speed percentage the dial moves before an attack (if 0 then it is a bonus item/has different effects)
-            "Shield 0.5 notCRITHIT"  // Special effect (split by whitespace, first string = effect, second = percentage effect has, third = when it applies (if applicable)
+            "easeOfUse 0.3"//"Shield 0.5 notCRITHIT"  // Special effect (split by whitespace, first string = effect, second = percentage effect has, third = when it applies (if applicable)
             },
             new string[5] {
             "       ",
@@ -35,7 +35,7 @@ namespace DungeonExplorer.Item_Types
             new string[4] {
             "~ Sponge ~",
             "Your trusted cleaning companion! Sometimes you talk to it.",
-            "(Shield - If not a CRIT HIT will soak 50% damage for 3 turns)",
+            "(Speed Absorption - makes hitting the opponent 30% easier when equipped)",//"(Shield - If not a CRIT HIT will soak 50% damage for 3 turns)",
             ""
             }
         };

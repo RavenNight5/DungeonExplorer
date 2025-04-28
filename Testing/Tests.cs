@@ -44,7 +44,7 @@ namespace DungeonExplorer.Testing
             {
                 AddAllInventoryItems();
 
-                Game.StartCombat(0);  // Dragon
+                Program.game.StartCombat(0);  // Dragon
 
                 Console.WriteLine("Testing combat session has ended, press [any key] to return to the Testing Menu.");
 
@@ -56,7 +56,7 @@ namespace DungeonExplorer.Testing
             {
                 AddAllInventoryItems();
 
-                Game.StartCombat(1);  // Gnome
+                Program.game.StartCombat(1);  // Gnome
 
                 Console.WriteLine("Testing combat session has ended, press [any key] to return to the Testing Menu.");
 
@@ -97,20 +97,16 @@ namespace DungeonExplorer.Testing
 
         private void AddAllInventoryItems()
         {
-            if (InTestingMode == true)
+            foreach (var itemType in Item.AllItems)
             {
-                foreach (var itemType in Item.AllItems)
+                for (var i = 0; i < itemType.Count; i++)
                 {
-                    for (var i = 0; i < itemType.Count; i++)
+                    if (!Game.CurrentPlayer.InventoryItems.Contains(itemType[i][0][0]))  // If the inventory does not already contain the item
                     {
-                        if (!Game.CurrentPlayer.InventoryItems.Contains(itemType[i][0][0]))  // If the inventory does not already contain the item
-                        {
-                            Game.CurrentPlayer.InventoryItems.Add(itemType[i][0][0]);  // Add the item name to the inventory
-                        }
+                        Game.CurrentPlayer.InventoryItems.Add(itemType[i][0][0]);  // Add the item name to the inventory
                     }
                 }
             }
-
         }
 
         public static void CheckRoomDisplayExists(int lastRoomFetched, int descriptionsListCount)

@@ -83,7 +83,7 @@ namespace DungeonExplorer
             Console.WriteLine("\n\n---Game Finished---\n");
         }
 
-        public static void StartCombat(int monsterIndex = 0)
+        public void StartCombat(int monsterIndex = 0)
         {
             if (CurrentCombatSession == null)
             {
@@ -95,7 +95,17 @@ namespace DungeonExplorer
 
         public static void ReturnToCombat()
         {
-            StartCombat();
+            if (CurrentCombatSession == null)
+            {
+                throw new InvalidOperationException("No active combat session exists to return to.");
+            }
+
+            if (!Combat.InCombat)
+            {
+                Combat.InCombat = true;
+            }
+
+            CurrentCombatSession.MainCombatScreen();
         }
     }
 }
