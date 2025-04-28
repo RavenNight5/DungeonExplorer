@@ -1,69 +1,12 @@
 ﻿// Filename: Program.cs
 using System;
+using System.Diagnostics;
 using System.Threading;
 using DungeonExplorer.Testing;
 using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
 {
-    //class Program
-    //{
-
-    //    public static string VersionNumber = "v0.2";
-
-    //    public static int NumOfLevels = 1;  // Change locally based on how many levels are implemented
-
-    //    public static string NameTemp = "";
-    //    public static string TempPlural = "";
-
-    //    public static Game game { get; private set; }
-
-    //    static CancellationTokenSource cts = new CancellationTokenSource();
-    //    private static bool attacking = false;
-
-    //    static void Main(string[] args)
-    //    {
-    //        Thread t = new Thread(startAttackThread);
-    //        t.Start();
-    //        Thread t2 = new Thread(keyPressThread);
-    //        t2.Start();
-    //    }
-
-    //    static void keyPressThread(object state)
-    //    {
-    //        while (!cts.IsCancellationRequested)
-    //        {
-    //            if (Console.KeyAvailable)
-    //            {
-    //                var key = Console.ReadKey(true);
-    //                if (key.Key == ConsoleKey.Spacebar)
-    //                {
-    //                    attacking = !attacking;
-    //                }
-    //            }
-    //        }
-    //    }
-
-
-    //    static void startAttackThread(object state)
-    //    {
-    //        Console.WriteLine("Starting Combat...");
-    //        while (!cts.IsCancellationRequested)
-    //        {
-    //            if (attacking)
-    //            {
-    //                Console.WriteLine("Attacking...");
-    //                while (attacking)
-    //                {
-
-    //                }
-    //                Console.WriteLine("Attacked...");
-    //            }
-    //            Console.WriteLine("Not Attacking...");
-    //        }
-    //        Console.WriteLine("Stopped Combat...");
-    //    }
-    //}
     internal class Program
     {
         /// <summary>
@@ -93,7 +36,7 @@ namespace DungeonExplorer
             game = new Game();
 
             Console.WriteLine(title);
-            Console.WriteLine("\nPress [Space] to play.\nPress [T] for the Testing Menu.\n\n");
+            Console.WriteLine("\n Press [Space] to play.\n ---\n Press [T] for the Testing Menu.\n\n");
 
             string playerInput = Game.InputHandler.WaitOnKey("Spacebar", "T");
 
@@ -143,10 +86,39 @@ namespace DungeonExplorer
                 }
             }
 
-            Console.WriteLine("\nPress any key to exit...");
+            Console.WriteLine("\nPress [any key] to exit application...");
             Console.ReadKey();
         }
 
+
+        // If the player has lost the battle
+        public static void GameOver()
+        {
+            CLEAR_CONSOLE();
+
+            Console.WriteLine(@"                                    
+ ▄▀  ▄▀▄ █▄ ▄█ ██▀   ▄▀▄ █ █ ██▀ █▀▄
+ ▀▄▓ ▓▀▓ ▒ ▀ ▒ ▒▄▄   ▒▄▀ ▀▄▒ ▓▄▄ ▓▀▄
+
+
+ Restart Application [Space]
+ ---
+ Quit Application [Q]
+");
+
+            string playerInput = Game.InputHandler.WaitOnKey("Spacebar", "Q");
+            
+            if (playerInput == "Spacebar")
+            {
+                Process.Start(AppDomain.CurrentDomain.FriendlyName);
+
+                Environment.Exit(0);
+            }
+            else
+            {
+                Environment.Exit(0);
+            }
+        }
 
         // Clears the current console screen and the scrollback buffer (characters that may be out of view but still there when you scroll up)
         public static void CLEAR_CONSOLE()

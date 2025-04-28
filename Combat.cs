@@ -20,6 +20,8 @@ namespace DungeonExplorer
         private string weaponStatus = "Choose";
         private string bonusItemStatus = "Choose";
 
+        private string whosTurn = "Player";  // The current turn holder (Player or Monster)
+
         private string player_BonusEffect = "";  // The bonus effect of the equipped bonus item (if any)
 
         private int player_BaseDamage = 0;
@@ -101,19 +103,26 @@ namespace DungeonExplorer
 
             notPassing = true;
 
+            string attackStatus = "Start";
+
+            if (whosTurn == "Monster")
+            {
+                attackStatus = "Recieve";
+            }
+
             if (Player.Health <= 0)
             {
-                Console.WriteLine("You have been defeated...\n\nPress [any key] to continue.\n");
+                Console.WriteLine("You have been defeated...\n\n");
 
-                Console.ReadKey();
+                Thread.Sleep(750);
 
                 ExitCombat(false);
             }
             else if (MonsterObject.Health <= 0)
             {
-                Console.WriteLine($"You have defeated {MonsterObject.Name}!\n\nPress [any key] to continue.\n");
+                Console.WriteLine($"You have defeated {MonsterObject.Name}!\n\n");
 
-                Console.ReadKey();
+                Thread.Sleep(1000);
 
                 ExitCombat(true);
             }
@@ -159,6 +168,12 @@ namespace DungeonExplorer
                     Debug.WriteLine($"Error parsing Weapon stats.");
                 }
             }
+            else
+            {
+                player_BaseDamage = Player.BaseDamage;
+                player_CRITDmg = Player.CRITDamage;
+                player_CRITRate = Player.CRITRate;
+            }
 
             if (Combat_EquippedBonus != "" && Combat_EquippedBonus != null)
             {
@@ -172,6 +187,10 @@ namespace DungeonExplorer
                 {
                     Debug.WriteLine($"Error parsing Bonus Item stats.");
                 }
+            }
+            else
+            {
+                player_BonusEffect = "";
             }
 
             string playerStats = $@"
@@ -200,7 +219,7 @@ namespace DungeonExplorer
 
             System.Threading.Thread.Sleep(100);
 
-            Console.WriteLine($@" > Start Attack [Space]
+            Console.WriteLine($@" > {attackStatus} Attack [Space]
    | Total Attacks Made: {attacksMade}
    | Turns Passed: {turnsPassed}
 
@@ -223,11 +242,18 @@ namespace DungeonExplorer
 
                 if (playerInput == "Spacebar")
                 {
-                    attacksMade += 1;
+                    if (whosTurn == "Player")
+                    {
+                        attacksMade += 1;
 
-                    attacking = true;
+                        attacking = true;
 
-                    SubCombatScreen();
+                        SubCombatScreen();
+                    }
+                    else
+                    {
+                        EnemyAttack();
+                    }
                 }
                 else if (playerInput == "D1")
                 {
@@ -342,12 +368,11 @@ namespace DungeonExplorer
 
                                     if (opportunities >= 5)
                                     {
-                                        Console.WriteLine("You took too long... The enemy attacks.\n\n");
-                                        Thread.Sleep(1500);
-
                                         attacking = false;
 
                                         cts.Cancel(); // Stop the thread  
+
+                                        attackedResult();
 
                                         break;
                                     }
@@ -417,6 +442,7 @@ namespace DungeonExplorer
                     {
                         Console.Write("You missed.\n\n");
                         Thread.Sleep(400);
+
                         attackResult = PlayerAttack(true, false);
                     }
                     else if (hitCharacter == "-" || hitCharacter == "<" || hitCharacter == ">")
@@ -435,13 +461,21 @@ namespace DungeonExplorer
             }
         }
 
-        private int EnemyAttack()
+        private void EnemyAttack()
         {
-            return MonsterObject.Attack();
+            whosTurn = "Player";
+
+            int mosterDamageDealt = MonsterObject.Attack(false, false, new List<int>() { MonsterObject.BaseDamage, MonsterObject.CRITDamage, MonsterObject.CRITRate });
+
+            CurrentPlayer.DamagePlayer(mosterDamageDealt);
+
+            MainCombatScreen();
         }
 
         private int PlayerAttack(bool miss, bool hitWeakSpot)
         {
+            whosTurn = "Monster";
+            
             return CurrentPlayer.Attack(miss, hitWeakSpot, new List<int>() { player_BaseDamage, player_CRITDmg, player_CRITRate, weakSpotDamage });
         }
 
@@ -454,20 +488,18 @@ namespace DungeonExplorer
 
  Before starting an attack:
  --------------------------
-     > make sure you have an equipped WEAPON and BONUS ITEM (if available)
-     > Check your stats (WEAPONS will affect Base Damage and CRIT Damage)
+     > Make sure you have an equipped WEAPON and BONUS ITEM (if available)
+     > Check your stats (most items will affect your Base Damage, CRIT Damage or CRIT Rate)
 
  During an attack:
  -----------------
 
      x - - - x - - - - x - - - < + > - - x
                  ^
-
-     A bar (see above) will be shown with a marker  ^  displayed below.
+     A bar (as above) will be shown with a marker  ^  displayed below.
 
      This marker will move across the bar at a speed relevant to the ease of use of the selected WEAPON.
      
-
      When the marker reaches the end of the bar a different bar will be shown and you will have missed
      an OPPORTUNITY.
 
@@ -478,24 +510,22 @@ namespace DungeonExplorer
 
          x   Miss
 
-         -   Regular Hit
+      -  or  < >   Regular Hit
 
          +   WEAK SPOT Hit (+10% Damage which gets less each OPPORTUNITY missed)
-
-        < >  Regular Hit
 
  After an attack:
  ----------------
      Provided you have hit the opponent, Base Damage will be applied, followed by CRIT Damage (if the hit 
-     was critical - 30% chance, see your CRIT Rate), then finally WEAK SPOT Damage if the hit was
-     at the weak spot.
+     was critical - a changeable % chance: see your CRIT Rate), WEAK SPOT Damage if the hit was at the weak 
+     spot, then finally the values of two 6-sided die.
 
-     This is all calculated and shown as a final Damage TOTAL. Which is taken off the opponent's health.
+     The TOTAL is then taken off the opponent's health.
 
 
  Opponent attack:
  ----------------
-     Similar to a player attack with only the Base Damage, CRIT Damage, CRIT Rate
+     Similar to a player attack with: Base Damage, CRIT Damage, CRIT Rate, 1d10 Damage Roll,
      and a BONUS ACTION (such as steal one turn from the player) that occur at random
      intervals in the combat session.
 
@@ -514,20 +544,34 @@ namespace DungeonExplorer
 
             Program.CLEAR_CONSOLE();
 
-            if (Tests.InTestingMode)
+            if (Tests.InTestingMode && victorious)
             {
                 Console.WriteLine("As testing mode is enabled, the program will need to restart.\n\nPress [any key] to continue.\n");
 
                 Console.ReadKey();
 
-                System.Diagnostics.Process.Start(System.AppDomain.CurrentDomain.FriendlyName);
+                Process.Start(AppDomain.CurrentDomain.FriendlyName);  // Restarts console app
 
                 Environment.Exit(0);
             }
-            
-            // Automatically returns the player to the room or testing menu
-        }
+            else
+            {
+                if (victorious)
+                {
+                    Console.WriteLine($"You have defeated {MonsterObject.Name}!\n\nPress [any key] to continue.\n");
 
+                    Console.ReadKey();
+
+                    Game.RoomHandler.ReturnToLevel();
+                }
+                else
+                {
+                    Program.GameOver();
+                }
+            }
+            
+            // Automatically returns the player to the room or testing menu if not defeated
+        }
 
     }
 }

@@ -101,9 +101,9 @@ namespace DungeonExplorer.Testing
             {
                 for (var i = 0; i < itemType.Count; i++)
                 {
-                    if (!Game.CurrentPlayer.InventoryItems.Contains(itemType[i][0][0]))  // If the inventory does not already contain the item
+                    if (!Player.InventoryItems.Contains(itemType[i][0][0]))  // If the inventory does not already contain the item
                     {
-                        Game.CurrentPlayer.InventoryItems.Add(itemType[i][0][0]);  // Add the item name to the inventory
+                        Player.InventoryItems.Add(itemType[i][0][0]);  // Add the item name to the inventory
                     }
                 }
             }

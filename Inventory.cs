@@ -56,13 +56,15 @@ namespace DungeonExplorer
         // Used to refresh the display after an item is selected, filters the list based on the combat selection
         private string GetInventoryDisplay(List<string> inventoryItems, string currentlyChoosing = "")
         {
+            List<string> newInventoryItems = Player.InventoryItems;
+
             // Filter out all items that are not of type currentlyChoosing by creating a new list
             if (!string.IsNullOrEmpty(currentlyChoosing))
             {
-                inventoryItems = GetAllItemOfType(inventoryItems, currentlyChoosing);
+                newInventoryItems = GetAllItemOfType(Player.InventoryItems, currentlyChoosing);
 
                 // Sort the items in alphabetical order  
-                inventoryItems = inventoryItems.OrderBy(n => n).ToList();
+                newInventoryItems = newInventoryItems.OrderBy(n => n).ToList();
             }
 
             if (_slots.Count <= 0)
@@ -84,10 +86,10 @@ namespace DungeonExplorer
                     _slots[i][4] = _emptyBottom;
                 }
 
-                for (int i = 0; i < inventoryItems.Count; i++)
+                for (int i = 0; i < newInventoryItems.Count; i++)
                 {
-                    _slots[i] = Item.GetItemImage(inventoryItems[i]);
-                    _descriptionSlots[i] = Item.GetItemDescription(inventoryItems[i]);
+                    _slots[i] = Item.GetItemImage(newInventoryItems[i]);
+                    _descriptionSlots[i] = Item.GetItemDescription(newInventoryItems[i]);
                 }
             }
 
@@ -118,7 +120,7 @@ namespace DungeonExplorer
         {
             Program.CLEAR_CONSOLE();
 
-            Console.Write(GetInventoryDisplay(inventoryItems, currentlyChoosing)); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
+            Console.Write(GetInventoryDisplay(Player.InventoryItems, currentlyChoosing)); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
             
             if (incorrectInput)
             {
@@ -185,7 +187,7 @@ namespace DungeonExplorer
                                     }
                                     else
                                     {
-                                        DisplayInventory(inventoryItems, currentlyChoosing, true);
+                                        DisplayInventory(Player.InventoryItems, currentlyChoosing, true);
                                     }
                                 }
                                
@@ -217,7 +219,7 @@ namespace DungeonExplorer
                                     }
                                     else
                                     {
-                                        DisplayInventory(inventoryItems, currentlyChoosing, true);
+                                        DisplayInventory(Player.InventoryItems, currentlyChoosing, true);
                                     }
                                 }
                             }
@@ -248,7 +250,7 @@ namespace DungeonExplorer
                                 }
                             }
 
-                            Console.Write(GetInventoryDisplay(inventoryItems, currentlyChoosing)); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
+                            Console.Write(GetInventoryDisplay(Player.InventoryItems, currentlyChoosing)); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
 
                             PlayerChoiceInventory();
 
@@ -270,7 +272,7 @@ namespace DungeonExplorer
             List<string> result = new List<string>();
 
             // For each item in the inventory, if the item matches the item that the player is looking for (e.g. "Weapon") then add it to a new list of strings
-            foreach (string item in inventoryItems)
+            foreach (string item in Player.InventoryItems)
             {
                 string thisItemType = Item.GetItemType(item);
 

@@ -31,7 +31,7 @@ namespace DungeonExplorer.Text_Displays
 
 
 
-[Enter full screen or use a large window for the best experience.]";
+ [Enter full screen or use a large window for the best experience.]";
         }
 
         public string GetWelcomeTitle()

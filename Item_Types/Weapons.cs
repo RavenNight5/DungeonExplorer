@@ -23,7 +23,7 @@ namespace DungeonExplorer.Item_Types
             "18",  // Base Dmg
             "20",  // CRIT Dmg
             "25",  // CRIT Rate
-            "20",  // Difficulty of use (10-100) where 10 is an easy attack and 100 is extremely difficult - this number
+            "18",  // Difficulty of use (1-100) where 100 is an easy attack and 1 is extremely difficult - this number
                    // acts as the speed percentage the dial moves before an attack
             ""  // Special effect if applicable
             },
@@ -37,7 +37,7 @@ namespace DungeonExplorer.Item_Types
             new string[4] {
             "~ Dagger ~",
             "A wide-bladed dagger, probably better for self defense rather than cleaning.",
-            "(18 Base Damage)",
+            "(18 Base Damage, not too hard to use)",
             ""
             }
         };
@@ -45,11 +45,11 @@ namespace DungeonExplorer.Item_Types
             new string[8] {
             "Longsword",
             "55",
-            "8",
-            "24",
-            "30",
-            "15",
-            "35",
+            "0",
+            "45",  // Base
+            "20",  // CRIT Dmg
+            "35",  // CRIT Rate
+            "10",  // Ease
             ""
             },
             new string[5] {
@@ -62,7 +62,7 @@ namespace DungeonExplorer.Item_Types
             new string[4] {
             "~ Longsword ~",
             "I'm a cleaner. Now, let's not get ahead of ourselves...",
-            "(24 Base Damage)",
+            "(45 Base Damage, difficult to use)",
             ""
             }
         };

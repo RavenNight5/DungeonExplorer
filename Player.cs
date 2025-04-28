@@ -16,7 +16,7 @@ namespace DungeonExplorer
         ///     - Removing items from the inventory
         ///     - Calling on the Inventory class to display the content of the player's inventory
         /// </summary>
-        public List<string> InventoryItems = new List<string>();  // Holds the current items the player has in their inventory
+        public static List<string> InventoryItems = new List<string>();  // Holds the current items the player has in their inventory
 
         public static int Health { get; set; }
         public static int BaseDamage { get; set; }
@@ -32,6 +32,8 @@ namespace DungeonExplorer
         public override string Name { get; set; }
         public override string Plural { get; set; }
         public override int MaxHealth { get; set; }
+
+        private readonly string[] _d6Visuals = new string[] { "   ·\r\n", "    ·\r\n   ·", "     ·\r\n    ·\r\n   ·", "   · ·\r\n   · ·", "   · ·\r\n    ·\r\n   · ·", "   ···\r\n   ···" };
 
         public Player(string name, string plural, int maxHealth) : base(name, plural, maxHealth)
         {
@@ -146,7 +148,28 @@ namespace DungeonExplorer
                     }
                 }
 
-                Console.WriteLine($"\n\nPress [any key] to continue.\n");
+                Console.WriteLine($"\n\n > Roll 2x D6 [Space]\n");
+
+                Console.ReadKey();
+
+                Program.CLEAR_CONSOLE();
+
+                int dice1 = diceRoll();
+                int dice2 = diceRoll();
+
+                Thread.Sleep(100);
+                Console.WriteLine($"{_d6Visuals[dice1 - 1]}");
+                Thread.Sleep(200);
+                Console.WriteLine($"{_d6Visuals[dice2 - 1]}");
+
+                Thread.Sleep(200);
+                Console.WriteLine($"\n  [ {dice1 + dice2} ] + DICE Damage\n");
+                Thread.Sleep(100);
+                Console.WriteLine($@" ╔═─~~─═╗
+ │  {(int)Math.Ceiling(result + dice1 + dice2)}  │  TOTAL Attack Dmg
+ ╚═─~~─═╝");
+
+                Console.WriteLine($"\n > Continue [Space]");
 
                 Console.ReadKey();
             }
@@ -154,9 +177,28 @@ namespace DungeonExplorer
             return (int)Math.Ceiling(result);
         }
 
+        private int diceRoll()
+        {
+            int result = 0;
+            
+            // Avoids repeated seed initialization (it wouldn't give me a unique random number with just the regular instance of random somehow)
+            Random random = new Random(Guid.NewGuid().GetHashCode());
+
+            result = random.Next(1, 7);  // Rolls a D6  
+
+            return result;
+        }
+
         public override void DamagePlayer(int dmg)
         {
-            Console.WriteLine($"'{Name}' took {dmg} damage.");
+            if (Health - dmg <= 0)
+            {
+                Health = 0;
+            }
+            else
+            {
+                Health -= dmg;
+            }
         }
     }
 }

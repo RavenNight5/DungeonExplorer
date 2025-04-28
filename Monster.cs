@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -101,8 +102,58 @@ namespace DungeonExplorer
 
         public override int Attack(bool miss = false, bool hitWeakSpot = false, List<int> availableDamage = null)
         {
+            Program.CLEAR_CONSOLE();
 
-            return 1;
+            float result = 0;
+
+            if (!(availableDamage == null) && miss == false)
+            {
+                int baseDamage = availableDamage[0];
+                int critDamage = availableDamage[1];
+                int critRate = availableDamage[2];
+
+                Random critRateChance = new Random();
+                Random randomD10 = new Random(Guid.NewGuid().GetHashCode());
+
+                int dice1 = randomD10.Next(1, 11);
+
+                if (critRateChance.Next(0, 100) <= critRate)  // CRIT Hit  
+                {
+                    result = baseDamage + (baseDamage * critDamage / 100);  // Adds the percentage of crit damage to the base damage
+
+                    result += dice1;
+
+                    Console.WriteLine($" {Name} attacks, causing CRIT Damage.\n");
+                    Thread.Sleep(200);
+                    Console.WriteLine($" [ {baseDamage} ] Base Dmg");
+                    Thread.Sleep(125);
+                    Console.WriteLine($" +[ {critDamage} ]% CRIT Dmg");
+                    Thread.Sleep(100);
+                    Console.WriteLine($"   [ {dice1} ] + DICE Damage");
+                    Thread.Sleep(50);
+                    Console.WriteLine($" ---\n\n [ {(int)Math.Ceiling(result)} ] Total Dmg");
+                }
+                else  // Regular hit  
+                {
+                    result = baseDamage;
+
+                    result += dice1;
+
+                    Console.WriteLine($" {Name} attacks.\n");
+                    Thread.Sleep(200); 
+                    Console.WriteLine($" [ {baseDamage} ] Base Dmg");
+                    Thread.Sleep(100);
+                    Console.WriteLine($"  [ {dice1} ] + DICE Damage");
+                    Thread.Sleep(50);
+                    Console.WriteLine($" ---\n\n [ {(int)Math.Ceiling(result)} ] Total Dmg");
+                }
+
+                Console.WriteLine($"\n\nPress [any key] to continue.\n");
+
+                Console.ReadKey();
+            }
+
+            return (int)Math.Ceiling(result);
         }
 
         public override void DamageMonster(Monster monster, int dmg)
