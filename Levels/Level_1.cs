@@ -254,11 +254,11 @@ namespace DungeonExplorer.Levels
                                     {
                                         dialogue = new string[] { "With your weapon tested, approved, and ready to go you begin to walk down the unlit hallway...", "A strange smell fills the air?", "Similar to... Pottery? Or a plant pot~", "No.", "It's THE GARDENER" };
 
+                                        R2_ActionCompleted[action] = true;
+
                                         Description_Box.ArrayDescription(dialogue, 32);
 
                                         Program.game.StartCombat(1);  // Start combat with monster 'The Gardener'
-
-                                        R2_ActionCompleted[action] = true;
                                     }
                                     
                                 }

@@ -204,12 +204,11 @@ namespace DungeonExplorer
         // Changes the stats of the monster (also uses the written notice method above)
         public void DoSpecialAbility(List<int> changes, string what)  
         {
-            DoSpecialAbility($"INCREASED {what.ToUpper()}\n For ONE TURN");
+            DoSpecialAbility($"INCREASED {what.ToUpper()}\n    For ONE TURN");
 
             if (what.ToUpper().Contains("BASE DAMAGE"))
             {
                 BaseDamage += changes[0];
-                Console.WriteLine($"\n BD NEW: {BaseDamage}");
             }
             if (what.ToUpper().Contains("CRIT DAMAGE"))
             {

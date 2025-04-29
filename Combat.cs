@@ -49,8 +49,6 @@ namespace DungeonExplorer
         private int turnsPassed = 0;
         private int opportunities = 0;
 
-        private Monster MonsterObject;
-
         private int currentMonsterSpecialAbilityUses = 0;
         private bool monsterJustUsedSpecialAbility = false;  // Used to reset the monster's stats after using a special ability (if applicable)
 
@@ -79,6 +77,8 @@ namespace DungeonExplorer
         private string marker = "^";
         private int markerPos = 0;
 
+        public static Monster MonsterObject;
+
         public static List<string[]> bonusItemUsesThisSession;  // 0 = item name, 1 = num of times used ( then parsed to int)
 
         public static string Combat_EquippedWeapon = "";
@@ -105,6 +105,8 @@ namespace DungeonExplorer
             MonsterObject = monster;
 
             MonsterObject.Health = MonsterObject.MaxHealth;
+
+            whosTurn = "Player";
 
             Level_1.CompletedBattle = false;
 
@@ -151,10 +153,6 @@ namespace DungeonExplorer
             }
             else if (MonsterObject.Health <= 0)
             {
-                Console.WriteLine($"You have defeated {MonsterObject.Name}!\n\n");
-
-                Thread.Sleep(1000);
-
                 ExitCombat(true);
             }
 
@@ -585,7 +583,7 @@ namespace DungeonExplorer
 
             if (abilityChance == 5 && currentMonsterSpecialAbilityUses < MonsterObject.SpecialAbilityUses)
             {
-                if (MonsterObject.SpecialAbility.Contains("Damage"))
+                if (MonsterObject.SpecialAbility != "StealTurn")
                 {
                     monsterJustUsedSpecialAbility = true;
 

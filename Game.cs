@@ -39,7 +39,7 @@ namespace DungeonExplorer
 
             Monster.Add(new Monster("Dragon", "Dungeon Dweller", 250, "StealTurn", 1, 18, 20, 35));
 
-            Monster.Add(new Monster("Gnome", "The Gardener", 300, "BaseDamage & CRITRate", 3, 10, 8, 45));
+            Monster.Add(new Monster("Gnome", "The Gardener", 300, "BaseDamage & CRITRate", 3, 12, 10, 45));
 
             Item weapons = new Weapons();
             Item bonus_Items = new Bonus_Items();
