@@ -21,7 +21,6 @@ namespace DungeonExplorer
 
         public static string[] GetItemStats(string item)
         {
-
             foreach (var itemType in AllItems)
             {
                 for (var i = 0; i < itemType.Count; i++)
@@ -36,19 +35,32 @@ namespace DungeonExplorer
             return null;
         }
 
+        public static int GetItemUses(string item)
+        {
+            int defaultUses = 0;
+
+            if (item == null || item == "")
+            {
+                return defaultUses;
+            }
+            else
+            {
+                try
+                {
+                    defaultUses = GetItemStats(item)[2] == "" ? 0 : int.Parse(GetItemStats(item)[2]);  // If uses is empty set it as 0 (infinite uses), otherwise parse the available string to an int
+                }
+                catch
+                {
+                    Debug.WriteLine("Trying to get stats, or an item, that does not exist.");
+                }
+            }
+            
+            return defaultUses;
+        }
+
         // Finds the corresponding item image from the single string name stored in the player's inventory
         public static string[] GetItemImage(string item)
         {
-            //foreach (string stats in itemStats[6].Split(' '))
-            //{
-
-            //}
-
-            //for (int i = 0; i < AllItems.Count; i++)
-            //{
-
-            //}
-
             foreach (var itemType in AllItems)
             {
                 for (var i = 0; i < itemType.Count; i++)
@@ -114,6 +126,35 @@ namespace DungeonExplorer
             return null;
         }
 
-        //Check if item can be collected with CanCollect(), if true is returned then proceed
+        public static List<string> GetItemSpecialEffects(string item)
+        {
+            if (item == null || item == "")
+            {
+                return null;
+            }
+            else
+            {
+                for (int i = 0; i < AllItems.Count; i++)
+                {
+                    foreach (var newItem in AllItems[i])
+                    {
+                        if (newItem[0][0] == item)
+                        {
+                            if (newItem[0][7] == "")
+                            {
+                                return null;  // No special effects
+                            }
+                            else
+                            {
+                                return newItem[0][7].Split(' ').ToList();  // Returns a list of each effect written in the string (e.g. "Shield 20" will return as ["Shield", "20"])
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
     }
 }

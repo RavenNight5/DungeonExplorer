@@ -84,6 +84,9 @@ namespace DungeonExplorer
 
             float result = 0;
 
+            int dice1 = diceRoll();
+            int dice2 = diceRoll();
+
             if (!(availableDamage == null) && miss == false)
             {
                 int baseDamage = availableDamage[0];
@@ -154,8 +157,18 @@ namespace DungeonExplorer
 
                 Program.CLEAR_CONSOLE();
 
-                int dice1 = diceRoll();
-                int dice2 = diceRoll();
+                int totalResult = (int)Math.Ceiling(result + dice1 + dice2);
+
+                string space = "   ";
+
+                if (totalResult.ToString().Length == 2)
+                {
+                    space = "  ";
+                }
+                else if (totalResult.ToString().Length == 3)
+                {
+                    space = " ";
+                }
 
                 Thread.Sleep(100);
                 Console.WriteLine($"{_d6Visuals[dice1 - 1]}");
@@ -166,7 +179,7 @@ namespace DungeonExplorer
                 Console.WriteLine($"\n  [ {dice1 + dice2} ] + DICE Damage\n");
                 Thread.Sleep(100);
                 Console.WriteLine($@" ╔═─~~─═╗
- │  {(int)Math.Ceiling(result + dice1 + dice2)}  │  TOTAL Attack Dmg
+ │  {totalResult}{space}│  TOTAL Attack Dmg
  ╚═─~~─═╝");
 
                 Console.WriteLine($"\n > Continue [Space]");
@@ -174,7 +187,7 @@ namespace DungeonExplorer
                 Console.ReadKey();
             }
 
-            return (int)Math.Ceiling(result);
+            return (int)Math.Ceiling(result + dice1 + dice2);
         }
 
         private int diceRoll()
@@ -189,15 +202,68 @@ namespace DungeonExplorer
             return result;
         }
 
-        public override void DamagePlayer(int dmg)
+        public override void DamagePlayer(int dmg, int healthDefense = 0, bool lifeShield = false)
         {
             if (Health - dmg <= 0)
             {
-                Health = 0;
+                if (lifeShield)  // If the bonus item equipped is a life shield
+                {
+                    Health = (int)Math.Ceiling((double)(MaxHealth * healthDefense) / 100);  // If the player has a life shield they won't die and will be restored healthDefense as a % of their max health
+
+                    Program.CLEAR_CONSOLE();
+
+                    Console.WriteLine(" A CRITICAL blow was dealt, but you were saved by your Life Shield!\n");
+                    Thread.Sleep(200);
+                    Console.WriteLine($" {healthDefense}% of max health has been restored.\n");
+                    Thread.Sleep(100);
+
+                    Console.WriteLine($" Press [any key] to continue\n");
+                    Console.ReadKey();
+                }
+                else
+                {
+                    Health = 0;
+                }
             }
             else
             {
-                Health -= dmg;
+                if (lifeShield)
+                {
+                    Health -= dmg;
+                    Health = Health + (int)Math.Ceiling((double)(MaxHealth * healthDefense) / 100);  // Add the health restored by the life shield even though the player is still alive (so the use was not in vein)
+
+                    Program.CLEAR_CONSOLE();
+
+                    Console.WriteLine(" No critical blow was dealt, you're still alive! Since a Life Shield is equipped:\n");
+                    Thread.Sleep(200);
+                    Console.WriteLine($" + {healthDefense}% of max health has been restored.\n");
+                    Thread.Sleep(100);
+
+                    Console.WriteLine($" Press [any key] to continue\n");
+                    Console.ReadKey();
+                }
+                else
+                {
+                    if (healthDefense != 0)  // A shield is equipped
+                    {
+                        int shielded = (dmg * healthDefense / 100);
+                        
+                        Health -= dmg - shielded;  // Take off the shield percentage from the damage dealt
+
+                        Program.CLEAR_CONSOLE();
+
+                        Thread.Sleep(200);
+                        Console.WriteLine($"Your Shield absorbed {shielded} Damage from the opponent!\n");
+                        Thread.Sleep(100);
+
+                        Console.WriteLine("Press [any key] to continue\n");
+                        Console.ReadKey();
+                    }
+                    else
+                    {
+                        Health -= dmg;
+                    }
+                }
             }
         }
     }

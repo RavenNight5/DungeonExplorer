@@ -29,6 +29,10 @@ namespace DungeonExplorer
         public int CRITDamage { get; set; }  // A % that determines the additional damage dealt if the attack is a CRIT HIT
         public int CRITRate { get; set; }  // A % chance out of 100 that the attack will be a CRIT HIT
 
+        public int DefaultBaseDamage = 0;
+        public int DefaultCRITDamage = 0;
+        public int DefaultCRITRate = 0;
+
         public Monster(string species, string name, int maxHealth, string specialAbility, int specialAbilityUses, int baseDamage, int critDamage, int critRate) : base(name, null, maxHealth)
         {
             Species = species;
@@ -44,6 +48,10 @@ namespace DungeonExplorer
             BaseDamage = baseDamage;
             CRITDamage = critDamage;
             CRITRate = critRate;
+
+            DefaultBaseDamage = baseDamage;
+            DefaultCRITDamage = critDamage;
+            DefaultCRITRate = critRate;
 
             AssignInterface(species);
         }
@@ -92,7 +100,7 @@ namespace DungeonExplorer
     │o  ░░░▒░░░   │   │+[ {CRITDamage} ]%  CRIT dmg
     │  /-|▒▒▒|-\  │   │ [ {CRITRate} ]%  Chance of CRIT hit
     | ═|░▒▒▒▒▒░\═ |   │ ------
-    | ░▒▒▒▒▒▒▒▒▒░ |   │ Ability: Can double Base Damage up to three times.
+    | ░▒▒▒▒▒▒▒▒▒░ |   │ Ability: Can double Base Damage & CRIT Rate up to three times.
       ░|▒▒▒▒▒▒▒|░     ╚══──══=───---
     │ +|▒▒▒▒▒▒▒|+ │
     ╚═──  ─~─  ──═╝
@@ -168,6 +176,49 @@ namespace DungeonExplorer
             }
 
             AssignInterface(monster.Species);  // Update the monsters interfaces
+        }
+
+        public void ResetAllDamageStats()
+        {
+            BaseDamage = DefaultBaseDamage;
+            CRITDamage = DefaultCRITDamage;
+            CRITRate = DefaultCRITRate;
+        }
+
+        // Static polymorphism to take action on the special abilities
+
+        // Writes a notice using the passed string
+        public void DoSpecialAbility(string action)
+        {
+            Console.WriteLine($@"  ╔═--    ---────── !! ──────---    --═╗
+  │                                    │
+  │        Special Ability Used!       │
+  |                ----                |
+  | The Opponent Has:                  |
+    {action.ToUpper()}
+  |                                    |
+  ╚═--     ---───── !! ─────---     --═╝
+");
+        }
+
+        // Changes the stats of the monster (also uses the written notice method above)
+        public void DoSpecialAbility(List<int> changes, string what)  
+        {
+            DoSpecialAbility($"INCREASED {what.ToUpper()}\n For ONE TURN");
+
+            if (what.ToUpper().Contains("BASE DAMAGE"))
+            {
+                BaseDamage += changes[0];
+                Console.WriteLine($"\n BD NEW: {BaseDamage}");
+            }
+            if (what.ToUpper().Contains("CRIT DAMAGE"))
+            {
+                CRITDamage += changes[1];
+            }
+            if (what.ToUpper().Contains("CRIT RATE"))
+            {
+                CRITRate += changes[2];
+            }
         }
     }
 }

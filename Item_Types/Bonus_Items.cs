@@ -16,14 +16,16 @@ namespace DungeonExplorer.Item_Types
         private List<string[][]> _items_List = new List<string[][]>();
 
         public static string[][] Bonus_Item_Sponge = new string[][] {
-            new string[6] {
+            new string[8] {
             "Sponge",  // Name (used for filtering in search etc.)
             "35",  // Cost (if bought in a shop)
-            "3",  // Uses (if perishable item)
-            "0",  // Base dmg (if 0 then it is a bonus item/has different effects)
+            "3",  // Uses (if perishable item - reset after each combat session)
+            "0",  // Base Dmg (if 0 then has different effects)...
+            "0",  // CRIT Dmg
+            "0",  // CRIT Rate
             "0",  // Difficulty of use (10-100) where 10 is an easy attack and 100 is extremely difficult - this number
                    // acts as the speed percentage the dial moves before an attack (if 0 then it is a bonus item/has different effects)
-            "easeOfUse 0.3"//"Shield 0.5 notCRITHIT"  // Special effect (split by whitespace, first string = effect, second = percentage effect has, third = when it applies (if applicable)
+            "Shield 50 NOTCRIT" // Special effect (split by whitespace, first string = effect, second = percentage effect has, third = when it applies (if applicable)
             },
             new string[5] {
             "       ",
@@ -35,18 +37,45 @@ namespace DungeonExplorer.Item_Types
             new string[4] {
             "~ Sponge ~",
             "Your trusted cleaning companion! Sometimes you talk to it.",
-            "(Speed Absorption - makes hitting the opponent 30% easier when equipped)",//"(Shield - If not a CRIT HIT will soak 50% damage for 3 turns)",
+            "(Damage Absorption - If not a CRIT HIT will soak 50% damage up to 3 times)",//(Speed Absorption - makes hitting the opponent 30% easier when equipped)"
+            ""
+            }
+        };
+        public static string[][] Bonus_Item_BeefySponge = new string[][] {
+            new string[8] {
+            "Beefy Sponge",
+            "70",  // Cost
+            "4",  // Uses
+            "0",  // Base Dmg
+            "0",  // CRIT Dmg
+            "0",  // CRIT Rate
+            "0",  // Difficulty
+            "Shield 40" // Shields from 40% of damage with any attack
+            },
+            new string[5] {
+            "       ",
+            "  ▒▓█  ",
+            "  ▒▓█  ",
+            "  ▓██  ",
+            "      "
+            },
+            new string[4] {
+            "~ Beefy Sponge ~",
+            "So dense you could make armour out of it.",
+            "(Damage Absorption - Will soak 40% damage from ANY HIT up to 4 times)",//(Speed Absorption - makes hitting the opponent 30% easier when equipped)"
             ""
             }
         };
         public static string[][] Bonus_Item_Mop = new string[][] {
-            new string[6] {
+            new string[8] {
             "Mop",
             "0",  // 0 price means it can't be bought
-            "0",  // 0 uses = infinite
-            "0",
-            "0",
-            "AddBaseDamage 3"
+            "0",  // Uses 0 = infinite
+            "8",  // Base Dmg
+            "0",  // CRIT Dmg
+            "5",  // CRIT Rate
+            "0",  // Difficulty
+            ""
             },
             new string[5] {
             "   ╥   ",
@@ -58,19 +87,21 @@ namespace DungeonExplorer.Item_Types
             new string[4] {
             "~ Mop ~",
             "Handy for all the puddles this dungeon seems to create.",
-            "(+ 3 Base Damage on all attacks)",
+            "(+ 8 Base Damage & + 5% CRIT Rate on all attacks)",
             ""
             }
         };
         public static string[][] Bonus_Item_DustpanBrush = new string[][] {
-            new string[6] {
+            new string[8] {
             "Dustpan",
             "20",
-            "1",
-            "0",
-            "0",
-            "LifeShield 0.2"  // Here the special effect is "LifeShield" - when this is equipped you will not be defeated
-                              // from losing all health, instead this item will be destroyed and restore 20% of your max health
+            "1",  // Uses
+            "0",  // Base Dmg
+            "0",  // CRIT Dmg
+            "0",  // CRIT Rate
+            "0",  // Difficulty
+            "LifeShield 30"  // Special effect "LifeShield" - when this is equipped you will not be defeated by losing all health,
+                              // instead this item will restore 30% of your max health (only once per combat session)
             },
             new string[5] {
             "░▒▓╢   ",
@@ -82,17 +113,19 @@ namespace DungeonExplorer.Item_Types
             new string[4] {
             "~ Dustpan & Brush ~",
             "For sweeping and cleaning small areas.",
-            "(Life Shield - Restore 20% health upon death)",
+            "(Life Shield - Restore 30% health upon death (once per combat session))",
             ""
             }
         };
         public static string[][] Bonus_Item_EmptyCup = new string[][] {
-            new string[6] {
+            new string[8] {
             "Empty Cup",
             "10",
-            "1",
-            "0",
-            "0",
+            "0",  // Uses
+            "0",  // Base Dmg
+            "0",  // CRIT Dmg
+            "0",  // CRIT Rate
+            "20",  // Difficulty
             ""
             },
             new string[5] {
@@ -105,18 +138,20 @@ namespace DungeonExplorer.Item_Types
             new string[4] {
             "~ Empty Cup ~",
             "An empty cup. It's pretty empty at the moment.",
-            "",
+            "(Slows down your attack by 20%... Used as a distraction?)",
             ""
             }
         };
         public static string[][] Bonus_Item_BloodCup = new string[][] {
-            new string[6] {
+            new string[8] {
             "Blood Cup",
             "0",
-            "1",
-            "0",
-            "0",
-            "AddBaseDamage 20"
+            "1",  // Uses
+            "20",  // Base Dmg
+            "20",  // CRIT Dmg
+            "100",  // CRIT Rate
+            "0",  // Difficulty
+            "#"  // # means perishable (after uses are depleated to 0 then remove from inventory)
             },
             new string[5] {
             "       ",
@@ -128,20 +163,22 @@ namespace DungeonExplorer.Item_Types
             new string[4] {
             "~ Blood Cup ~",
             "A cup filled with some strange blood you found dripping from the ceiling in the hallway...",
-            "(+ 20 Base Damage on any attack - one use)",
+            "(+ 20 Base Damage, + 20% CRIT Damage and + 100% CRIT Rate on any attack - perishable, one use)",
             ""
             }
         };
 
         // Misc Items
         public static string[][] Bonus_Item_Key = new string[][] {
-            new string[6] {
+            new string[8] {
             "Rusty Key",
             "0",
-            "0",
-            "0",
-            "0",
-            ""
+            "1",  // Uses
+            "0",  // Base Dmg
+            "10",  // CRIT Dmg
+            "0",  // CRIT Rate
+            "0",  // Difficulty
+            "WeakSpotDmg 30 #"
             },
             new string[5] {
             "   ┌-  ",
@@ -152,8 +189,8 @@ namespace DungeonExplorer.Item_Types
             },
             new string[4] {
             "~ Old Rusted Key ~",
-            "A key that looks like it would work",
-            "on one of the cell doors.",
+            "A key that looks like it would work on one of the cell doors.",
+            "(+ 30% Weak Spot Damage and + 10% CRIT Damage on any attack - perishable, one use) or (Unlock one cell door - perishable, one use)",
             ""
             }
         };
@@ -165,10 +202,26 @@ namespace DungeonExplorer.Item_Types
             _items_List.Add(Bonus_Item_DustpanBrush);
             _items_List.Add(Bonus_Item_EmptyCup);
             _items_List.Add(Bonus_Item_BloodCup);
+            _items_List.Add(Bonus_Item_BeefySponge);
 
             _items_List.Add(Bonus_Item_Key);
 
             AllItems.Add(_items_List);
+        }
+
+
+        // Static polymorphism to return the result of the passed effects
+
+        // A base effect (such as adding 3 base damage)
+        public static int AddEffects(string effect, int effectNum)
+        {
+            return 0;
+        }
+
+        // Conditional base effect (such as adding base damage if the condition is met)
+        public static int AddEffects(string effect, int effectNum, string condition)
+        {
+            return 0;
         }
     }
 }

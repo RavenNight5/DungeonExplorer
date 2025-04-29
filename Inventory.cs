@@ -120,6 +120,13 @@ namespace DungeonExplorer
         {
             Program.CLEAR_CONSOLE();
 
+            if (currentlyChoosing != "")  // Accessing inventory from the combat screen
+            {
+                // reset the currently selected item due to filtering
+                InventorySlotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
+                InventoryItemDescription = new string[4];
+            }
+
             Console.Write(GetInventoryDisplay(Player.InventoryItems, currentlyChoosing)); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
             
             if (incorrectInput)

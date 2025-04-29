@@ -10,7 +10,7 @@ namespace DungeonExplorer
     internal interface IDamageable
     {
         void DamageMonster(Monster monster, int dmg);
-        void DamagePlayer(int dmg);
+        void DamagePlayer(int dmg, int healthDefense = 0, bool lifeShield = false);
     }
 
     // Weapons, Bonus_Items

@@ -27,7 +27,7 @@ namespace DungeonExplorer
         {
             Console.WriteLine("No damage was dealt to the monster.");  // The default outputs for IDamageable
         }
-        public virtual void DamagePlayer(int dmg)
+        public virtual void DamagePlayer(int dmg, int healthDefense = 0, bool lifeShield = false)
         {
             Console.WriteLine("No damage was dealt to you.");
         }
