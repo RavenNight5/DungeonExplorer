@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using DungeonExplorer.Item_Types;
+using DungeonExplorer.Levels;
 using DungeonExplorer.Testing;
 using Microsoft.SqlServer.Server;
 
@@ -48,12 +49,10 @@ namespace DungeonExplorer
         private int turnsPassed = 0;
         private int opportunities = 0;
 
-        private Monster MonsterObject { get; set; }
+        private Monster MonsterObject;
 
         private int currentMonsterSpecialAbilityUses = 0;
         private bool monsterJustUsedSpecialAbility = false;  // Used to reset the monster's stats after using a special ability (if applicable)
-
-        private List<Tuple<string, int>> bonusItemUsesThisSession = new List<Tuple<string, int>>();  // String = item name, int = uses left
 
         public static bool InCombat = false;
 
@@ -80,6 +79,8 @@ namespace DungeonExplorer
         private string marker = "^";
         private int markerPos = 0;
 
+        public static List<string[]> bonusItemUsesThisSession;  // 0 = item name, 1 = num of times used ( then parsed to int)
+
         public static string Combat_EquippedWeapon = "";
         public static string[] Combat_EquippedWeaponImage = Inventory.InventoryEmptySlot;
 
@@ -99,7 +100,13 @@ namespace DungeonExplorer
 
         public Combat(Monster monster)
         {
+            InCombat = false;
+
             MonsterObject = monster;
+
+            MonsterObject.Health = MonsterObject.MaxHealth;
+
+            Level_1.CompletedBattle = false;
 
             randBarPattern = barPatterns[0];
             barLength = barPatterns[0].Length;
@@ -107,6 +114,14 @@ namespace DungeonExplorer
             player_BaseDamage = Player.BaseDamage;
             player_CRITDmg = Player.CRITDamage;
             player_CRITRate = Player.CRITRate;
+
+            Combat_EquippedWeapon = "";
+            Combat_EquippedWeaponImage = Inventory.InventoryEmptySlot;
+
+            ResetBonusItemSlot();
+            ResetBonusItemStats();
+
+            bonusItemUsesThisSession = new List<string[]>();
 
             MainCombatScreen();
         }
@@ -177,9 +192,14 @@ namespace DungeonExplorer
                 {
                     foreach (var item in bonusItemUsesThisSession)
                     {
-                        if (item.Item1 == Combat_EquippedBonus)  // If the bonus item is in the list of bonusItemUsesThisSession
+                        if (item[0] == Combat_EquippedBonus)  // If the bonus item is in the list of bonusItemUsesThisSession
                         {
-                            slotBonusUses = (int.Parse(slotBonusUses) - item.Item2).ToString();  // Calculate the uses left of the item then assign that to the slotBonusUses
+                            slotBonusUses = (int.Parse(slotBonusUses) - int.Parse(item[1])).ToString();  // Calculate the uses left of the item then assign that to the slotBonusUses
+                            
+                            if (int.Parse(slotBonusUses) <= 0)
+                            {
+                                slotBonusUses = "0";
+                            }
                         }
                     }
                 }
@@ -194,16 +214,24 @@ namespace DungeonExplorer
 
                 try
                 {
-                    bonusItemBaseDamage = int.Parse(bonusStats[3]);
-                    bonusItemCRITDamage = int.Parse(bonusStats[4]);
-                    bonusItemCRITRate = int.Parse(bonusStats[5]);
-                    bonusItemWeaponEaseOfUse = int.Parse(bonusStats[6]);
+                    if (slotBonusUses != "0")
+                    {
+                        bonusItemBaseDamage = int.Parse(bonusStats[3]);
+                        bonusItemCRITDamage = int.Parse(bonusStats[4]);
+                        bonusItemCRITRate = int.Parse(bonusStats[5]);
+                        bonusItemWeaponEaseOfUse = int.Parse(bonusStats[6]);
 
-                    //if (bonusStats[6] == "" || bonusStats[6] == "#")  // Item is NOT a defense item
-                    //{
-                    //    currentLifeShield = false;
-                    //    currentHealthDefense = 0;
-                    //}
+                        if (bonusStats[7] == "")  // Item is NOT a health item
+                        {
+                            currentLifeShield = false;
+                            currentHealthDefense = 0;
+                        }
+                    }
+                    else
+                    {
+                        ResetBonusItemStats();
+                    }
+
                 }
                 catch
                 {
@@ -217,7 +245,6 @@ namespace DungeonExplorer
             {
 
                 ResetBonusItemSlot();
-
                 ResetBonusItemStats();
 
             }
@@ -598,24 +625,30 @@ namespace DungeonExplorer
 
         private int PlayerAttack(bool miss, bool hitWeakSpot)
         {
-
+            // Ensure stats are updated with the equipped bonus item before attacking  
             UpdateStatsWithBonusItem();
+
+            // Recalculate player's attack stats to include bonus item effects  
+            int finalBaseDamage = player_BaseDamage;
+            int finalCRITDamage = player_CRITDmg;
+            int finalCRITRate = player_CRITRate;
+            int finalWeakSpotDamage = weakSpotDamage;
 
             whosTurn = "Monster";
 
-            return CurrentPlayer.Attack(miss, hitWeakSpot, new List<int>() { 
-                player_BaseDamage + bonusItemBaseDamage,
-                player_CRITDmg + bonusItemCRITDamage,
-                player_CRITRate + bonusItemCRITRate,
-                weakSpotDamage  + bonusItemWeakSpotDamage,
-            });
+            return CurrentPlayer.Attack(miss, hitWeakSpot, new List<int>()
+           {
+               finalBaseDamage,
+               finalCRITDamage,
+               finalCRITRate,
+               finalWeakSpotDamage
+           });
         }
 
         private void UpdateStatsWithBonusItem()
         {
             List<string> bonusItemEffect = Item.GetItemSpecialEffects(Combat_EquippedBonus);
-            int bonusItemEffectUses = Item.GetItemUses(Combat_EquippedBonus);
-
+            
             if (bonusItemEffect == null || bonusItemEffect.Count == 0)
             {
                 return;
@@ -647,49 +680,35 @@ namespace DungeonExplorer
                 //    currentItemPerishable = true;
                 //}
                 //else
-                //{
+                //{ 
                 //    currentItemPerishable = false;
                 //}
 
-                if (bonusItemEffectUses > 0)
+                int bonusItemUses = Item.GetItemUses(Combat_EquippedBonus);
+
+                if (bonusItemUses > 0)
                 {
-                    bool found = false;  // Keeping bool, could be useful at later date
-
-                    List<Tuple<string, int>> updates = new List<Tuple<string, int>>();
-
-                    if (bonusItemUsesThisSession.Count <= 0)  // If the list is initially empty add a new tuple
+                    if (bonusItemUsesThisSession.Count == 0)  // If the list is empty then add the first item
                     {
-                        bonusItemUsesThisSession.Add(new Tuple<string, int>(Combat_EquippedBonus, 1));
+                        bonusItemUsesThisSession.Add(new string[] {Combat_EquippedBonus, "0"});
                     }
 
-                    foreach (var item in bonusItemUsesThisSession)
+                    for (int i = 0; i < bonusItemUsesThisSession.Count; i++)
                     {
-                        if (item.Item1 == Combat_EquippedBonus)  // If the bonus item is in the list of bonusItemUsesThisSession
+                        string[] item = bonusItemUsesThisSession[i];
+
+                        if (item[0] == Combat_EquippedBonus)  // If the bonus item is in the list of bonusItemUsesThisSession
                         {
-                            found = true;
-
-                            if (item.Item2 < bonusItemEffectUses)  // If the uses are less than the max
+                            if (int.Parse(item[1]) < bonusItemUses)  // If the uses are less than the max
                             {
-                                //if (item.Item2 == bonusItemEffectUses - 1)  // One more use and it's 0
-                                //{
-                                //    if (currentItemPerishable)
-                                //    {
-                                //        currentItemPerishable = false;
-
-                                //        CurrentPlayer.RemoveItemFromInventory(Combat_EquippedBonus);
-
-                                //        ResetBonusItemSlot();
-
-                                //    }
-                                //}
-
-                                if ((currentHealthDefense > 0 || currentLifeShield == true) && whosTurn == "Monster")  // Bonus item is a health defense item and it's also the monster's turn
+                               
+                                if (whosTurn == "Player" && currentHealthDefense <= 0)  // Player's turn and the item is not a health item
                                 {
-                                    updates.Add(new Tuple<string, int>(item.Item1, item.Item2 + 1));  // Create a new tuple with updated value (since they are readonly)
+                                    item[1] = (int.Parse(item[1]) + 1).ToString();
                                 }
-                                else if ((currentHealthDefense <= 0 || currentLifeShield == false) && whosTurn == "Player")  // Any other item (currentHealthDefense <= 0) requires it to be the player's turn for the item to be used
+                                else if (whosTurn == "Monster")
                                 {
-                                    updates.Add(new Tuple<string, int>(item.Item1, item.Item2 + 1));  // Create a new tuple with updated value (since they are readonly)
+                                    item[1] = (int.Parse(item[1]) + 1).ToString();
                                 }
 
                                 // No item uses are updated otherwise
@@ -700,24 +719,18 @@ namespace DungeonExplorer
                                 ResetBonusItemStats();
                             }
                         }
-                        else
+                        else  // Item not found
                         {
-                            found = false;
-
-                            bonusItemUsesThisSession.Add(new Tuple<string, int>(Combat_EquippedBonus, 1));
-                           
+                            bonusItemUsesThisSession.Add(new string[] { Combat_EquippedBonus, "0" });
                         }
                     }
-
-                    bonusItemUsesThisSession.RemoveAll(item => updates.Any(update => update.Item1 == item.Item1)); // Removes all items from bonusItemUsesThisSession that == the current item (calling it the 'update')
-                    bonusItemUsesThisSession.AddRange(updates);  // Re-add the range of updated items to the list
 
                 }
             }
 
         }
 
-        private void ResetBonusItemStats()
+        public void ResetBonusItemStats()
         {
             currentHealthDefense = 0;
             currentLifeShield = false;
@@ -729,7 +742,7 @@ namespace DungeonExplorer
             bonusItemWeaponEaseOfUse = 0;
         }
 
-        private void ResetBonusItemSlot()
+        public void ResetBonusItemSlot()
         {
             slotBonusUses = " ";
             Combat_EquippedBonus = "";
@@ -819,7 +832,9 @@ namespace DungeonExplorer
 
                     Console.ReadKey();
 
-                    Game.RoomHandler.ReturnToLevel();
+                    Level_1.CompletedBattle = true;
+
+                    RoomHandler.ReturnToLevel();
                 }
                 else
                 {

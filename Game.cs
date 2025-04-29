@@ -39,7 +39,7 @@ namespace DungeonExplorer
 
             Monster.Add(new Monster("Dragon", "Dungeon Dweller", 250, "StealTurn", 1, 18, 20, 35));
 
-            Monster.Add(new Monster("Gnome", "The Gardener", 400, "BaseDamage & CRITRate", 3, 10, 8, 45));
+            Monster.Add(new Monster("Gnome", "The Gardener", 300, "BaseDamage & CRITRate", 3, 10, 8, 45));
 
             Item weapons = new Weapons();
             Item bonus_Items = new Bonus_Items();
@@ -89,7 +89,15 @@ namespace DungeonExplorer
             {
                 CurrentCombatSession = new Combat(Monster[monsterIndex]);
             }
+            else  // Create a new combat session if requirements are met
+            {
+                if (Level_1.CompletedBattle == true)  // If dragon has been battled
+                {
+                    CurrentCombatSession = new Combat(Monster[monsterIndex]);
+                }
+            }
 
+            
             CurrentCombatSession.MainCombatScreen();
         }
 

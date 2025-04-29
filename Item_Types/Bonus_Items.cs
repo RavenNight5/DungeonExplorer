@@ -19,13 +19,13 @@ namespace DungeonExplorer.Item_Types
             new string[8] {
             "Sponge",  // Name (used for filtering in search etc.)
             "35",  // Cost (if bought in a shop)
-            "3",  // Uses (if perishable item - reset after each combat session)
+            "5",  // Uses (reset after each combat session)
             "0",  // Base Dmg (if 0 then has different effects)...
             "0",  // CRIT Dmg
             "0",  // CRIT Rate
             "0",  // Difficulty of use (10-100) where 10 is an easy attack and 100 is extremely difficult - this number
                    // acts as the speed percentage the dial moves before an attack (if 0 then it is a bonus item/has different effects)
-            "Shield 50 NOTCRIT" // Special effect (split by whitespace, first string = effect, second = percentage effect has, third = when it applies (if applicable)
+            "Shield 50" // Special effect (split by whitespace, first string = effect, second = percentage effect has, third = when it applies (if applicable)
             },
             new string[5] {
             "       ",
@@ -37,7 +37,7 @@ namespace DungeonExplorer.Item_Types
             new string[4] {
             "~ Sponge ~",
             "Your trusted cleaning companion! Sometimes you talk to it.",
-            "(Damage Absorption - If not a CRIT HIT will soak 50% damage up to 3 times)",//(Speed Absorption - makes hitting the opponent 30% easier when equipped)"
+            "(Damage Absorption - will soak 50% damage up to 5 times)",
             ""
             }
         };
@@ -45,12 +45,12 @@ namespace DungeonExplorer.Item_Types
             new string[8] {
             "Beefy Sponge",
             "70",  // Cost
-            "4",  // Uses
+            "3",  // Uses
             "0",  // Base Dmg
             "0",  // CRIT Dmg
             "0",  // CRIT Rate
             "0",  // Difficulty
-            "Shield 40" // Shields from 40% of damage with any attack
+            "Shield 70" // Shields from 70% of damage with any attack
             },
             new string[5] {
             "       ",
@@ -62,7 +62,7 @@ namespace DungeonExplorer.Item_Types
             new string[4] {
             "~ Beefy Sponge ~",
             "So dense you could make armour out of it.",
-            "(Damage Absorption - Will soak 40% damage from ANY HIT up to 4 times)",//(Speed Absorption - makes hitting the opponent 30% easier when equipped)"
+            "(Damage Absorption - Will soak 70% damage from ANY HIT up to 3 times)",//(Speed Absorption - makes hitting the opponent 30% easier when equipped)"
             ""
             }
         };
@@ -173,7 +173,7 @@ namespace DungeonExplorer.Item_Types
             new string[8] {
             "Rusty Key",
             "0",
-            "1",  // Uses
+            "0",  // Uses
             "0",  // Base Dmg
             "10",  // CRIT Dmg
             "0",  // CRIT Rate
@@ -190,7 +190,7 @@ namespace DungeonExplorer.Item_Types
             new string[4] {
             "~ Old Rusted Key ~",
             "A key that looks like it would work on one of the cell doors.",
-            "(+ 30% Weak Spot Damage and + 10% CRIT Damage on any attack - perishable, one use) or (Unlock one cell door - perishable, one use)",
+            "(+ 30% Weak Spot Damage and + 10% CRIT Damage on any attack) or (Unlock one cell door - perishable, one use)",
             ""
             }
         };
@@ -201,27 +201,13 @@ namespace DungeonExplorer.Item_Types
             _items_List.Add(Bonus_Item_Mop);
             _items_List.Add(Bonus_Item_DustpanBrush);
             _items_List.Add(Bonus_Item_EmptyCup);
-            _items_List.Add(Bonus_Item_BloodCup);
             _items_List.Add(Bonus_Item_BeefySponge);
+            _items_List.Add(Bonus_Item_BloodCup);
 
             _items_List.Add(Bonus_Item_Key);
 
             AllItems.Add(_items_List);
         }
 
-
-        // Static polymorphism to return the result of the passed effects
-
-        // A base effect (such as adding 3 base damage)
-        public static int AddEffects(string effect, int effectNum)
-        {
-            return 0;
-        }
-
-        // Conditional base effect (such as adding base damage if the condition is met)
-        public static int AddEffects(string effect, int effectNum, string condition)
-        {
-            return 0;
-        }
     }
 }

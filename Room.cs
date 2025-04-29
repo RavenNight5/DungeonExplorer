@@ -91,7 +91,7 @@ namespace DungeonExplorer
                     // Player chose a number action such as Open Chest
                     else
                     {
-                        return Array.IndexOf(optionsKeyBinds, optionChosen); 
+                        return Array.IndexOf(optionsKeyBinds, optionChosen);
                     }
 
                 }

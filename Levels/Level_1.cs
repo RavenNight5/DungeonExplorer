@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using DungeonExplorer.Item_Types;
 using DungeonExplorer.Testing;
 using DungeonExplorer.Text_Displays;
@@ -18,24 +19,21 @@ namespace DungeonExplorer.Levels
         ///     - Changing rooms
         ///     - Showing dialogue (using Description_Box class)
         /// </summary>
-        public bool[] R1_ActionCompleted = new bool[] { false, false, false, false };  //Door, Chest, LookOnTable, LookUnderTable
-        public bool[] R2_ActionCompleted = new bool[] { false, false, false, false, false };  //Door, Wall, N, S, StandAround
-        public bool[] R3_ActionCompleted = new bool[] { false, false, false };
-        public bool[] R4_ActionCompleted = new bool[] { false, false, false };
-        public bool[] R5_ActionCompleted = new bool[] { false, false, false };
-        public bool[] R6_ActionCompleted = new bool[] { false, false, false };
+        public static bool[] R1_ActionCompleted = new bool[] { false, false, false, false };  //Door, Chest, LookOnTable, LookUnderTable
+        public static bool[] R2_ActionCompleted = new bool[] { false, false, false, false, false };  //Door, Wall, N, S, StandAround
+        public static bool[] R3_ActionCompleted = new bool[] { false, false, false };
+        public static bool[] R4_ActionCompleted = new bool[] { false, false, false };
+        public static bool[] R5_ActionCompleted = new bool[] { false, false, false };
+        public static bool[] R6_ActionCompleted = new bool[] { false, false, false };
+
+        public static bool CompletedBattle = false;
+
+        public static bool[] _room_DescriptionShown = new bool[] { false, false, false, false, false, false, false };
 
         public static bool[] R7_ActionCompleted = new bool[] { false, false, false };  //N, Puddle, S
-        
-        public static Level_1_Displays L1_Displays { get; private set; }
-        public static Level_1_Actions L1_Actions { get; private set; }
-        
-        private readonly bool[] _room_DescriptionShown = new bool[] { false, false, false, false, false, false, false };
 
         public Level_1()
         {
-            L1_Displays = new Level_1_Displays();
-            L1_Actions = new Level_1_Actions();
 
             Game.CurrentPlayer.PickUpItem("Sponge");
             Game.CurrentPlayer.PickUpItem("Mop");
@@ -83,7 +81,7 @@ namespace DungeonExplorer.Levels
             string concatenatedOptions = Game.OptionHandler.GetGeneralOptions();
 
             Console.Write(Room.GetCurrentItemsAndStats());
-            Console.Write(L1_Displays.GetRoom(Game_Map.CurrentRoom)); Console.Write("\n" + concatenatedOptions + "\n\n");
+            Console.Write(Level_1_Displays.GetRoom(Game_Map.CurrentRoom)); Console.Write("\n" + concatenatedOptions + "\n\n");
 
             if (_room_DescriptionShown[Game_Map.CurrentRoom - 1].Equals(false))
             {
@@ -106,14 +104,14 @@ namespace DungeonExplorer.Levels
 
                 if (Game_Map.CurrentRoom == 1 && !(action <= -1))  // -1 is a different option is selected rather than an exploration action (such as D for description) then re-call DisplayRooms
                 {
-                    Tests.CheckRoomActionExists(L1_Actions.L1_RoomActions);
+                    Tests.CheckRoomActionExists(Level_1_Actions.L1_RoomActions);
                     Tests.CheckActionTakenIsValid(action);
 
                     if (action < R1_ActionCompleted.Length)  // A valid action is taken (not viewing the room's description or another general option)
                     {
                         string[] dialogue;
 
-                        Tests.CheckRoomActionExists(L1_Actions.L1_RoomActions);
+                        Tests.CheckRoomActionExists(Level_1_Actions.L1_RoomActions);
 
                         // Door
                         if (action.Equals(0))
@@ -124,16 +122,16 @@ namespace DungeonExplorer.Levels
                                 {
                                     Game.CurrentPlayer.RemoveItemFromInventory("Rusty Key");
 
-                                    L1_Displays.R1_Interactables[action] = Environment_Interactables.Open_DoorVertical;
+                                    Level_1_Displays.R1_Interactables[action] = Environment_Interactables.Open_DoorVertical;
 
-                                    dialogue = L1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][1];
+                                    dialogue = Level_1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][1];
                                     Description_Box.ArrayDescription(dialogue, 32);
 
                                     R1_ActionCompleted[action] = true;
                                 }
                                 else
                                 {
-                                    dialogue = L1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][0];
+                                    dialogue = Level_1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][0];
                                     Description_Box.ArrayDescription(dialogue, 32);
                                 }
                             }
@@ -145,11 +143,11 @@ namespace DungeonExplorer.Levels
                         // Chest
                         else if (action.Equals(1))
                         {
-                            L1_Displays.R1_Interactables[action] = Environment_Interactables.Open_Chest;
+                            Level_1_Displays.R1_Interactables[action] = Environment_Interactables.Open_Chest;
 
                             if (R1_ActionCompleted[action] == false)
                             {
-                                dialogue = L1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][0];
+                                dialogue = Level_1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][0];
 
                                 Game.CurrentPlayer.PickUpItem("Rusty Key");
 
@@ -157,7 +155,7 @@ namespace DungeonExplorer.Levels
                             }
                             else
                             {
-                                dialogue = L1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][1];
+                                dialogue = Level_1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][1];
                             }
 
                             Description_Box.ArrayDescription(dialogue, 32);
@@ -167,7 +165,7 @@ namespace DungeonExplorer.Levels
                         {
                             if (R1_ActionCompleted[action] == false)
                             {
-                                dialogue = L1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][0];
+                                dialogue = Level_1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][0];
 
                                 Game.CurrentPlayer.PickUpItem("Empty Cup");
 
@@ -175,7 +173,7 @@ namespace DungeonExplorer.Levels
                             }
                             else
                             {
-                                dialogue = L1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][1];
+                                dialogue = Level_1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][1];
                             }
 
                             Description_Box.ArrayDescription(dialogue, 32);
@@ -185,12 +183,12 @@ namespace DungeonExplorer.Levels
                         {
                             if (R1_ActionCompleted[action] == false)
                             {
-                                dialogue = L1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][2][2];
+                                dialogue = Level_1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][2][2];
                                 R1_ActionCompleted[action] = true;
                             }
                             else
                             {
-                                dialogue = L1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][2][3];
+                                dialogue = Level_1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][2][3];
                             }
 
                             Description_Box.ArrayDescription(dialogue, 32);
@@ -201,7 +199,7 @@ namespace DungeonExplorer.Levels
                 }
                 else if (Game_Map.CurrentRoom == 2 && action != -1)
                 {
-                    Tests.CheckRoomActionExists(L1_Actions.L1_RoomActions);
+                    Tests.CheckRoomActionExists(Level_1_Actions.L1_RoomActions);
                     Tests.CheckActionTakenIsValid(action);
 
                     if (action < R2_ActionCompleted.Length)
@@ -215,17 +213,28 @@ namespace DungeonExplorer.Levels
 
                             R2_ActionCompleted[action] = true;
                         }
-                        // Wall / StandAround
+                        // Wall / Stand Around
                         else if (action.Equals(1) || action.Equals(4))
                         {
                             if (R2_ActionCompleted[action] == false)
                             {
-                                dialogue = L1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action - 1][0];
+                                dialogue = Level_1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action - 1][0];
+
+                                if (action.Equals(1))
+                                {
+                                    Game.CurrentPlayer.PickUpItem("Longsword");
+                                }
+                                
                                 R2_ActionCompleted[action] = true;
                             }
                             else
                             {
-                                dialogue = L1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action - 1][1];
+                                dialogue = Level_1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action - 1][1];
+                                
+                                if (action.Equals(1))
+                                {
+                                    Game.CurrentPlayer.PickUpItem("Beefy Sponge");
+                                }
                             }
 
                             Description_Box.ArrayDescription(dialogue, 32);
@@ -235,13 +244,34 @@ namespace DungeonExplorer.Levels
                         {
                             if (R2_ActionCompleted[action] == false)
                             {
-                                dialogue = new string[] { "It is too dark, you don't want to go down there right now.", "You should probably wait until you have a torch of some kind." };
-                                
-                                R2_ActionCompleted[action] = true;
+                                if (Player.InventoryItems.Contains("Longsword"))
+                                {
+                                    if (!CompletedBattle)
+                                    {
+                                        dialogue = new string[] { "Maybe I should try out this new weapon somewhere before continuing-", "You keep headding South to find a suitable spot to test the weapon." };
+                                    }
+                                    else  // Only starts Gnome battle when the player has the longsword and has battled the dragon
+                                    {
+                                        dialogue = new string[] { "With your weapon tested, approved, and ready to go you begin to walk down the unlit hallway...", "A strange smell fills the air?", "Similar to... Pottery? Or a plant pot~", "No.", "It's THE GARDENER" };
+
+                                        Description_Box.ArrayDescription(dialogue, 32);
+
+                                        Program.game.StartCombat(1);  // Start combat with monster 'The Gardener'
+
+                                        R2_ActionCompleted[action] = true;
+                                    }
+                                    
+                                }
+                                else
+                                {
+                                    //dialogue = new string[] { "You must really want to mop them floors, huh?", "Well how can you if you can't see what you're doing!" };
+
+                                    dialogue = new string[] { "It is too dark, I don't want to go up there right now.", "I'd feel safer if I had a better defense weapon... I should look around some more." };
+                                }
                             }
                             else
                             {
-                                dialogue = new string[] { "You must really want to mop them floors, huh?", "Well how can you if you can't see what you're doing!" };
+                                dialogue = new string[] { "The Gardener. What a guy... Shame I had to take him down.", "I should get a pay rise.", "Or at the very least a nametag showing off my 'Monster Cleaner' status." };
                             }
 
                             Description_Box.ArrayDescription(dialogue, 32);
@@ -252,22 +282,22 @@ namespace DungeonExplorer.Levels
                             if (R2_ActionCompleted[action] == false)
                             {
                                 R2_ActionCompleted[action] = true;
-                                
+
                                 dialogue = new string[] { "You head south down the long hallway.", "A subtle dripping noise can be heard, it seems to echo around the chamber up ahead." };
-                                
+
                                 Description_Box.ArrayDescription(dialogue, 32);
                             }
                             //dialogue = new string[] { "You have come to the end of this version.", "But do not fret, there will be plenty of cleaning next time!" };
 
                             Game_Map.CurrentRoom = 7;
                         }
-
+                        
                     }
                 }
                 //Rooms 3-6
                 else if (Game_Map.CurrentRoom == 7 && action != -1)
                 {
-                    Tests.CheckRoomActionExists(L1_Actions.L1_RoomActions);
+                    Tests.CheckRoomActionExists(Level_1_Actions.L1_RoomActions);
                     Tests.CheckActionTakenIsValid(action);
 
                     if (action < R7_ActionCompleted.Length)
@@ -288,25 +318,25 @@ namespace DungeonExplorer.Levels
                             {
                                 if (Room.CurrentEquippedItem == "Mop")
                                 {
-                                    dialogue = L1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][1];
+                                    dialogue = Level_1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][1];
 
                                     R7_ActionCompleted[action] = true;
 
-                                    L1_Displays.R1_Interactables[2] = Environment_Interactables.Puddle_1_Clean;
+                                    Level_1_Displays.R1_Interactables[2] = Environment_Interactables.Puddle_1_Clean;
 
                                     Level_1_Displays.L1Room_ExploreOptions[Game_Map.CurrentRoom - 1][1] = "Puddle Mopped! (+8 Coins)";
                                     Player.GoldCoins += 8;
                                 }
                                 else if (Room.CurrentEquippedItem == "Empty Cup")
                                 {
-                                    dialogue = L1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][2];
+                                    dialogue = Level_1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][2];
 
                                     Game.CurrentPlayer.RemoveItemFromInventory("Empty Cup");
                                     Game.CurrentPlayer.PickUpItem("Blood Cup");
                                 }
                                 else
                                 {
-                                    dialogue = L1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][0];
+                                    dialogue = Level_1_Actions.L1_RoomActions[Game_Map.CurrentRoom - 1][action][0];
                                 }
 
                                 Description_Box.ArrayDescription(dialogue, 32);
