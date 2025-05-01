@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace DungeonExplorer
 {
-    internal class Input
+    public class Input
     {
         /// <summary>
         /// Handles multiple inputs the player can make, ensuring the provided input is valid regarding the provided criteria (passed as parameters).
@@ -35,7 +35,7 @@ namespace DungeonExplorer
             {
                 if (name.Length >= min && name.Length <= max)
                 {
-                    Player.Name = name;
+                    Program.NameTemp = name;
                 }
                 else
                 {
@@ -84,7 +84,7 @@ namespace DungeonExplorer
             }
         }
 
-        public void WaitOnKey(string keyRequired, string optSecondKey = null, string optThirdKey = null)
+        public static string WaitOnKey(string keyRequired, string optSecondKey = null, string optThirdKey = null)
         {
             var keyInfo = Console.ReadKey();
 
@@ -92,15 +92,15 @@ namespace DungeonExplorer
 
             if (keyInfo.Key.ToString().Equals(keyRequired))
             {
-                return;
+                return keyInfo.Key.ToString();
             }
             else if (keyInfo.Key.ToString().Equals(optSecondKey) && optSecondKey != null)
             {
-                return;
+                return keyInfo.Key.ToString();
             }
             else if (keyInfo.Key.ToString().Equals(optThirdKey) && optThirdKey != null)
             {
-                return;
+                return keyInfo.Key.ToString();
             }
             else
             {
@@ -109,11 +109,26 @@ namespace DungeonExplorer
                 WaitOnKey(keyRequired, optSecondKey, optThirdKey);
 
             }
+
+            return null;
         }
 
-        public void WaitOnAnyKey()
+        //Combat Inputs
+
+        public string CombatMainOptions(string[] optionsKeyBinds, string currentlyChoosing = "")
         {
-            Console.ReadKey();
+            string optionChosen = OptionsGetPlayerResponse(optionsKeyBinds);
+
+            if (optionChosen != null)
+            {
+                return optionChosen;
+            }
+            else
+            {
+                CombatMainOptions(optionsKeyBinds);
+
+                return null;
+            }
         }
 
         public static void ClearCurrentConsoleLine()

@@ -2,60 +2,117 @@
 using System;
 using System.Collections.Generic;
 using DungeonExplorer.Dialogue;
+using DungeonExplorer.Item_Types;
+using DungeonExplorer.Levels;
 using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
 {
-    internal class Game
+    public class Game
     {
         /// <summary>
-        /// Initialises four objects that will be the main objects throughout the game.
-        /// Starts the game throug the newly-initialised room object.
+        /// Initialises the main objects that will be used and referenced throughout the game.
+        /// This now includes two Monsters, each with different stats and abilities.
+        /// Starts the game throug the newly-initialised Game_Map object.
         /// </summary>
         
-        // Here I set multiple classes to static as they will only be defined once per game. Therefore, they and their methods can be accessed in other main classes (e.g. Level_1)
+        private string playerPlural = "";
+
+        public static Combat CurrentCombatSession { get; set; }
+
+        // Here I set multiple objects as static since they will only be defined once per game. Therefore, they and their methods can be accessed in other main classes (e.g. Level_1)
         public static Player CurrentPlayer { get; private set; }
-        public static Room RoomHandler { get; private set; }
+        public static List<Monster> Monster { get; private set; }
+        public static Game_Map RoomHandler { get; private set; }
+        public static Item ItemHandler { get; private set; }
         public static Input InputHandler { get; private set; }
         public static Options OptionHandler { get; private set; }
 
         public Game()
         {
-            Game.CurrentPlayer = new Player();
+            CurrentPlayer = new Player(Program.NameTemp, playerPlural, 80);
 
-            Game.RoomHandler = new Room();
+            RoomHandler = new Game_Map();
 
-            Game.InputHandler = new Input();
+            Monster = new List<Monster>();
 
-            Game.OptionHandler = new Options();
+            Monster.Add(new Monster("Dragon", "Dungeon Dweller", 250, "StealTurn", 1, 18, 20, 35));
+
+            Monster.Add(new Monster("Gnome", "The Gardener", 300, "BaseDamage & CRITRate", 3, 12, 10, 45));
+
+            Item weapons = new Weapons();
+            Item bonus_Items = new Bonus_Items();
+
+            ItemHandler = new Item();
+
+            InputHandler = new Input();
+
+            OptionHandler = new Options();
         }
 
-        public void Start()
+        public void Start(int roomToStartAt = 1)  // roomToStartAt is used when the player selects a room from the testing menu
         {
             Program.CLEAR_CONSOLE();
 
-            General_Info general_Info = new General_Info();
-
-            string[] dialogue = general_Info.WelcomeDialogue;
-
-            for (int i = 0; i < dialogue.Length; i++)
+            if (roomToStartAt == 1)
             {
-                new Description_Box(dialogue[i]);
+                General_Info general_Info = new General_Info();
 
-                if (i.Equals(dialogue.Length - 1)) Console.WriteLine("\n\n[Space] to Wake Up\n");
-                else Console.WriteLine("\n\n[Space]\n");
+                string[] dialogue = general_Info.WelcomeDialogue;
 
-                InputHandler.WaitOnKey("Spacebar");
+                for (int i = 0; i < dialogue.Length; i++)
+                {
+                    new Description_Box(dialogue[i]);
 
-                Program.CLEAR_CONSOLE();
+                    if (i.Equals(dialogue.Length - 1)) Console.WriteLine("\n\n[Space] to Wake Up\n");
+                    else Console.WriteLine("\n\n[Space]\n");
+
+                    Input.WaitOnKey("Spacebar");
+
+                    Program.CLEAR_CONSOLE();
+                }
+
             }
 
             for (int i = 1; i <= Program.NumOfLevels; i++)
             {
-                RoomHandler.StartLevel(i);
+                RoomHandler.StartLevel(i, roomToStartAt);
             }
 
             Console.WriteLine("\n\n---Game Finished---\n");
+        }
+
+        public void StartCombat(int monsterIndex = 0)
+        {
+            if (CurrentCombatSession == null)
+            {
+                CurrentCombatSession = new Combat(Monster[monsterIndex]);
+            }
+            else  // Create a new combat session if requirements are met
+            {
+                if (Level_1.CompletedBattle == true)  // If dragon has been battled
+                {
+                    CurrentCombatSession = new Combat(Monster[monsterIndex]);
+                }
+            }
+
+            
+            CurrentCombatSession.MainCombatScreen();
+        }
+
+        public static void ReturnToCombat()
+        {
+            if (CurrentCombatSession == null)
+            {
+                throw new InvalidOperationException("No active combat session exists to return to.");
+            }
+
+            if (!Combat.InCombat)
+            {
+                Combat.InCombat = true;
+            }
+
+            CurrentCombatSession.MainCombatScreen();
         }
     }
 }

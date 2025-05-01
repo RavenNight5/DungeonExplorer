@@ -13,8 +13,8 @@ namespace DungeonExplorer.Dialogue
         public General_Info()
         {
             WelcomeDialogue = new string[] {
-                $"{Player.Name}, you are the dungeon's lead cleaner! The only cleaner at that...",
-                "Your job is to explore, find things to clean, probably clean them, and that's about it.",
+                $"{Program.NameTemp}, you are the dungeon's lead cleaner! The only cleaner at that...",
+                "Your job is to explore the dungeon and find things to clean for Gold Coins.",
                 "Remember to check out the room's description [D] before doing anything drastic!",
                 "Who knows, maybe you will have a more interesting day today..."
             };

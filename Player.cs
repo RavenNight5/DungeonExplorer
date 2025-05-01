@@ -1,234 +1,268 @@
 ﻿// Filename: Player.cs
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Threading;
 
 namespace DungeonExplorer
 {
-    public class Player
+    public class Player : Creature
     {
         /// <summary>
-        /// Initialises the player's name, max health & health.
-        /// Handles the inventory system (including its text display), including:
+        /// Initialises the player's name, max health, health & gold coins.
+        /// Handles the player's inventory, including:
         ///     - Picking up items
         ///     - Removing items from the inventory
-        ///     - Returning the inventory's text display
-        ///     - Displaying the inventory's text display
-        ///     - Allowing selection between each item in the inventory, showing their descriptions when selected
-        ///     - Equipping an item from the inventory - which is then handled by the Room class
+        ///     - Calling on the Inventory class to display the content of the player's inventory
         /// </summary>
-        private string[] _slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
-        private string[] _itemDescription = new string[4];
+        public static List<string> InventoryItems = new List<string>();  // Holds the current items the player has in their inventory
 
-        public static string Name { get; set; }
-        public static string NamePlural { get; set; }
-        public static int MaxHealth { get; set; }
         public static int Health { get; set; }
+        public static int BaseDamage { get; set; }
+        public static int CRITDamage { get; set; }
+        public static int CRITRate { get; set; }
 
-        public static string[] EmptySlot = {
-        "       ",
-        "       ",
-        "       ",
-        "       ",
-        "      "
-        };
+        public static int GoldCoins { get; set; }
 
-        public static string[] EmptyDescription = {
-        "",
-        "",
-        "",
-        ""
-        };
+        public override bool IsPlayer => true;
+        public override bool IsEnemy => false;
+        public override bool IsNPC => false;
 
-        private readonly List<string[]> _inventoryItem = new List<string[]>();
-        private readonly List<string[]> _inventoryItem_Descriptions = new List<string[]>();
-        
-        private readonly string _emptyNormal = "       ";
-        private readonly string _emptyBottom = "      ";  // There is an inventory slot number so have one less space
+        public override string Name { get; set; }
+        public override string Plural { get; set; }
+        public override int MaxHealth { get; set; }
 
-        private readonly string _selectedSlotChar = "+";
+        private readonly string[] _d6Visuals = new string[] { "   ·\r\n", "    ·\r\n   ·", "     ·\r\n    ·\r\n   ·", "   · ·\r\n   · ·", "   · ·\r\n    ·\r\n   · ·", "   ···\r\n   ···" };
 
-        private readonly string[] _slot_1 = new string[5];  // Each string in the array represents the horizontal line in that inventory slot
-        private readonly string[] _slot_2 = new string[5];
-        private readonly string[] _slot_3 = new string[5];
-        private readonly string[] _slot_4 = new string[5];
-        private readonly string[] _slot_5 = new string[5];
-        private readonly string[] _slot_6 = new string[5];
-        private readonly string[] _slot_7 = new string[5];
-        private readonly string[] _slot_8 = new string[5];
-        private readonly string[] _slot_9 = new string[5];
-        private readonly string[] _slot_0 = new string[5];
-
-        public Player()
+        public Player(string name, string plural, int maxHealth) : base(name, plural, maxHealth)
         {
-            MaxHealth = 6;
-            Health = MaxHealth;
+            Name = name;
+            Plural = plural;
 
-            _inventoryItem.Add(_slot_1);
-            _inventoryItem.Add(_slot_2);
-            _inventoryItem.Add(_slot_3);
-            _inventoryItem.Add(_slot_4);
-            _inventoryItem.Add(_slot_5);
-            _inventoryItem.Add(_slot_6);
-            _inventoryItem.Add(_slot_7);
-            _inventoryItem.Add(_slot_8);
-            _inventoryItem.Add(_slot_9);
-            _inventoryItem.Add(_slot_0);
+            BaseDamage = 5;
+            CRITDamage = 10;  // A % that determines the additional damage dealt if the attack is a CRIT HIT
+            CRITRate = 15;  // A % chance out of 100 that the attack will be a CRIT HIT
 
-            for (int i = 0; i < _inventoryItem.Count; i++)  //For each inventory slot array - initialise each string to the width of the inventory slot
+            Health = maxHealth;
+
+            GoldCoins = 10;
+        }
+
+        public void PickUpItem(string item)  //Passes the item to be added to the inventory - this is preset and passed from Inventory_Items (index 0 of the array is the item, index 1 is the description)
+        {
+            if (!InventoryItems.Contains(item))
             {
-                _inventoryItem[i][0] = _emptyNormal;
-                _inventoryItem[i][1] = _emptyNormal;
-                _inventoryItem[i][2] = _emptyNormal;
-                _inventoryItem[i][3] = _emptyNormal;
-                _inventoryItem[i][4] = _emptyBottom;
-
-                _inventoryItem_Descriptions.Add(EmptyDescription);
+                InventoryItems.Add(item);  // Only adds the name of the item to be stored in the player object
             }
         }
 
-        public void PickUpItem(string[][] item)  //Passes the item to be added to the inventory - this is preset and passed from Inventory_Items (index 0 of the array is the item, index 1 is the description)
+        public void RemoveItemFromInventory(string item)
         {
-            bool itemAdded = false;
+            InventoryItems.Remove(item);  // Removes the name of the item from the player object inventory
 
-            for (int i = 0; i < _inventoryItem.Count; i++)
+            Inventory.InventorySlotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };  // Resets the inventory slot numbers (so none are shown as selected)
+
+            if (item == Room.CurrentEquippedItem)  // item[1] is the "image" of the item and would correspond to the CurrentEquippedItem slot
             {
-                // Check if the current slot's middle line is equal to the empty slot string (as the middle line will always have text if an item is assigned to that slot)
-                if (_inventoryItem[i][2].Equals(_emptyNormal) && itemAdded.Equals(false))
-                {
-                    itemAdded = true;
-
-                    _inventoryItem[i] = item[0];
-                    _inventoryItem_Descriptions[i] = item[1];
-                }
+                Room.CurrentEquippedItem = "";
+                Room.CurrentEquippedItemImage = Inventory.InventoryEmptySlot;
             }
         }
 
-        public void RemoveItemFromInventory(string[] item)
+        // Uses the inventory class to display the passed list of items on a screen
+        public void DisplayInventory(string currentlyChoosing = "")
         {
-            for (int i = 0; i < _inventoryItem.Count; i++)
-            {
-                if (_inventoryItem[i].Equals(item))
-                {
-                    _inventoryItem[i] = EmptySlot;
-                    _itemDescription = EmptyDescription;
-                    _inventoryItem_Descriptions[i] = EmptyDescription;
-                }
-            }
+            Inventory inventory = new Inventory();
 
-            _slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
-
-            Room.CurrentEquippedItem = EmptySlot;
+            inventory.DisplayInventory(InventoryItems, currentlyChoosing);
         }
 
-        // Used to refresh the display after an item is selected etc.
-        private string GetInventoryDisplay()
-        {
-            string inventoryDisplay = $@"
-     Inventory:
-    ---───══───═══════════════════───══───---  Description:
-    │{_inventoryItem[0][0]}│{_inventoryItem[1][0]}│{_inventoryItem[2][0]}│{_inventoryItem[3][0]}│{_inventoryItem[4][0]}│ ╔══════=──────────---
-    │{_inventoryItem[0][1]}│{_inventoryItem[1][1]}│{_inventoryItem[2][1]}│{_inventoryItem[3][1]}│{_inventoryItem[4][1]}│ ║ {_itemDescription[0]}
-    │{_inventoryItem[0][2]}║{_inventoryItem[1][2]}║{_inventoryItem[2][2]}║{_inventoryItem[3][2]}║{_inventoryItem[4][2]}│ │ {_itemDescription[1]}
-    │{_inventoryItem[0][3]}│{_inventoryItem[1][3]}│{_inventoryItem[2][3]}│{_inventoryItem[3][3]}│{_inventoryItem[4][3]}│ │ {_itemDescription[2]}
-    ║{_slotNumbers[0]}{_inventoryItem[0][4]}│{_slotNumbers[1]}{_inventoryItem[1][4]}│{_slotNumbers[2]}{_inventoryItem[2][4]}│{_slotNumbers[3]}{_inventoryItem[3][4]}│{_slotNumbers[4]}{_inventoryItem[4][4]}║ │ {_itemDescription[3]}
-    ║ ───────────────────────────────────── ║ ║ [Enter] to Equip/Use
-    ║{_inventoryItem[5][0]}│{_inventoryItem[6][0]}│{_inventoryItem[7][0]}│{_inventoryItem[8][0]}│{_inventoryItem[9][0]}║ ╚══════=──────────---
-    │{_inventoryItem[5][1]}│{_inventoryItem[6][1]}│{_inventoryItem[7][1]}│{_inventoryItem[8][1]}│{_inventoryItem[9][1]}│
-    │{_inventoryItem[5][2]}║{_inventoryItem[6][2]}║{_inventoryItem[7][2]}║{_inventoryItem[8][2]}║{_inventoryItem[9][2]}│
-    │{_inventoryItem[5][3]}│{_inventoryItem[6][3]}│{_inventoryItem[7][3]}│{_inventoryItem[8][3]}│{_inventoryItem[9][3]}│
-    │{_slotNumbers[5]}{_inventoryItem[5][4]}│{_slotNumbers[6]}{_inventoryItem[6][4]}│{_slotNumbers[7]}{_inventoryItem[7][4]}│{_slotNumbers[8]}{_inventoryItem[8][4]}│{_slotNumbers[9]}{_inventoryItem[9][4]}│
-    ---──────────═══════════════──────────---
-        ";
-
-            return inventoryDisplay;
-        }
-
-        public void DisplayInventory()
+        public override int Attack(bool miss = false, bool hitWeakSpot = false, List<int> availableDamage = null)
         {
             Program.CLEAR_CONSOLE();
 
-            Console.Write(GetInventoryDisplay()); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
+            float result = 0;
 
-            PlayerChoiceInventory();
+            int dice1 = DiceRoll();
+            int dice2 = DiceRoll();
 
-            void PlayerChoiceInventory()
+            if (!(availableDamage == null) && miss == false)
             {
-                string optionChosen = Game.InputHandler.OptionsGetPlayerResponse(Options.InventoryOptionsKeyBinds);
+                int baseDamage = availableDamage[0];
+                int critDamage = availableDamage[1];
+                int critRate = availableDamage[2];
+                int weakSpotDmg = availableDamage[3];
 
-                if (optionChosen != null)
+                Random critRateChance = new Random();
+
+                if (critRateChance.Next(0, 100) <= critRate)  // CRIT Hit  
                 {
-                    try
+                    result = baseDamage + (baseDamage * critDamage / 100);  // Adds the percentage of crit damage to the base damage
+
+                    if (hitWeakSpot)
                     {
-                        if (optionChosen.Equals("Tab"))
-                        {
-                            Program.CLEAR_CONSOLE();
+                        result += (result * weakSpotDmg / 100);  // Adds the percentage of weak spot damage to the result damage
 
-                            Game.RoomHandler.ReturnToLevel();
-
-                        }
-                        else if (optionChosen.Equals("Enter"))
-                        {
-                            Program.CLEAR_CONSOLE();
-
-                            //To add:
-                            //If selected and a useable item (health kit etc.) then use straight away and remove from inventory.
-
-                            if (!_itemDescription[0].Equals(""))
-                            {
-                                int itemIndex = _inventoryItem_Descriptions.IndexOf(_itemDescription);
-
-                                Room.CurrentEquippedItem = _inventoryItem[itemIndex];
-
-                                Game.RoomHandler.ReturnToLevel();
-                            }
-                            else
-                            {
-                                Room.CurrentEquippedItem = EmptySlot;
-
-                                Game.RoomHandler.ReturnToLevel();
-                            }
-
-                        }
-                        else  // Player has chosen an item
-                        {
-                            Program.CLEAR_CONSOLE();
-
-                            int slotChosen = Array.IndexOf(Options.InventoryOptionsKeyBinds, optionChosen);
-
-                            if (_slotNumbers[slotChosen].ToString() != _selectedSlotChar)
-                            {
-                                _itemDescription = _inventoryItem_Descriptions[slotChosen];
-
-                                _slotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", };
-
-                                _slotNumbers[slotChosen] = _selectedSlotChar;
-                            }
-                            else
-                            {
-                                _itemDescription = EmptyDescription;
-
-                                if (slotChosen.Equals(9)) _slotNumbers[slotChosen] = "0";
-                                else
-                                {
-                                    _slotNumbers[slotChosen] = (slotChosen + 1).ToString();
-                                }
-                            }
-
-                            Console.Write(GetInventoryDisplay()); Console.WriteLine("\n\n" + Game.OptionHandler.GetInventoryOptions() + "\n");
-
-                            PlayerChoiceInventory();
-
-                        }
+                        Console.WriteLine($" WEAK SPOT CRIT HIT!\n");
+                        Thread.Sleep(300);
+                        Console.WriteLine($" [ {baseDamage} ] Weapon Base Dmg");
+                        Thread.Sleep(200);
+                        Console.WriteLine($" +[ {critDamage} ]% CRIT Dmg");
+                        Thread.Sleep(100);
+                        Console.WriteLine($"  +[ {weakSpotDmg} ]% Weak Spot Dmg");
+                        Thread.Sleep(50);
+                        Console.WriteLine($" ---\n [ {(int)Math.Ceiling(result)} ] Total Dmg");
                     }
-                    catch (Exception e)
+                    else
                     {
-                        Debug.WriteLine(optionChosen + " was not recognised as a string in this instance. \nException caught: " + e);
+                        Console.WriteLine($" CRIT HIT!\n");
+                        Thread.Sleep(200);
+                        Console.WriteLine($" [ {baseDamage} ] Weapon Base Dmg");
+                        Thread.Sleep(100);
+                        Console.WriteLine($" +[ {critDamage} ]% CRIT Dmg");
+                        Thread.Sleep(50);
+                        Console.WriteLine($" ---\n [ {(int)Math.Ceiling(result)} ] Total Dmg");
                     }
                 }
-                else PlayerChoiceInventory();
+                else  // Regular hit  
+                {
+                    result = baseDamage;
+
+                    if (hitWeakSpot)
+                    {
+                        result += (result * weakSpotDmg / 100);
+
+                        Console.WriteLine($" WEAK SPOT HIT!\n");
+                        Thread.Sleep(200);
+                        Console.WriteLine($" [ {baseDamage} ] Weapon Base Dmg");
+                        Thread.Sleep(100);
+                        Console.WriteLine($"  +[ {weakSpotDmg} ]% Weak Spot Dmg");
+                        Thread.Sleep(50);
+                        Console.WriteLine($" ---\n [ {(int)Math.Ceiling(result)} ] Total Dmg");
+                    }
+                    else
+                    {
+                        Console.WriteLine($" HIT!\n");
+                        Thread.Sleep(200);
+                        Console.WriteLine($" [ {baseDamage} ] Weapon Base Dmg");
+                        Thread.Sleep(100);
+                        Console.WriteLine($" ---\n [ {(int)Math.Ceiling(result)} ] Total Dmg");
+                    }
+                }
+
+                Console.WriteLine($"\n\n > Roll 2x D6 [Space]\n");
+
+                Console.ReadKey();
+
+                Program.CLEAR_CONSOLE();
+
+                int totalResult = (int)Math.Ceiling(result + dice1 + dice2);
+
+                string space = "   ";
+
+                if (totalResult.ToString().Length == 2)
+                {
+                    space = "  ";
+                }
+                else if (totalResult.ToString().Length == 3)
+                {
+                    space = " ";
+                }
+
+                Thread.Sleep(100);
+                Console.WriteLine($"{_d6Visuals[dice1 - 1]}");
+                Thread.Sleep(200);
+                Console.WriteLine($"{_d6Visuals[dice2 - 1]}");
+
+                Thread.Sleep(200);
+                Console.WriteLine($"\n  [ {dice1 + dice2} ] + DICE Damage\n");
+                Thread.Sleep(100);
+                Console.WriteLine($@" ╔═─~~─═╗
+ │  {totalResult}{space}│  TOTAL Attack Dmg
+ ╚═─~~─═╝");
+
+                Console.WriteLine($"\n > Continue [Space]");
+
+                Console.ReadKey();
             }
+
+            return (int)Math.Ceiling(result + dice1 + dice2);
+        }
+
+        private int DiceRoll()
+        {
+            int result = 0;
             
+            // Avoids repeated seed initialization (it wouldn't give me a unique random number with just the regular instance of random somehow)
+            Random random = new Random(Guid.NewGuid().GetHashCode());
+
+            result = random.Next(1, 7);  // Rolls a D6  
+
+            return result;
+        }
+
+        public override void DamagePlayer(int dmg, int healthDefense = 0, bool lifeShield = false)
+        {
+            if (Health - dmg <= 0)
+            {
+                if (lifeShield)  // If the bonus item equipped is a life shield
+                {
+                    Health = (int)Math.Ceiling((double)(MaxHealth * healthDefense) / 100);  // If the player has a life shield they won't die and will be restored healthDefense as a % of their max health
+
+                    Program.CLEAR_CONSOLE();
+
+                    Console.WriteLine(" A CRITICAL blow was dealt, but you were saved by your Life Shield!\n");
+                    Thread.Sleep(200);
+                    Console.WriteLine($" {healthDefense}% of max health has been restored.\n");
+                    Thread.Sleep(100);
+
+                    Console.WriteLine($" Press [any key] to continue\n");
+                    Console.ReadKey();
+                }
+                else
+                {
+                    Health = 0;
+                }
+            }
+            else
+            {
+                if (lifeShield)
+                {
+                    Health -= dmg;
+                    Health = Health + (int)Math.Ceiling((double)(MaxHealth * healthDefense) / 100);  // Add the health restored by the life shield even though the player is still alive (so the use was not in vein)
+
+                    Program.CLEAR_CONSOLE();
+
+                    Console.WriteLine(" No critical blow was dealt, you're still alive! Since a Life Shield is equipped:\n");
+                    Thread.Sleep(200);
+                    Console.WriteLine($" + {healthDefense}% of max health has been restored.\n");
+                    Thread.Sleep(100);
+
+                    Console.WriteLine($" Press [any key] to continue\n");
+                    Console.ReadKey();
+                }
+                else
+                {
+                    if (healthDefense != 0)  // A shield is equipped
+                    {
+                        int shielded = (dmg * healthDefense / 100);
+                        
+                        Health -= dmg - shielded;  // Take off the shield percentage from the damage dealt
+
+                        Program.CLEAR_CONSOLE();
+
+                        Thread.Sleep(200);
+                        Console.WriteLine($"Your Shield absorbed {shielded} Damage from the opponent!\n");
+                        Thread.Sleep(100);
+
+                        Console.WriteLine("Press [any key] to continue\n");
+                        Console.ReadKey();
+                    }
+                    else
+                    {
+                        Health -= dmg;
+                    }
+                }
+            }
         }
     }
 }

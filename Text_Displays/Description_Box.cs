@@ -188,7 +188,7 @@ namespace DungeonExplorer.Text_Displays
                     Console.WriteLine("\n\n[Space]\n");
                 }
 
-                Game.InputHandler.WaitOnKey("Spacebar");
+                Input.WaitOnKey("Spacebar");
             }
         }
 

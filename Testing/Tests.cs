@@ -2,15 +2,119 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace DungeonExplorer.Testing
 {
     internal class Tests
     {
         /// <summary>
+        /// Handles the Testing Menu that can be selected at the start of the game.
+        /// This allows the player to start at a specific point in the game or start a combat session.
         /// Uses static methods containing the Debug.Assert() method to check an unexpected/erroneous value has not been wrongly passed through the input checks.
         /// </summary>
-        
+
+        public static bool InTestingMode = false;
+
+        public void TestingMenu(bool incorrectInput = false)
+        {
+            Program.CLEAR_CONSOLE();
+
+            if (Program.game == null)
+            {
+                Program.game = new Game();
+            }
+
+            InTestingMode = true;
+
+            Console.WriteLine("Testing Menu\n------------\n\nStart the game from a specific room or begin a combat session. \nAll weapons and items will be available to use.\n\n");
+
+            Console.WriteLine("Go to:\n > Room 1 (The Cell) [1]\n > Room 2 (Hallway) [2]\n > Room 7 (South Hall & Chamber) [7]\n\n");
+            Console.WriteLine("Combat:\n > Battle Dragon [D]\n > Battle Gnome [G]\n\n > CLOSE TESTING MENU & Start Game [Space]\n");
+
+            if (incorrectInput)
+            {
+                Console.WriteLine("That is not an option. Please try again.\n");
+            }
+
+            string[] testingOptions = new string[] { "D1", "D2", "D7", "D", "G", "Spacebar" };  // Keys 1, 2, 7, D, G, Spacebar (room 7 is
+            string playerInput = Game.InputHandler.OptionsGetPlayerResponse(testingOptions);  // D is the recognised key inputs 0-9
+
+            if (playerInput == "Spacebar")
+            {
+                InTestingMode = false;
+
+                beginGame(1);
+            }
+            else if (playerInput == "D" )
+            {
+                AddAllInventoryItems();
+
+                Program.game.StartCombat(0);  // Dragon
+
+                Console.WriteLine("Testing combat session has ended, press [any key] to return to the Testing Menu.");
+
+                Console.ReadKey();
+
+                TestingMenu();
+            }
+            else if (playerInput == "G")
+            {
+                AddAllInventoryItems();
+
+                Program.game.StartCombat(1);  // Gnome
+
+                Console.WriteLine("Testing combat session has ended, press [any key] to return to the Testing Menu.");
+
+                Console.ReadKey();
+
+                TestingMenu();
+            }
+            else  // A number input
+            {
+                if (testingOptions.Contains(playerInput))
+                {
+                    try
+                    {
+                        AddAllInventoryItems();
+
+                        beginGame(int.Parse(playerInput.TrimStart('D')));
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine($"Input {playerInput} was not recognised as an integer in this instance. \nException caught: " + e);
+                    }
+                    finally
+                    {
+                        TestingMenu();
+                    }
+                }
+                else
+                {
+                    TestingMenu(true);
+                }
+            }
+        }
+
+        private void beginGame(int room)
+        {
+            Program.game.Start(room);
+        }
+
+        private void AddAllInventoryItems()
+        {
+            foreach (var itemType in Item.AllItems)
+            {
+                for (var i = 0; i < itemType.Count; i++)
+                {
+                    if (!Player.InventoryItems.Contains(itemType[i][0][0]))  // If the inventory does not already contain the item
+                    {
+                        Player.InventoryItems.Add(itemType[i][0][0]);  // Add the item name to the inventory
+                    }
+                }
+            }
+        }
+
         public static void CheckRoomDisplayExists(int lastRoomFetched, int descriptionsListCount)
         {
             Debug.Assert(lastRoomFetched < descriptionsListCount, "Room to be fetched does not exist.");
@@ -24,5 +128,6 @@ namespace DungeonExplorer.Testing
         {
             Debug.Assert(!(action <= -1), "An invalid explore action was erroneously passed through.");
         }
+
     }
 }
