@@ -1,7 +1,6 @@
 ﻿// Filename: Program.cs
 using System;
 using System.Diagnostics;
-using System.Threading;
 using DungeonExplorer.Testing;
 using DungeonExplorer.Text_Displays;
 
@@ -16,8 +15,10 @@ namespace DungeonExplorer
         /// Details:
         /// - Writes the welcome title
         /// - Initialises a new game object and waits for the player to start the game
+        /// - Initialises a new tests object if the player wants to use the Testing Menu (then handled by the Tests class)
         /// - Allows the player to input their name and sets it to the name attribute in the Player class (as only one player will ever be initialised per game)
         /// - Starts the game
+        /// - Handles the game over screen if the player loses a battle
         /// </summary>
         public static string VersionNumber = "v0.2";
 
@@ -26,7 +27,8 @@ namespace DungeonExplorer
         public static string NameTemp = "";
         public static string TempPlural = "";
 
-        public static Game game { get; private set; }
+        public static Game game { get; set; }
+        public static Tests tests { get; private set; }
 
         static void Main(string[] args)
         {
@@ -38,7 +40,7 @@ namespace DungeonExplorer
             Console.WriteLine(title);
             Console.WriteLine("\n Press [Space] to play.\n ---\n Press [T] for the Testing Menu.\n\n");
 
-            string playerInput = Game.InputHandler.WaitOnKey("Spacebar", "T");
+            string playerInput = Input.WaitOnKey("Spacebar", "T");
 
             if (playerInput == "Spacebar")
             {
@@ -50,9 +52,11 @@ namespace DungeonExplorer
             {
                 EnterName();
 
-                Tests testingMenu = new Tests();
+                tests = new Tests();
+                
+                game = null;  // Reset the game object as a new one will be instantiated in Tests
 
-                testingMenu.TestingMenu();  // Brings up the testing menu
+                tests.TestingMenu();  // Brings up the testing menu
             }
 
             void EnterName()
@@ -106,7 +110,7 @@ namespace DungeonExplorer
  Quit Application [Q]
 ");
 
-            string playerInput = Game.InputHandler.WaitOnKey("Spacebar", "Q");
+            string playerInput = Input.WaitOnKey("Spacebar", "Q");
             
             if (playerInput == "Spacebar")
             {

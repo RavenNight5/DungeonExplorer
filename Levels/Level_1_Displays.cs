@@ -15,9 +15,6 @@ namespace DungeonExplorer.Levels
         /// fetched with the current room number by using it as an index for the required list.
         /// </summary>
         
-        //private List<string> Rooms_Initial = new List<string>();
-        //private List<string> Rooms_North = new List<string>();
-
         public static List<string[]> R1_Interactables = new List<string[]> { 
             Environment_Interactables.Closed_DoorVertical, 
             Environment_Interactables.Closed_Chest, 
@@ -86,27 +83,6 @@ namespace DungeonExplorer.Levels
             _r6_Desc,
             _r7_Desc
         };
-
-        public Level_1_Displays()
-        {
-			//RefreshRoomDisplays();
-
-            //_descriptions_List.Add(_r1_Desc);
-            //_descriptions_List.Add(_r2_Desc);
-            //_descriptions_List.Add(_r3_Desc);
-            //_descriptions_List.Add(_r4_Desc);
-            //_descriptions_List.Add(_r5_Desc);
-            //_descriptions_List.Add(_r6_Desc);
-            //_descriptions_List.Add(_r7_Desc);
-
-            //L1Room_ExploreOptions.Add(_r1_ExploreOptions);
-            //L1Room_ExploreOptions.Add(_r2_ExploreOptions);
-            //L1Room_ExploreOptions.Add(_r3_ExploreOptions);
-            //L1Room_ExploreOptions.Add(_r4_ExploreOptions);
-            //L1Room_ExploreOptions.Add(_r5_ExploreOptions);
-            //L1Room_ExploreOptions.Add(_r6_ExploreOptions);
-            //L1Room_ExploreOptions.Add(_r7_ExploreOptions);
-        }
 
         public static List<string> _rooms1_List = new List<string>();
 

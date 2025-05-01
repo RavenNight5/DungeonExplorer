@@ -1,8 +1,5 @@
-﻿using System;
+﻿// Filename: Bonus_Items.cs
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DungeonExplorer.Item_Types
 {

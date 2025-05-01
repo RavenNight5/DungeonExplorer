@@ -1,6 +1,5 @@
 ﻿// Filename: Room.cs
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using DungeonExplorer.Levels;
 using DungeonExplorer.Text_Displays;
@@ -53,7 +52,7 @@ namespace DungeonExplorer
 
         public static int PlayerChoice(string[] optionsKeyBinds)
         {
-            string optionChosen = Game.InputHandler.OptionsGetPlayerResponse(optionsKeyBinds);
+            string optionChosen = Game.InputHandler.OptionsGetPlayerResponse(optionsKeyBinds);  // Returns the key pressed by the player as a string
 
             if (optionChosen != null)
             {
@@ -68,7 +67,7 @@ namespace DungeonExplorer
 
                         Console.WriteLine("\n   [D] to Return");
 
-                        Game.InputHandler.WaitOnKey("D", "Enter", "Spacebar");
+                        Input.WaitOnKey("D", "Enter", "Spacebar");
 
                         Program.CLEAR_CONSOLE();
 

@@ -1,15 +1,10 @@
-﻿using System;
+﻿// Filename: Combat.cs
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Timers;
-using DungeonExplorer.Item_Types;
 using DungeonExplorer.Levels;
 using DungeonExplorer.Testing;
-using Microsoft.SqlServer.Server;
 
 namespace DungeonExplorer
 {
@@ -463,6 +458,10 @@ namespace DungeonExplorer
                                 Console.Write(GetAttackBar());
 
                                 markerPos += 2; // Increment the marker's position  
+                                
+                                //Debugger.Log(0, "Testing", $"Testing marker position increment and attack bar rendering.\n" +
+                                //    $"markerPos: {markerPos},\n" +
+                                //    $"currentBarPattern: {currentBarPattern}");
 
                                 Thread.Sleep(weaponEaseOfUse * 10);
 
@@ -810,17 +809,39 @@ namespace DungeonExplorer
         {
             InCombat = false;
 
+            Level_1.CompletedBattle = true;
+
             Program.CLEAR_CONSOLE();
 
-            if (Tests.InTestingMode && victorious)
+            if (Tests.InTestingMode)
             {
-                Console.WriteLine("As testing mode is enabled, the program will need to restart.\n\nPress [any key] to continue.\n");
+                if (victorious)
+                {
+                    Console.WriteLine($"You have defeated {MonsterObject.Name}!\n\nPress [any key] to continue.\n");
 
-                Console.ReadKey();
+                    Console.ReadKey();
+                }
+                else
+                {
+                    Console.WriteLine(@"                                    
+ ▄▀  ▄▀▄ █▄ ▄█ ██▀   ▄▀▄ █ █ ██▀ █▀▄
+ ▀▄▓ ▓▀▓ ▒ ▀ ▒ ▒▄▄   ▒▄▀ ▀▄▒ ▓▄▄ ▓▀▄
 
-                Process.Start(AppDomain.CurrentDomain.FriendlyName);  // Restarts console app
 
-                Environment.Exit(0);
+ Press [any key] to return to the Testing Menu
+");
+                    Console.ReadKey();
+                }
+
+                Program.tests.TestingMenu();
+
+                //Console.WriteLine("As testing mode is enabled, the program will need to restart.\n\nPress [any key] to continue.\n");
+
+                //Console.ReadKey();
+
+                //Process.Start(AppDomain.CurrentDomain.FriendlyName);  // Restarts console app
+
+                //Environment.Exit(0);
             }
             else
             {
@@ -829,8 +850,6 @@ namespace DungeonExplorer
                     Console.WriteLine($"You have defeated {MonsterObject.Name}!\n\nPress [any key] to continue.\n");
 
                     Console.ReadKey();
-
-                    Level_1.CompletedBattle = true;
 
                     RoomHandler.ReturnToLevel();
                 }

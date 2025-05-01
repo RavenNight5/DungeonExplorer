@@ -9,7 +9,8 @@ namespace DungeonExplorer.Testing
     internal class Tests
     {
         /// <summary>
-        /// Handles the Testing Menu that can be selected at the start of the game. This allows the player to start at a specific point in the game or start a combat session.
+        /// Handles the Testing Menu that can be selected at the start of the game.
+        /// This allows the player to start at a specific point in the game or start a combat session.
         /// Uses static methods containing the Debug.Assert() method to check an unexpected/erroneous value has not been wrongly passed through the input checks.
         /// </summary>
 
@@ -18,6 +19,11 @@ namespace DungeonExplorer.Testing
         public void TestingMenu(bool incorrectInput = false)
         {
             Program.CLEAR_CONSOLE();
+
+            if (Program.game == null)
+            {
+                Program.game = new Game();
+            }
 
             InTestingMode = true;
 
@@ -31,7 +37,7 @@ namespace DungeonExplorer.Testing
                 Console.WriteLine("That is not an option. Please try again.\n");
             }
 
-            string[] testingOptions = new string[] { "D1", "D2", "D7", "D", "G", "Spacebar" };
+            string[] testingOptions = new string[] { "D1", "D2", "D7", "D", "G", "Spacebar" };  // Keys 1, 2, 7, D, G, Spacebar (room 7 is
             string playerInput = Game.InputHandler.OptionsGetPlayerResponse(testingOptions);  // D is the recognised key inputs 0-9
 
             if (playerInput == "Spacebar")

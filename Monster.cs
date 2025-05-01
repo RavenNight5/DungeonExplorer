@@ -1,10 +1,7 @@
-﻿using System;
+﻿// Filename: Monster.cs
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace DungeonExplorer
 {
@@ -80,7 +77,7 @@ namespace DungeonExplorer
     │   )▓▓^▓▓(   │   │+[ {CRITDamage} ]%  CRIT dmg
     │ ~)\╤▓▒▓╤/(~ │   │ [ {CRITRate} ]%  Chance of CRIT hit
     |  \▒│▒^▒│▒/  |   │ ------
-    |   \▒░▒░▒/   |   │ Ability: Has one opportunity to steal your turn.
+    |   \▒░▒░▒/   |   │ Ability: Has one opportunity to Steal your Turn.
          |vvv|        ╚══──══=───---
     │     \V/     │
     ╚═──  ─~─  ──═╝
@@ -93,16 +90,16 @@ namespace DungeonExplorer
 
     ╔═──  ─~─  ──═╗   ╔════─════─════=────────────---
     │  /════+     │   │ Health: {HealthVisual} [ {Health}/{MaxHealth} ]
-      // -  \\        ╚════─════─════=────────────---
-    |//|+════\-   |   ╔══──══=───---
-    |+//~╖░░░╓~░  |   │   {BaseDamage}     Base Damage
-    │|/░░▒▒~▒▒░░  │   │ ------
-    │o  ░░░▒░░░   │   │+[ {CRITDamage} ]%  CRIT dmg
+      //▓-▓▓\\        ╚════─════─════=────────────---
+    |//|+════\-\  |   ╔══──══=───---
+    |+▓/~╤░░░╤~░| |   │   {BaseDamage}     Base Damage
+    │▓/░░|▒^▒|░░| │   │ ------
+    │o  \░▒▒▒░/   │   │+[ {CRITDamage} ]%  CRIT dmg
     │  /-|▒▒▒|-\  │   │ [ {CRITRate} ]%  Chance of CRIT hit
     | ═|░▒▒▒▒▒░\═ |   │ ------
-    | ░▒▒▒▒▒▒▒▒▒░ |   │ Ability: Can double Base Damage & CRIT Rate up to three times.
-      ░|▒▒▒▒▒▒▒|░     ╚══──══=───---
-    │ +|▒▒▒▒▒▒▒|+ │
+    | ░░░░▒▒▒░░░░ |   │ Ability: Can double {SpecialAbility} up to three times.
+      ░|░░░▒░░░|░     ╚══──══=───---
+    │ +|░░░░░░░|+ │
     ╚═──  ─~─  ──═╝
     ";
             }
@@ -185,6 +182,7 @@ namespace DungeonExplorer
             CRITRate = DefaultCRITRate;
         }
 
+
         // Static polymorphism to take action on the special abilities
 
         // Writes a notice using the passed string
@@ -206,15 +204,15 @@ namespace DungeonExplorer
         {
             DoSpecialAbility($"INCREASED {what.ToUpper()}\n    For ONE TURN");
 
-            if (what.ToUpper().Contains("BASE DAMAGE"))
+            if (what.ToUpper().Contains("BASEDAMAGE"))
             {
                 BaseDamage += changes[0];
             }
-            if (what.ToUpper().Contains("CRIT DAMAGE"))
+            if (what.ToUpper().Contains("CRITDAMAGE"))
             {
                 CRITDamage += changes[1];
             }
-            if (what.ToUpper().Contains("CRIT RATE"))
+            if (what.ToUpper().Contains("CRITRATE"))
             {
                 CRITRate += changes[2];
             }

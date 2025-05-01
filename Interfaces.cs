@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Filename: Interfaces.cs
 
 namespace DungeonExplorer
 {
-    // Player, Monster
+    // Player, Monster (Handled through the abstract Creature class)
     internal interface IDamageable
     {
         void DamageMonster(Monster monster, int dmg);

@@ -1,9 +1,7 @@
 ﻿// Filename: Player.cs
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
-using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
 {
@@ -84,8 +82,8 @@ namespace DungeonExplorer
 
             float result = 0;
 
-            int dice1 = diceRoll();
-            int dice2 = diceRoll();
+            int dice1 = DiceRoll();
+            int dice2 = DiceRoll();
 
             if (!(availableDamage == null) && miss == false)
             {
@@ -190,7 +188,7 @@ namespace DungeonExplorer
             return (int)Math.Ceiling(result + dice1 + dice2);
         }
 
-        private int diceRoll()
+        private int DiceRoll()
         {
             int result = 0;
             

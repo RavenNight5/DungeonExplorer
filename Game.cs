@@ -1,7 +1,6 @@
 ﻿// Filename: Game.cs
 using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
 using DungeonExplorer.Dialogue;
 using DungeonExplorer.Item_Types;
 using DungeonExplorer.Levels;
@@ -14,9 +13,9 @@ namespace DungeonExplorer
         /// <summary>
         /// Initialises the main objects that will be used and referenced throughout the game.
         /// This now includes two Monsters, each with different stats and abilities.
-        /// Starts the game throug the newly-initialised room object.
+        /// Starts the game throug the newly-initialised Game_Map object.
         /// </summary>
-
+        
         private string playerPlural = "";
 
         public static Combat CurrentCombatSession { get; set; }
@@ -68,7 +67,7 @@ namespace DungeonExplorer
                     if (i.Equals(dialogue.Length - 1)) Console.WriteLine("\n\n[Space] to Wake Up\n");
                     else Console.WriteLine("\n\n[Space]\n");
 
-                    InputHandler.WaitOnKey("Spacebar");
+                    Input.WaitOnKey("Spacebar");
 
                     Program.CLEAR_CONSOLE();
                 }

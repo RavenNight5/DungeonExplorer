@@ -1,8 +1,6 @@
 ﻿// Filename: Input.cs
 using System;
-using System.Diagnostics;
 using System.Linq;
-using DungeonExplorer.Text_Displays;
 
 namespace DungeonExplorer
 {
@@ -86,7 +84,7 @@ namespace DungeonExplorer
             }
         }
 
-        public string WaitOnKey(string keyRequired, string optSecondKey = null, string optThirdKey = null)
+        public static string WaitOnKey(string keyRequired, string optSecondKey = null, string optThirdKey = null)
         {
             var keyInfo = Console.ReadKey();
 

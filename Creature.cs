@@ -1,8 +1,6 @@
-﻿using System;
+﻿// Filename: Creature.cs
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DungeonExplorer
 {
@@ -23,14 +21,16 @@ namespace DungeonExplorer
             this.MaxHealth = maxHealth;
         }
 
+        // Interfaces
         public virtual void DamageMonster(Monster monster, int dmg)
         {
-            Console.WriteLine("No damage was dealt to the monster.");  // The default outputs for IDamageable
+            Console.WriteLine("No damage was dealt to the monster.");  // The default output for IDamageable, DamageMonster
         }
         public virtual void DamagePlayer(int dmg, int healthDefense = 0, bool lifeShield = false)
         {
-            Console.WriteLine("No damage was dealt to you.");
+            Console.WriteLine("No damage was dealt to you.");  // The default output for IDamageable, DamagePlayer
         }
+        //
 
         public abstract int Attack(bool miss = false, bool hitWeakSpot = false, List<int> availableDamage = null);
 

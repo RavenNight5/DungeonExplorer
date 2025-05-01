@@ -1,8 +1,5 @@
-﻿using System;
+﻿// Filename: Game_Map.cs
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DungeonExplorer.Levels;
 
 namespace DungeonExplorer
@@ -16,26 +13,24 @@ namespace DungeonExplorer
         public static int CurrentLevel = 1;
         public static int CurrentRoom = 1;
 
-        private readonly List<Level_1> _levels = new List<Level_1>();  // Using a list containing the level objects so they can automatically be referenced
+        private List<Level_1> rooms = new List<Level_1>();  // A list containing the level objects so they can automatically be referenced
 
         public Game_Map()
         {
-            _levels.Add(new Level_1());
+            rooms.Add(new Level_1());
         }
 
         public void ReturnToLevel()  // If player is in inventory or another screen this method will be called to continue the gameplay
         {
-            _levels[CurrentLevel - 1].DisplayRooms();
+            rooms[CurrentLevel - 1].DisplayRooms();
         }
 
         public void StartLevel(int levelNum, int room = 1)
         {
-            // Each time StartLevel is called it will be the next level (the iteration levelNum from class Game)
-            // Therefore CurrentRoom needs to be set back to 1 as it will be the first room of the new level
             CurrentLevel = levelNum;
             CurrentRoom = room;
 
-            _levels[CurrentLevel - 1].Start();
+            rooms[CurrentLevel - 1].Start();  // Get the index of the level object from the list and start that level
         }
 
     }

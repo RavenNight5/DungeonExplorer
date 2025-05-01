@@ -1,12 +1,8 @@
-﻿using System;
+﻿// Filename: Inventory.cs
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using DungeonExplorer.Item_Types;
-using DungeonExplorer.Levels;
 
 namespace DungeonExplorer
 {
@@ -22,14 +18,11 @@ namespace DungeonExplorer
         ///     
         ///     For the Combat Inventory:
         ///     - Player can equip an item from the grid:
-        ///         - If selecting a weapon then the combat equipped weapon is set
-        ///         - If selecting a bonus item then the combat equipped bonus item is set
+        ///         - If selecting a weapon then only weapons are shown (LINQ) & the combat equipped weapon is set
+        ///         - If selecting a bonus item then only bonus items are shown (LINQ) & the combat equipped bonus item is set
         ///     
         /// </summary>
-        private string _selectedSlotChar = "+";
-
-        private readonly List<string[]> _slots = new List<string[]>();
-        private readonly List<string[]> _descriptionSlots = new List<string[]>();
+        private string selectedSlotChar = "+";
 
         public static string[] InventorySlotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
         public static string[] InventoryItemDescription = new string[4];  // Assigned values only when an item is selected
@@ -49,9 +42,11 @@ namespace DungeonExplorer
         ""
         };
 
+        private readonly List<string[]> _slots = new List<string[]>();
+        private readonly List<string[]> _descriptionSlots = new List<string[]>();
+
         private readonly string _emptyNormal = "       ";
         private readonly string _emptyBottom = "      ";  // There is an inventory slot number so have one less space
-
 
         // Used to refresh the display after an item is selected, filters the list based on the combat selection
         private string GetInventoryDisplay(List<string> inventoryItems, string currentlyChoosing = "")
@@ -238,13 +233,13 @@ namespace DungeonExplorer
 
                             int slotChosen = Array.IndexOf(Options.InventoryOptionsKeyBinds, optionChosen);
 
-                            if (InventorySlotNumbers[slotChosen].ToString() != _selectedSlotChar)
+                            if (InventorySlotNumbers[slotChosen].ToString() != selectedSlotChar)
                             {
                                 InventoryItemDescription = _descriptionSlots[slotChosen];
 
                                 InventorySlotNumbers = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
 
-                                InventorySlotNumbers[slotChosen] = _selectedSlotChar;
+                                InventorySlotNumbers[slotChosen] = selectedSlotChar;
                             }
                             else
                             {
@@ -273,7 +268,7 @@ namespace DungeonExplorer
 
         }
 
-        // Gets the itemType of the item that the player is selecting (e.g. "Weapon") and returns a list of all items in the inventory that match that type
+        // Returns a list of all items in the player's inventory that match the current slelection type e.g. "Weapon"
         private static List<string> GetAllItemOfType(List<string> inventoryItems, string itemType)
         {
             List<string> result = new List<string>();

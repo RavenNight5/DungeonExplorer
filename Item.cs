@@ -1,18 +1,15 @@
-﻿using System;
+﻿// Filename: Item.cs
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DungeonExplorer.Item_Types;
 
 namespace DungeonExplorer
 {
     public class Item
     {
         /// <summary>
-        /// Uses dynamic polymorphism to create the subclass objects of Items  ////////////////////////////////////
-        /// These objects then assign the item string arrays to a list then that list to All_Items
+        /// Contains a collection of all the items in the game, separated by it's derrived class type (Weapons & Bonus Items)
+        /// Handles various static methods that return values based on the item name or image passed to it
         /// </summary>
 
         public static List<List<string[][]>> AllItems = new List<List<string[][]>>();  // AllItems[index] where index directly correlates to ItemTypeIndex
